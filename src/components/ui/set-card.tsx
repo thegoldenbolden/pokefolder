@@ -11,6 +11,7 @@ export default function Set(set: React.PropsWithChildren & TSet) {
   });
   return (
     <Link
+      prefetch={false}
       key={set.id}
       href={`/sets/${name}/${set.id}`}
       aria-label={set.name}

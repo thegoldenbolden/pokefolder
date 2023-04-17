@@ -29,6 +29,7 @@ export default async function PageControls(props: PageControlProps) {
   const BackPage =
     cards.page !== 1 ? (
       <Link
+        prefetch={false}
         aria-label="go to previous page"
         href={`${props.route}?${params}`}
         className="rounded-md p-2 flex w-7 h-7 items-center justify-center bg-tw-primary hover:brightness-90 focus:brightness-90"
@@ -44,6 +45,7 @@ export default async function PageControls(props: PageControlProps) {
   params.set('page', `${cards.page + 1}`);
   const NextPage = !lastPage ? (
     <Link
+      prefetch={false}
       aria-label="go to next page"
       href={`${props.route}?${params}`}
       className="rounded-md p-2 flex w-7 h-7 items-center justify-center bg-tw-primary hover:brightness-90 focus:brightness-90"

@@ -6,6 +6,7 @@ export default function Header() {
   return (
     <header className="py-2 md:py-6 z-50 drop-shadow-md flex gap-3 items-center justify-between border-solid border-b-2 border-tw-secondary">
       <Link
+        prefetch={false}
         className={`${passion.className} flex uppercase text-4xl`}
         href="/"
         aria-label="go to home"

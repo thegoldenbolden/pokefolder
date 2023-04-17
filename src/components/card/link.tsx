@@ -13,7 +13,7 @@ export default function Card(card: TCard) {
   });
 
   return (
-    <Link href={`/cards/${name}/${card.id}`}>
+    <Link prefetch={false} href={`/cards/${name}/${card.id}`}>
       <ClientImage
         src={card.images.large || card.images.small || '/back.png'}
         alt={card.name}

@@ -96,6 +96,7 @@ async function RecentSets() {
 
     return (
       <Link
+        prefetch={false}
         key={set.id}
         href={`/sets/${name}/${set.id}`}
         aria-label={set.name}
