@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .bg-image {
+    background-image: radial-gradient(
+        ellipse at top,
+        theme('colors.tw-gray'),
+        transparent
+      ),
+      radial-gradient(ellipse at bottom, theme('colors.tw-jet'), transparent);
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+  }
+}
+
+@layer base {
+  :disabled {
+    cursor: not-allowed;
+  }
+}

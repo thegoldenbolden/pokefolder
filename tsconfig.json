@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "strictNullChecks": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@buttons/*": ["components/buttons/*"],
+      "@modals/*": ["components/modals/*"],
+      "@inputs/*": ["components/inputs/*"],
+      "@forms/*": ["components/forms/*"],
+      "@link/*": ["components/link/*"],
+      "@card/*": ["components/card/*"],
+      "@icons": ["components/icons"],
+      "@ui/*": ["components/ui/*"],
+      "@hooks/*": ["hooks/*"],
+      "@tcg": ["types/tcg"],
+      "@lib/*": ["lib/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/components/ui",
+    "src/components/card"
+  ],
+  "exclude": ["node_modules"]
+}
