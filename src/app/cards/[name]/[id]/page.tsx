@@ -1,6 +1,6 @@
 import type { TCardFull, TSet, TCard } from '@tcg';
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
+import { Fragment, Suspense } from 'react';
 
 import format, { createSearchParams, formatSetName } from '@lib/format';
 import { init } from '@lib/server-only';
@@ -195,7 +195,10 @@ export default async function Page({ params }: CardParams) {
                     <h3 className="flex gap-2 flex-wrap font-bold">
                       <div className="flex gap-2 items-center flex-wrap">
                         {cost.map((costType, i) => (
-                          <span key={`${costType}-${i}`} className="w-max">
+                          <span
+                            key={`${name}-${costType}-${i}`}
+                            className="w-max"
+                          >
                             <CardType type={costType} />
                           </span>
                         ))}
@@ -212,7 +215,7 @@ export default async function Page({ params }: CardParams) {
           {!card.rules?.length ? null : (
             <Section heading="Rules">
               {card.rules.map((rule, i) => (
-                <p key={i} className="px-2">
+                <p key={`rules-${i}`} className="px-2">
                   • {rule}
                 </p>
               ))}
@@ -252,12 +255,19 @@ function Item(props: ListItemProps) {
         {!props.content.length
           ? 'N/A'
           : props.content.map((content, i) => {
-              if (!content) return 'N/A';
-              if (!props.as) return content;
+              if (!content)
+                return <Fragment key={`${props.title}-${i}`}>N/A</Fragment>;
+              if (!props.as)
+                return (
+                  <Fragment key={`${props.title}-${i}`}>{content}</Fragment>
+                );
               const params = new URLSearchParams();
               typeof content === 'string' && params.set(props.name, content);
               return (
-                <Link key={i} href={`/search?${params ?? ''}`}>
+                <Link
+                  key={`${props.title}-${i}`}
+                  href={`/search?${params ?? ''}`}
+                >
                   {content}
                 </Link>
               );
@@ -317,6 +327,7 @@ function Type({ types, title }: CardTypeProps) {
 type LegalityProps = {
   as?: 'a';
   legalities: TCardFull['legalities'];
+  name?: 'sets' | 'card';
 };
 function Legalities(props: LegalityProps) {
   if (!props.legalities) return null;
@@ -326,7 +337,7 @@ function Legalities(props: LegalityProps) {
     <>
       {legalities.map(([legality, value]) => (
         <Item
-          key={legality}
+          key={`${props.name ?? 'card'}-${legality}`}
           title={legality}
           content={[value]}
           as={props.as}
@@ -381,7 +392,7 @@ function CardSet({ set }: { set?: TCardFull['set'] }) {
           />
           <Item title="Release Date" content={[set.releaseDate]} />
           <Item title="Updated At" content={[set.updatedAt]} />
-          <Legalities legalities={set.legalities} />
+          <Legalities name="sets" legalities={set.legalities} />
         </ul>
       </div>
     </Section>

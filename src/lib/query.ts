@@ -59,7 +59,7 @@ export function createApiQuery(
     select: ['cardmarket.prices', 'id', 'images', 'name', 'set'],
     orderBy: ['-cardmarket.prices.trendPrice'],
     ...apiParams,
-    q: formatApiQuery(searchParams)
+    q: apiParams?.q ?? formatApiQuery(searchParams)
   };
 }
 
