@@ -65,7 +65,7 @@ export default function Page() {
           <StyledLink
             href="/sets"
             aria-label="view all sets"
-            className="hover:underline focus:underline font-bold uppercase"
+            className="font-bold uppercase"
           >
             View all sets
           </StyledLink>
