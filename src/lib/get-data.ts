@@ -23,9 +23,6 @@ export default async function getData<T>(
   try {
     const response = await fetch(url, init);
     if (!response.ok) throw new Error('Failed to fetch');
-    console.group(response.headers.get('date'));
-    console.log(decodeURIComponent(url));
-    console.groupEnd();
     return response.json();
   } catch (error) {
     console.error(`${url} encountered an error`, error);

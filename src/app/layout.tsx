@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Analytics } from '@vercel/analytics/react';
 import { passion, montserrat } from '@lib/fonts';
 import Footer from '@ui/footer';
 import Header from '@ui/header';
@@ -12,10 +11,6 @@ export const metadata: Metadata = {
   },
   applicationName: 'PokeFolder',
   keywords: 'pokemon, trading card game, tcg',
-  icons: {
-    icon: '/icons/favicon.ico',
-    apple: '/icons/apple-touch-icon.png'
-  },
   robots: {
     index: true,
     follow: false,
@@ -44,7 +39,6 @@ export default function RootLayout({
         <Header />
         <main className="py-3">{children}</main>
         <Footer />
-        <Analytics />
       </body>
     </html>
   );
