@@ -1,7 +1,5 @@
 type Base = { id: string; name: string };
-
 type Legality = { standard: string; expanded: string; unlimited: string };
-
 type CardImage = { small: string; large: string };
 type Supertype = 'Pokémon' | 'Energy' | 'Trainer';
 type Ability = { name: string; text: string; type: string };

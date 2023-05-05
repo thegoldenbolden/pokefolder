@@ -8,6 +8,7 @@ import { API_URL } from '@lib/config';
 import Skeleton from '@ui/skeleton';
 import getData from '@lib/get-data';
 import Card from '@card/link';
+import Image, { blur } from '@ui/image';
 
 type SetProps = {
   searchParams: TQueryParams;
@@ -104,8 +105,12 @@ async function Cards({ searchParams }: { searchParams: TQueryParams }) {
 
 function CardsFallback() {
   return (
-    <div className="h-[1rem] flex items-center justify-center">
-      <span className="w-16 aspect-square rounded-full motion-safe:animate-spin border-solid border-4 border-tw-gray border-t-tw-primary" />
-    </div>
+    <ul className="grid gap-3 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
+      {Array.from({ length: 25 }).map((_, i) => (
+        <li key={`fallback-${i}`}>
+         <Image alt="card image fallback" src={blur} className="w-[250px] h-[350px]" />
+        </li>
+      ))}
+    </ul>
   );
 }

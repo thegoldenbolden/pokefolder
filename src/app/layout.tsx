@@ -6,10 +6,10 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'PokeFolder',
-    template: '%s | PokeFolder'
+    default: 'Pokefolder',
+    template: '%s | Pokefolder'
   },
-  applicationName: 'PokeFolder',
+  applicationName: 'Pokefolder',
   keywords: 'pokemon, trading card game, tcg',
   robots: {
     index: true,
