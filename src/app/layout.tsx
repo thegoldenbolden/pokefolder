@@ -5,6 +5,7 @@ import Header from '@ui/header';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.pokefolder.com'),
   title: {
     default: 'Pokefolder',
     template: '%s | Pokefolder',
