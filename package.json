@@ -5,13 +5,6 @@
   "main": "index.js",
   "homepage": "https://pokefolder.com",
   "license": "MIT",
-  "keywords": [
-    "pokemon",
-    "cards",
-    "trading card game",
-    "tcg",
-    "collect"
-  ],
   "scripts": {
     "build": "next build",
     "start": "next start",
@@ -25,32 +18,31 @@
   },
   "author": {
     "name": "Jacob Bolden",
-    "url": "https://jacobbolden.com"
+    "url": "https://www.jacobbolden.com"
   },
   "bugs": {
     "url": "https://github.com/thegoldenbolden/pokefolder/issues"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
-    "@vercel/analytics": "^0.1.11",
-    "next": "13.2.5-canary.16",
+    "next": "13.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "server-only": "^0.0.1",
-    "sharp": "^0.32.0"
+    "sharp": "^0.32.1"
   },
   "devDependencies": {
     "@headlessui/tailwindcss": "^0.1.3",
-    "@types/node": "^18.15.13",
+    "@types/node": "^20.0.0",
     "@types/nprogress": "^0.2.0",
-    "@types/react": "^18.0.37",
-    "@types/react-dom": "^18.0.11",
+    "@types/react": "^18.2.5",
+    "@types/react-dom": "^18.2.4",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8.38.0",
-    "eslint-config-next": "^13.3.0",
+    "eslint": "^8.39.0",
+    "eslint-config-next": "^13.4.1",
     "postcss": "^8.4.23",
-    "prettier": "^2.8.7",
-    "tailwindcss": "^3.3.1",
+    "prettier": "^2.8.8",
+    "tailwindcss": "^3.3.2",
     "typescript": "^5.0.4"
   }
 }
