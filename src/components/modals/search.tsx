@@ -20,7 +20,12 @@ export default function SearchModal(props: React.PropsWithChildren) {
         Advanced Search
       </button>
       <Transition show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" open={isOpen} onClose={closeModal}>
+        <Dialog
+          as="div"
+          className="relative z-50"
+          open={isOpen}
+          onClose={closeModal}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -45,7 +50,10 @@ export default function SearchModal(props: React.PropsWithChildren) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full min-w-md max-w-xl px-3 py-2 border-solid border-2 border-tw-gray sm:rounded-md backdrop-blur-md">
-                  <SearchForm closeRef={closeRef} className="flex flex-col gap-2">
+                  <SearchForm
+                    closeRef={closeRef}
+                    className="flex flex-col gap-2"
+                  >
                     <Dialog.Title
                       as="h2"
                       className="text-xl sm:text-2xl flex items-center justify-between sm:justify-start gap-4 py-2 border-b-solid border-b-2 border-b-tw-gray"

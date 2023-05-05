@@ -12,7 +12,12 @@ type PriceItemProps = {
   value: { [key: string]: number } | number;
 };
 
-export default function PriceList({ market, url, prices, updatedAt }: PriceListProps) {
+export default function PriceList({
+  market,
+  url,
+  prices,
+  updatedAt,
+}: PriceListProps) {
   const priceEntries = prices ? Object.entries(prices) : null;
   if (!priceEntries || !priceEntries.length) return null;
 
@@ -28,11 +33,18 @@ export default function PriceList({ market, url, prices, updatedAt }: PriceListP
         >
           Buy From {market}
         </Link>
-        {updatedAt && <span className="text-sm font-bold">Updated @ {updatedAt}</span>}
+        {updatedAt && (
+          <span className="text-sm font-bold">Updated @ {updatedAt}</span>
+        )}
       </h3>
       <ul className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
         {priceEntries.map(([type, value]) => (
-          <PriceItem key={type} type={type} value={value} euros={market === 'Cardmarket'} />
+          <PriceItem
+            key={type}
+            type={type}
+            value={value}
+            euros={market === 'Cardmarket'}
+          />
         ))}
       </ul>
     </div>
@@ -54,11 +66,14 @@ function PriceItem({ type, value, euros }: PriceItemProps) {
   const price = new Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: euros ? 'EUR' : 'USD',
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(value);
 
   type = type.replace(/([A-Z])/g, ' $1');
-  type = type.replace(/(avg1|avg7|avg30)/gi, (match) => `${match.slice(3)} Day Average`);
+  type = type.replace(
+    /(avg1|avg7|avg30)/gi,
+    (match) => `${match.slice(3)} Day Average`,
+  );
 
   return (
     <li className="flex flex-col">

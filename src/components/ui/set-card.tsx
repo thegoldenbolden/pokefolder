@@ -7,7 +7,7 @@ export default function Set(set: React.PropsWithChildren & TSet) {
   const name = format(set.name, {
     case: 'lowercase',
     '&': { from: '&', to: 'and' },
-    "'s": { from: "'s", to: 's' }
+    "'s": { from: "'s", to: 's' },
   });
   return (
     <Link

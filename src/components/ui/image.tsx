@@ -15,9 +15,11 @@ const shimmer = (w: number, h: number) => `
 </svg>`;
 
 const toBase64 = (str: string) =>
-  typeof window === 'undefined' ? Buffer.from(str).toString('base64') : window.btoa(str);
+  typeof window === 'undefined'
+    ? Buffer.from(str).toString('base64')
+    : window.btoa(str);
 
-export const blur = `data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`
+export const blur = `data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`;
 
 export default function Image(props: ImageProps) {
   return (
@@ -28,7 +30,7 @@ export default function Image(props: ImageProps) {
       alt={props.alt}
       {...((+(props.width ?? 40) >= 40 || +(props.height ?? 40) >= 40) && {
         placeholder: 'blur',
-        blurDataURL: blur
+        blurDataURL: blur,
       })}
     />
   );

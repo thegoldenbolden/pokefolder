@@ -23,10 +23,16 @@ export default function Footer() {
             href="https://pokemontcg.io"
             target="_blank"
             rel="noreferrer noopener"
-          >Pok{"é"}mon TCG API</Link>
+          >
+            Pok{'é'}mon TCG API
+          </Link>
         </div>
         <div className="flex gap-6 items-center flex-wrap">
-          <Link target="_blank" href="https://www.jacobbolden.com" rel="noopener">
+          <Link
+            target="_blank"
+            href="https://www.jacobbolden.com"
+            rel="noopener"
+          >
             <GlobeIcon className="w-6 h-6" />
           </Link>
           <Link

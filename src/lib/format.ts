@@ -45,7 +45,7 @@ export function formatSetName(name: string, config?: Partial<Config>) {
     case: 'lowercase',
     '&': { from: '&', to: 'and' },
     "'s": { from: "'s", to: 's' },
-    ...config
+    ...config,
   });
 }
 

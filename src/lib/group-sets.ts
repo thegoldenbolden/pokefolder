@@ -11,6 +11,6 @@ export default function groupSetsBySeries(sets: TSet[]) {
 
   return {
     series: Object.keys(group),
-    setsBySeries: Object.entries(group)
+    setsBySeries: Object.entries(group),
   };
 }

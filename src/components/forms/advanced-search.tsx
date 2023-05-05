@@ -14,7 +14,7 @@ export default async function AdvancedSearch() {
     pageSize: '250',
     page: '1',
     select: ['name', 'id', 'series'],
-    orderBy: ['series', 'name']
+    orderBy: ['series', 'name'],
   });
 
   const [types, subtypes, supertypes, rarities, sets] = await Promise.all([
@@ -22,7 +22,7 @@ export default async function AdvancedSearch() {
     _subtypes,
     _supertypes,
     _rarities,
-    _sets
+    _sets,
   ]);
 
   const { setsBySeries: series } = groupSetsBySeries(sets.data);

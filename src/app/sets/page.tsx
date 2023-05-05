@@ -11,7 +11,7 @@ import SetCard from '@ui/set-card';
 export const metadata: Metadata = {
   title: 'Sets',
   description: `See Pokemon cards based on their sets.`,
-  keywords: 'pokemon cards, card sets, trading card game, tcg'
+  keywords: 'pokemon cards, card sets, trading card game, tcg',
 };
 
 export default async function Page() {
@@ -28,12 +28,12 @@ async function Sets() {
     page: '1',
     pageSize: '250',
     select: ['set', 'id', 'images', 'name', 'series', 'releaseDate'],
-    orderBy: ['series']
+    orderBy: ['series'],
   });
 
   if (!sets?.totalCount) return <div>No sets found</div>;
   const { series: seriesNames, setsBySeries: series } = groupSetsBySeries(
-    sets.data
+    sets.data,
   );
 
   return (

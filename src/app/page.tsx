@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   description: 'Find the best prices for you pokemon collector dreams.',
-  keywords: 'pokemon, cards, collect, trading card game, tcg'
+  keywords: 'pokemon, cards, collect, trading card game, tcg',
 };
 
 export default function Page() {
@@ -84,14 +84,14 @@ async function RecentSets() {
     page: '1',
     select: ['id', 'images', 'name', 'releaseDate'],
     orderBy: ['-releaseDate'],
-    pageSize: '15'
+    pageSize: '15',
   });
 
   return sets.data.map((set) => {
     const name = format(set.name, {
       case: 'lowercase',
       '&': { from: '&', to: 'and' },
-      "'s": { from: "'s", to: 's' }
+      "'s": { from: "'s", to: 's' },
     });
 
     return (

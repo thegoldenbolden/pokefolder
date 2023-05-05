@@ -7,7 +7,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: {
     default: 'Pokefolder',
-    template: '%s | Pokefolder'
+    template: '%s | Pokefolder',
   },
   applicationName: 'Pokefolder',
   keywords: 'pokemon, trading card game, tcg',
@@ -22,13 +22,13 @@ export const metadata: Metadata = {
       noimageindex: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1
-    }
-  }
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {

@@ -1,9 +1,8 @@
 import type { TCard, TQueryParams, TSetFull } from '@tcg';
 import { Suspense } from 'react';
 
-import format, { formatSetName } from '@lib/format';
+import { formatSetName } from '@lib/format';
 import PageControls from '@ui/page-controls';
-import ScrollTop from '@buttons/scroll-top';
 import { API_URL } from '@lib/config';
 import Skeleton from '@ui/skeleton';
 import getData from '@lib/get-data';
@@ -32,7 +31,7 @@ export async function generateMetadata({ params }: SetProps) {
   return {
     title: `${set.data.series} | ${set.data.name}`,
     keywords: `${set.data.series}, ${set.data.name}, pokemon, cards, trading card game`,
-    description: `See cards from ${set.data.series}: ${set.data.name}`
+    description: `See cards from ${set.data.series}: ${set.data.name}`,
   };
 }
 
@@ -69,7 +68,6 @@ export default async function Page({ params, searchParams }: SetProps) {
             <PageControls route={route} searchParams={searchParams} />
           </div>
         </Suspense>
-        <ScrollTop />
       </div>
     </>
   );
@@ -108,7 +106,13 @@ function CardsFallback() {
     <ul className="grid gap-3 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
       {Array.from({ length: 25 }).map((_, i) => (
         <li key={`fallback-${i}`}>
-         <Image alt="card image fallback" src={blur} className="w-[250px] h-[350px]" />
+          <Image
+            alt="card image fallback"
+            src={blur}
+            width={250}
+            height={350}
+            className="w-[250px] h-[350px]"
+          />
         </li>
       ))}
     </ul>

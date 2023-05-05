@@ -18,7 +18,7 @@ export const queryParamsToApiParams: TQueryKeys = {
   ancient_trait: '!ancientTrait.name',
   abilities: '!abilities.name',
   attacks: '!attacks.name',
-  hp: 'hp'
+  hp: 'hp',
 };
 
 // Lookup valid keys for https://api.pokemontcg.io and format params
@@ -50,7 +50,7 @@ export function formatApiQuery(params: Partial<TQueryParams> | null) {
 
 export function createApiQuery(
   searchParams: Partial<TQueryParams> | null,
-  apiParams: Partial<TAPIParams> | null
+  apiParams: Partial<TAPIParams> | null,
 ): TAPIParams {
   const page = parseInt(`${searchParams?.page ?? 1}`) || 1;
   return {
@@ -59,13 +59,13 @@ export function createApiQuery(
     select: ['cardmarket.prices', 'id', 'images', 'name', 'set'],
     orderBy: ['-cardmarket.prices.trendPrice'],
     ...apiParams,
-    q: apiParams?.q ?? formatApiQuery(searchParams)
+    q: apiParams?.q ?? formatApiQuery(searchParams),
   };
 }
 
 export function createSearchParams(
   searchParams: TQueryParams | null,
-  apiParams: TAPIParams | null
+  apiParams: TAPIParams | null,
 ) {
   let params = new URLSearchParams();
   const query = createApiQuery(searchParams, apiParams);

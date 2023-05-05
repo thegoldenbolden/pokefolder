@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 
 import AdvancedSearch from '@forms/advanced-search';
 import PageControls from '@ui/page-controls';
-import ScrollTop from '@buttons/scroll-top';
 import SearchModal from '@modals/search';
 import getData from '@lib/get-data';
 import Skeleton from '@ui/skeleton';
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
   title: 'Search',
   keywords: 'search, pokemon, trading card game, tcg',
   description:
-    'Search for Pokémon cards and get detailed information such as current prices, artists, and more.'
+    'Search for Pokémon cards and get detailed information such as current prices, artists, and more.',
 };
 
 type Params = { searchParams: TQueryParams };
@@ -46,7 +45,6 @@ export default function Page({ searchParams }: Params) {
           <PageControls route="/search" searchParams={searchParams} />
         </div>
       </Suspense>
-      <ScrollTop />
     </div>
   );
 }
@@ -76,7 +74,13 @@ function CardsFallback() {
     <ul className="grid gap-3 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
       {Array.from({ length: 25 }).map((_, i) => (
         <li key={`fallback-${i}`}>
-         <Image alt="card image fallback" src={blur} className="w-[250px] h-[350px]" />
+          <Image
+            alt="card image fallback"
+            src={blur}
+            width={250}
+            height={350}
+            className="w-[250px] h-[350px]"
+          />
         </li>
       ))}
     </ul>

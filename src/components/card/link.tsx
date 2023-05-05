@@ -9,7 +9,7 @@ export default function Card(card: TCard) {
     case: 'lowercase',
     '&': { from: '&', to: 'and' },
     "'s": { from: "'s", to: 's' },
-    'lv.': { from: 'lv.', to: 'lv-' }
+    'lv.': { from: 'lv.', to: 'lv-' },
   });
 
   return (

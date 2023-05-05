@@ -17,5 +17,5 @@ export const queryParams: TQueryKey[] = [
   'sets',
   'subtypes',
   'supertypes',
-  'types'
+  'types',
 ];

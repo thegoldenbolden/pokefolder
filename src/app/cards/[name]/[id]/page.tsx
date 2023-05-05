@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: CardParams) {
   return {
     title: `${card.name} | ${card.set.name}`,
     description: `Get information about ${card.name} from ${series}.`,
-    keywords: `${card.name}, ${card.set.name}, ${card.set.series}, pokemon, trading card game, tcg`
+    keywords: `${card.name}, ${card.set.name}, ${card.set.series}, pokemon, trading card game, tcg`,
   };
 }
 
@@ -157,7 +157,7 @@ export default async function Page({ params }: CardParams) {
                 <Link
                   href={`/search?${createSearchParams(
                     'ancient_trait',
-                    card.ancientTrait.name
+                    card.ancientTrait.name,
                   )}`}
                 >
                   {card.ancientTrait.name}
@@ -377,12 +377,12 @@ function CardSet({ set }: { set?: TCardFull['set'] }) {
                   aria-label={`go to set ${set.name}`}
                   href={`/sets/${format(set.name, {
                     case: 'lowercase',
-                    '&': { from: '&', to: 'and' }
+                    '&': { from: '&', to: 'and' },
                   })}/${set.id}`}
                 >
                   {set.name}
                 </Link>
-              </div>
+              </div>,
             ]}
           />
           <Item title="PTCGO Code" content={[set.ptcgoCode]} />
@@ -406,7 +406,7 @@ async function MoreCardsFromSet({ set, cardId }: CardFromSetProps) {
     pageSize: '5',
     q: [`set.id:${set.id} -id:${cardId}`],
     select: ['id', 'images', 'name', 'cardmarket.prices', 'set'],
-    orderBy: ['-cardmarket.prices.trendPrice']
+    orderBy: ['-cardmarket.prices.trendPrice'],
   });
 
   const SetLink = (

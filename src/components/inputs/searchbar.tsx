@@ -7,11 +7,15 @@ type SearchbarProps = {
   className?: string;
   id: 'searchbar-header' | 'searchbar-hero';
 };
-export default function Searchbar({ placeholder, className, id }: SearchbarProps) {
+export default function Searchbar({
+  placeholder,
+  className,
+  id,
+}: SearchbarProps) {
   return (
     <SearchForm
       id={id}
-      className={`transition-colors group gap-2 hover:ring-2 hover:ring-tw-secondary focus-within:ring-2 focus-within:ring-tw-secondary ${className}`}
+      className={`transition-colors group gap-2 ${className}`}
     >
       <div className="px-2 flex items-center bg-transparent">
         <SearchIcon className="text-white/75 group-hover:text-tw-secondary group-focus-within:text-tw-secondary h-5 w-5" />

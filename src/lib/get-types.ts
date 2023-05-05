@@ -4,7 +4,7 @@ import { Data } from './get-data';
 
 type Endpoint = 'types' | 'subtypes' | 'supertypes' | 'rarities';
 export default async function getTypes(
-  endpoint: Endpoint
+  endpoint: Endpoint,
 ): Promise<Data<string>> {
   const url = `${API_URL}/${endpoint}`;
 
@@ -19,7 +19,7 @@ export default async function getTypes(
       totalCount: 0,
       count: 0,
       page: 0,
-      pageSize: 0
+      pageSize: 0,
     };
   }
 }

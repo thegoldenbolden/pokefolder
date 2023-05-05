@@ -24,7 +24,7 @@ export default function SearchForm(props: SearchForm) {
       'sets',
       'subtypes',
       'supertypes',
-      'types'
+      'types',
     ];
 
     keys.forEach((key) => {

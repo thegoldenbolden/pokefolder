@@ -15,7 +15,7 @@ type Slug = 'cards' | 'sets';
 export default async function getData<T>(
   endpoint: Slug,
   searchParams: TQueryParams | null,
-  apiParams: TAPIParams | null
+  apiParams: TAPIParams | null,
 ): Promise<Data<T>> {
   const params = createSearchParams(searchParams, apiParams);
   const url = `${API_URL}/${endpoint}?${params}`;
@@ -31,7 +31,7 @@ export default async function getData<T>(
       page: 0,
       pageSize: 0,
       count: 0,
-      totalCount: 0
+      totalCount: 0,
     };
   }
 }

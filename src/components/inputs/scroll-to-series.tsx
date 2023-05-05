@@ -40,7 +40,9 @@ export default function ScrollToSet({ options }: { options: string[] }) {
                 {({ active }) => (
                   <li
                     className={`${
-                      active ? 'px-2 bg-blue-500 text-white cursor-pointer' : 'px-2 cursor-pointer'
+                      active
+                        ? 'px-2 bg-blue-500 text-white cursor-pointer'
+                        : 'px-2 cursor-pointer'
                     }`}
                   >
                     {option}
