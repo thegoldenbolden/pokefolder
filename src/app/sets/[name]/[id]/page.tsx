@@ -25,6 +25,8 @@ async function getSet(id: string): Promise<{ data: TSetFull } | null> {
   }
 }
 
+export const revalidate = 86400;
+
 export async function generateMetadata({ params }: SetProps) {
   const set = await getSet(params.id);
   if (!set?.data) return { title: 'No cards found.' };
@@ -48,23 +50,19 @@ export default async function Page({ params, searchParams }: SetProps) {
               <div className="motion-safe:animate-pulse bg-tw-gray w-[14rem] h-[1rem]" />
             }
           >
-            {/** @ts-expect-error */}
             <SetHeading setId={params.id} />
           </Suspense>
           <Suspense fallback={<Skeleton height="h-[1rem]" width="w-[14rem]" />}>
-            {/** @ts-expect-error Server Component */}
             <PageControls route={route} searchParams={searchParams} />
           </Suspense>
         </div>
         <section className="min-h-screen">
           <Suspense fallback={<CardsFallback />}>
-            {/** @ts-expect-error Server Component */}
             <Cards searchParams={searchParams} />
           </Suspense>
         </section>
         <Suspense fallback={<Skeleton height="h-[1rem]" width="w-[14rem]" />}>
           <div className="flex justify-center items-center">
-            {/** @ts-expect-error Server Component */}
             <PageControls route={route} searchParams={searchParams} />
           </div>
         </Suspense>

@@ -7,7 +7,7 @@ import groupSetsBySeries from '@lib/group-sets';
 import getData from '@lib/get-data';
 import SetCard from '@ui/set-card';
 
-// export const revalidate = 86400;
+export const revalidate = 86400;
 export const metadata: Metadata = {
   title: 'Sets',
   description: `See Pokemon cards based on their sets.`,
@@ -17,7 +17,6 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <Suspense fallback={<span>Loading..</span>}>
-      {/** @ts-expect-error Server Component */}
       <Sets />
     </Suspense>
   );

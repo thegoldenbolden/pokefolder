@@ -25,6 +25,9 @@ async function getCard(id: string): Promise<{ data: TCardFull } | null> {
 }
 
 type CardParams = { params: { id: string } };
+
+export const revalidate = 86400;
+
 export async function generateMetadata({ params }: CardParams) {
   const response = await getCard(params.id);
   if (!response?.data) return { title: 'Card Not Found' };
@@ -226,7 +229,6 @@ export default async function Page({ params }: CardParams) {
       </div>
       <div className="flex justify-center items-center min-h-[320px]">
         <Suspense fallback={<Spinner />}>
-          {/** @ts-expect-error Server Component */}
           <MoreCardsFromSet set={card.set} cardId={card.id} />
         </Suspense>
       </div>
