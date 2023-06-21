@@ -25,6 +25,8 @@ async function getSet(id: string): Promise<{ data: TSetFull } | null> {
   }
 }
 
+export const revalidate = 86400;
+
 export async function generateMetadata({ params }: SetProps) {
   const set = await getSet(params.id);
   if (!set?.data) return { title: 'No cards found.' };

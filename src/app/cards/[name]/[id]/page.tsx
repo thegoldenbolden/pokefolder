@@ -25,6 +25,9 @@ async function getCard(id: string): Promise<{ data: TCardFull } | null> {
 }
 
 type CardParams = { params: { id: string } };
+
+export const revalidate = 86400;
+
 export async function generateMetadata({ params }: CardParams) {
   const response = await getCard(params.id);
   if (!response?.data) return { title: 'Card Not Found' };
