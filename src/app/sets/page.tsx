@@ -17,7 +17,6 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <Suspense fallback={<span>Loading..</span>}>
-      {/** @ts-expect-error Server Component */}
       <Sets />
     </Suspense>
   );

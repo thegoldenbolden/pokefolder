@@ -71,7 +71,6 @@ export default function Page() {
           </StyledLink>
         </div>
         <div className="flex relative items-center gap-4 py-4 px-3 snap-mandatory snap-x overflow-x-scroll">
-          {/** @ts-expect-error Server Component */}
           <RecentSets />
         </div>
       </section>

@@ -229,7 +229,6 @@ export default async function Page({ params }: CardParams) {
       </div>
       <div className="flex justify-center items-center min-h-[320px]">
         <Suspense fallback={<Spinner />}>
-          {/** @ts-expect-error Server Component */}
           <MoreCardsFromSet set={card.set} cardId={card.id} />
         </Suspense>
       </div>

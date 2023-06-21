@@ -25,23 +25,19 @@ export default function Page({ searchParams }: Params) {
     <div id="top" className="space-y-6">
       <div className="flex flex-wrap gap-2 justify-center items-center sm:justify-between  z-50 py-4">
         <SearchModal>
-          {/** @ts-expect-error Server Component */}
           <AdvancedSearch />
         </SearchModal>
         <Suspense fallback={<Skeleton height="h-[1rem]" width="w-[14rem]" />}>
-          {/** @ts-expect-error Server Component */}
           <PageControls route="/search" searchParams={searchParams} />
         </Suspense>
       </div>
       <section className="min-h-screen">
         <Suspense fallback={<CardsFallback />}>
-          {/** @ts-expect-error Server Component */}
           <Cards params={searchParams} />
         </Suspense>
       </section>
       <Suspense fallback={<Skeleton height="h-[1rem]" width="w-[14rem]" />}>
         <div className="flex justify-center items-center">
-          {/** @ts-expect-error Server Component */}
           <PageControls route="/search" searchParams={searchParams} />
         </div>
       </Suspense>
