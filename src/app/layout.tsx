@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.pokefolder.com'),
   title: {
     default: 'Pokefolder',
-    template: '%s | Pokefolder',
+    template: '%s • Pokefolder',
   },
   applicationName: 'Pokefolder',
-  keywords: 'pokemon, trading card game, tcg',
+  keywords: ['pokemon', 'trading card game', 'tcg', 'collecting', 'pokemon collection'],
   robots: {
     index: true,
     follow: false,
