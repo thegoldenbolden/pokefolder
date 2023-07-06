@@ -1,6 +1,6 @@
 declare namespace NodeJS {
   export interface ProcessEnv {
     TCG_KEY: string;
-    BASE_URL: string;
+				NEXT_PUBLIC_BASE_URL: string;
   }
 }
