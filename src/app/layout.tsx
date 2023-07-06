@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { passion, montserrat } from '@lib/fonts';
 import Footer from '@ui/footer';
 import Header from '@ui/header';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,7 +12,13 @@ export const metadata: Metadata = {
     template: '%s • Pokefolder',
   },
   applicationName: 'Pokefolder',
-  keywords: ['pokemon', 'trading card game', 'tcg', 'collecting', 'pokemon collection'],
+  keywords: [
+    'pokemon',
+    'trading card game',
+    'tcg',
+    'collecting',
+    'pokemon collection',
+  ],
   robots: {
     index: true,
     follow: false,
@@ -34,13 +41,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${passion.variable} ${montserrat.variable}`}>
-      <body className="px-3 max-w-screen-xl mx-auto font-montserrat bg-tw-black text-white">
-        <div className="bg-image" />
-        <Header />
-        <main className="py-3">{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${passion.variable} ${montserrat.variable}`}>
+        <body className="px-3 max-w-screen-xl mx-auto font-montserrat bg-tw-black text-white">
+          <div className="bg-image" />
+          <Header />
+          <main className="py-3">{children}</main>
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -24,6 +24,7 @@
     "url": "https://github.com/thegoldenbolden/pokefolder/issues"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.21.14",
     "@headlessui/react": "^1.7.15",
     "next": "^13.4.8",
     "react": "^18.2.0",
