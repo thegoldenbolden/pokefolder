@@ -10,9 +10,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: 'https://www.pokefolder.com/search',
       lastModified: new Date(),
     },
-    {
-      url: 'https://www.pokefolder.com/sets',
-      lastModified: new Date(),
-    },
   ];
 }

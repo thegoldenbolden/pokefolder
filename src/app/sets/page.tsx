@@ -1,33 +1,54 @@
-import type { TSet } from '@tcg';
+import type { TSet } from '@/types/tcg';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-
-import ScrollToSeries from '@inputs/scroll-to-series';
-import groupSetsBySeries from '@lib/group-sets';
-import getData from '@lib/get-data';
-import SetCard from '@ui/set-card';
+import { groupSetsBySeries } from '@/lib/utils';
+import SetCard from '@/ui/set-card';
+import { search } from '@/lib/fetch';
+import SeriesCombobox from '@/components/series-combobox';
+import { keywords } from '@/lib/tcg';
 
 export const revalidate = 86400;
 export const metadata: Metadata = {
   title: 'Sets',
-  description: `See Pokemon cards based on their sets.`,
-  keywords: 'pokemon cards, card sets, trading card game, tcg',
+  description:
+    'Explore a comprehensive collection of Pokemon TCG card sets. From classic expansions to the latest releases, dive into the world of Pokemon cards. Discover the unique themes, artwork, and gameplay mechanics of each set. Complete your card collection and become a true Pokemon TCG connoisseur',
+  keywords: [
+    'Pokemon card sets',
+    'TCG expansions',
+    'Complete card sets',
+    'Set collection',
+    'All card sets',
+    'Set catalog',
+    'Pokemon TCG releases',
+    'Card set archive',
+    'Complete card list',
+    'Set checklist',
+    'Expansion packs',
+    'Set gallery',
+    'Card set database',
+    'Set details',
+    'Set history',
+    ...keywords,
+  ],
 };
 
 export default async function Page() {
   return (
-    <Suspense fallback={<span>Loading..</span>}>
-      <Sets />
-    </Suspense>
+    <main className="my-6 md:my-10 flex flex-col gap-2">
+      <Suspense fallback={<span>Loading..</span>}>
+        <Sets />
+      </Suspense>
+    </main>
   );
 }
 
 async function Sets() {
-  const sets = await getData<TSet>('sets', null, {
-    page: '1',
-    pageSize: '250',
-    select: ['set', 'id', 'images', 'name', 'series', 'releaseDate'],
-    orderBy: ['series'],
+  const sets = await search<TSet>('sets', {
+    dev: {
+      pageSize: 250,
+      select: ['set', 'id', 'images', 'name', 'series', 'releaseDate'],
+      orderBy: '-release',
+    },
   });
 
   if (!sets?.totalCount) return <div>No sets found</div>;
@@ -37,10 +58,8 @@ async function Sets() {
 
   return (
     <>
-      <div className="flex flex-col self-end gap-px sticky top-2 z-50">
-        <ScrollToSeries options={seriesNames} />
-      </div>
-      <section className="flex flex-col gap-4 divide-y divide-tw-gray">
+      <SeriesCombobox series={seriesNames} />
+      <section className="flex flex-col gap-4 divide-y divide-spotlight">
         {series.map(([series, sets]) => {
           return (
             <div key={series} className="py-2 space-y-2">

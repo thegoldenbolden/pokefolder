@@ -1,3 +1,5 @@
+import { QueryKeys } from '@/lib/tcg';
+
 type Base = { id: string; name: string };
 type Legality = { standard: string; expanded: string; unlimited: string };
 type CardImage = { small: string; large: string };
@@ -34,15 +36,17 @@ type Attack = {
 };
 // prettier-ignore
 type TCGPrice = "normal" | "holofoil" | "reverseHolofoil" | "1stEditionHolofoil" | "1stEditionNormal";
-type TCGPlayer = {
+type TCGPriceTrend = 'low' | 'mid' | 'high' | 'market' | 'directLow';
+
+export type TCGPlayer = {
   url: string;
   updatedAt: string;
-  prices: Record<TCGPrice, number>;
+  prices: Record<TCGPrice, Record<TCGPriceTrend, number | null>>;
 };
 
 // prettier-ignore
 type CardmarketPrice = "trendPrice" | "avg1" | "avg7" | "avg30" | "reverseHoloAvg1" | "reverseHoloAvg7" | "reverseHoloAvg7";
-type CardMarket = {
+export type CardMarket = {
   url: string;
   updatedAt: string;
   prices: Partial<Record<CardmarketPrice, number>>;
@@ -76,50 +80,45 @@ export interface TCardFull extends TCard {
   resistances?: WeaknessResistance[];
 }
 
-export type TQueryParams = TQueryKeys & {
+export type TQueryParams = Record<QueryKeys, string> & {
   page: string;
   pageSize: string;
+  orderBy: OrderBy | `-${OrderBy}`;
+  hp_low: string;
+  hp_high: string;
+  view: 'table' | 'grid';
 };
 
 type TAPISelectParam =
   | 'name'
   | 'set'
   | 'id'
-  | 'images'
+  | `images${`.symbol` | '.logo' | ''}`
   | 'releaseDate'
   | 'series'
   | 'cardmarket.prices';
 
-type TAPIOrderByParam =
-  | '-releaseDate'
-  | '-cardmarket.prices.trendPrice'
-  | 'series'
-  | 'name';
-
 export type TAPIParams = {
   select?: TAPISelectParam[];
-  orderBy?: TAPIOrderByParam[];
-  pageSize?: string;
-  page?: string;
+  orderBy?: OrderBy | `-${OrderBy}`;
+  pageSize?: number;
+  page?: number;
   q?: string[];
 };
 
-export type TQueryKey =
-  | 'cards'
-  | 'supertypes'
-  | 'subtypes'
-  | 'types'
-  | 'rarities'
-  | 'artists'
-  | 'marks'
-  | 'hp'
-  | 'series'
-  | 'legalities_expanded'
-  | 'legalities_standard'
-  | 'legalities_unlimited'
-  | 'ancient_trait'
-  | 'attacks'
-  | 'abilities'
-  | 'sets';
+export type TCGApiResponse<T> = {
+  data: T[];
+  page: number;
+  pageSize: number;
+  count: number;
+  totalCount: number;
+};
 
-export type TQueryKeys = Record<TQueryKey, string>;
+export type OrderBy =
+  | 'release'
+  | 'pokedex'
+  | 'cardmarket'
+  | 'name'
+  | 'number'
+  | 'series'
+  | 'tcgplayer';

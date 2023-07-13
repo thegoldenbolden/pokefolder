@@ -1,20 +1,12 @@
-type SpinnerProps = {
-  width: `w-${number}`;
-  height: `h-${number}`;
-  borderColor: `border-t-${string} border-r-${string} border-l-${string} border-b-${string}`;
-  borderWidth: `border-${number}`;
-};
+import { cn } from '@/lib/utils';
 
-export default function Spinner(props: Partial<SpinnerProps>) {
-  const width = props.width ?? 'w-8',
-    height = props.height ?? 'h-8',
-    //prettier-ignore
-    borderColor = props.borderColor || 'border-t-tw-primary border-r-tw-red border-l-primary/50 border-b-primary/50',
-    borderWidth = props.borderWidth || 'border-2';
-
+export default function Spinner({ className }: { className?: string }) {
   return (
     <span
-      className={`${width} ${height} ${borderColor} ${borderWidth} aspect-square border-solid rounded-full motion-safe:animate-spin`}
+      className={cn(
+        'aspect-square w-8 h-8 border-solid rounded-full border-t-primary border-r-primary border-l-primary/50 border-b-primary/50 motion-safe:animate-spin',
+        className,
+      )}
     />
   );
 }

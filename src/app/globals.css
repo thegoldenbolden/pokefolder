@@ -2,14 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --spotlight: 0 0% 10%;
+    --border: 0 0% 15%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 63.9%;
+    --radius: 0.5rem;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 100%;
+
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 48 100% 51%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 223 47% 44%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 0 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+  }
+
+  :disabled {
+    cursor: not-allowed;
+  }
+
+  /*! Firefox */
+  html {
+    scrollbar-color: hsl(var(--foreground)) hsl(var(--background));
+  }
+
+  /*! Other Browser */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--foreground)) hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--foreground));
+    border-radius: 6px;
+    border: 3px solid hsl(var(--foreground));
+  }
+
   .bg-image {
     background-image: radial-gradient(
         ellipse at top,
-        theme('colors.tw-gray'),
+        hsl(var(--spotlight)),
         transparent
       ),
-      radial-gradient(ellipse at bottom, theme('colors.tw-jet'), transparent);
+      radial-gradient(ellipse at bottom, hsl(var(--background)), transparent);
     height: 100vh;
     width: 100vw;
     position: fixed;
@@ -19,8 +77,22 @@
   }
 }
 
-@layer base {
-  :disabled {
-    cursor: not-allowed;
+@layer components {
+  .logo {
+    color: hsl(var(--primary));
+    text-stroke: 0.15rem hsl(var(--secondary));
+    -webkit-text-stroke: 0.15rem hsl(var(--secondary));
+  }
+
+  .gradient-text {
+    color: white;
+  }
+
+  @supports (background-clip: text) {
+    .gradient-text {
+      background-image: linear-gradient(180deg, #fff, #adadad);
+      background-clip: text;
+      color: transparent;
+    }
   }
 }
