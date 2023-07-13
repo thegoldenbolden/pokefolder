@@ -14,7 +14,7 @@ export default async function Images({ params }: { params: TQueryParams }) {
   }
   return (
     <>
-      <ul className="grid gap-3 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
+      <ul className="grid gap-3 mb-2 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
         {cards.data.map((card) => (
           <li key={card.id}>
             <Card {...card} />

@@ -30,6 +30,7 @@ export default function Page() {
               variant="primary"
               highlight="primary"
               focus="ring"
+														className="focus-visible:px-1"
               size="bold"
               href="/search?cards=vikavolt"
             >
@@ -40,6 +41,7 @@ export default function Page() {
               variant="primary"
               highlight="primary"
               focus="ring"
+														className="focus-visible:px-1"
               size="bold"
               href="/search?cards=mew,cynthia"
             >
@@ -50,6 +52,7 @@ export default function Page() {
               variant="primary"
               highlight="primary"
               focus="ring"
+														className="focus-visible:px-1"
               size="bold"
               href="/sets"
             >

@@ -26,7 +26,7 @@ const linkVariants = cva('text-foreground/75 transition-colors', {
     },
     focus: {
       none: 'outline-none',
-      ring: 'outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:px-1',
+      ring: 'outline-none focus-visible:ring-2 focus-visible:ring-primary',
     },
   },
   defaultVariants: {

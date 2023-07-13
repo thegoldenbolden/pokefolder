@@ -50,6 +50,7 @@ const Table = async ({ params }: { params: TQueryParams }) => {
                 <TableCell>
                   <Link
                     variant="underline"
+                    focus="none"
                     href={`/search?sets=${card.set.id}`}
                   >
                     {card.set.name}
@@ -57,13 +58,18 @@ const Table = async ({ params }: { params: TQueryParams }) => {
                 </TableCell>
                 <TableCell>{card.number}</TableCell>
                 <TableCell>
-                  <Link variant="underline" href={getCardUrl(card)}>
+                  <Link
+                    variant="underline"
+                    focus="none"
+                    href={getCardUrl(card)}
+                  >
                     {card.name}
                   </Link>
                 </TableCell>
                 <TableCell>
                   <Link
                     variant="underline"
+                    focus="none"
                     href={`/search?rarities=${card.rarity}`}
                   >
                     {card.rarity}
@@ -72,6 +78,7 @@ const Table = async ({ params }: { params: TQueryParams }) => {
                 <TableCell>
                   <Link
                     variant="underline"
+                    focus="none"
                     href={`/search?supertypes=${card.supertype}`}
                   >
                     {card.supertype}
@@ -98,8 +105,8 @@ const Table = async ({ params }: { params: TQueryParams }) => {
                   {card.tcgplayer?.url ? (
                     <Link
                       href={card.tcgplayer.url}
-                      focus="none"
                       variant="underline"
+                      focus="none"
                       target="_blank"
                       rel="norefer nopenner"
                     >
