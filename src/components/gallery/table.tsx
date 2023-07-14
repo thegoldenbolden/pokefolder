@@ -20,7 +20,7 @@ import PageControls from './page-controls';
 const Table = async ({ params }: { params: TQueryParams }) => {
   const cards = await search<TCardFull>('cards', { user: params });
 
-  if (!cards?.data.length) {
+  if (!cards?.data.length || !cards.count || !cards.totalCount) {
     return <div>No cards were found</div>;
   }
 

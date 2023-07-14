@@ -18,8 +18,7 @@ export default async function PageControls(props: PageControlProps) {
   const params = new URLSearchParams(props.searchParams);
   const totalPages = Math.ceil(cards.totalCount / cards.pageSize);
   const lastPage = cards.page * cards.pageSize > cards.totalCount;
-
-  params.set('page', `${cards.page - 1}`);
+  params.set('page', `${cards.count ? cards.page - 1 : totalPages}`);
   const BackPage =
     cards.page !== 1 ? (
       <Link

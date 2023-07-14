@@ -5,13 +5,14 @@ import PageControls from './page-controls';
 
 export default async function Images({ params }: { params: TQueryParams }) {
   const cards = await search<TCard>('cards', { user: params });
-  if (!cards?.data || cards.totalCount === 0) {
+  if (!cards?.data.length || !cards.count || !cards.totalCount) {
     return (
       <div className="h-96 text-2xl flex items-center justify-center">
         No Cards Found
       </div>
     );
   }
+
   return (
     <>
       <ul className="grid gap-3 mb-2 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
