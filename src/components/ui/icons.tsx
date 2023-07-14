@@ -215,3 +215,27 @@ export const Minus: Icon = (props) => {
     </BaseIcon>
   );
 };
+
+export const Ascending: Icon = (props) => {
+  return (
+    <BaseIcon aria-label="ascending icon" {...props}>
+      <path d="m3 8 4-4 4 4" />
+      <path d="M7 4v16" />
+      <path d="M11 12h4" />
+      <path d="M11 16h7" />
+      <path d="M11 20h10" />
+    </BaseIcon>
+  );
+};
+
+export const Descending: Icon = (props) => {
+  return (
+    <BaseIcon aria-label="descending icon" {...props}>
+      <path d="m3 16 4 4 4-4" />
+      <path d="M7 20V4" />
+      <path d="M11 4h4" />
+      <path d="M11 8h7" />
+      <path d="M11 12h10" />
+    </BaseIcon>
+  );
+};

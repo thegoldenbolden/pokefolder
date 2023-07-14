@@ -10,7 +10,7 @@ import {
   useFormContext,
   useDispatchContext,
 } from '@/context/search';
-import { X } from '@/ui/icons';
+import { Minus, X } from '@/ui/icons';
 import { Input } from '@/ui/input';
 import {
   useCallback,
@@ -49,7 +49,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
         ],
       });
     },
-    [form[field], value],
+    [form[field], value, form.exclude],
   );
 
   const removeValue = useCallback(
@@ -57,7 +57,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
       const lowercased = value.toLowerCase();
       dispatch({ type: 'delete', key: field, id: lowercased });
     },
-    [form[field], value],
+    [form[field], value, form.exclude],
   );
 
   const onKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
@@ -70,7 +70,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
         return;
       }
     },
-    [form[field], value],
+    [form[field], value, form.exclude],
   );
 
   const onClick: MouseEventHandler<HTMLButtonElement> = useCallback(
@@ -78,7 +78,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
       addValue(value);
       setValue('');
     },
-    [form[field], value],
+    [form[field], value, form.exclude],
   );
 
   return (
@@ -112,6 +112,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
                   key={value.id}
                   className="flex items-center gap-1 border border-solid border-border rounded-sm px-2 focus-visible:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:bg-spotlight/75"
                 >
+                  {value.exclude && <Minus className="w-4 h-4" />}
                   {value.name}
                   <Button
                     variant="ghost"

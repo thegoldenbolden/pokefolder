@@ -6,7 +6,7 @@ import {
   useMultipleSelection,
 } from 'downshift';
 import { useState, useMemo, useCallback } from 'react';
-import { Minus, X } from '@/ui/icons';
+import { Ascending, Descending, Minus, X } from '@/ui/icons';
 import { Input } from '@/ui/input';
 import {
   type FieldValues,
@@ -146,6 +146,8 @@ export const Combobox = ({
                 key={`selected-item-${index}`}
                 {...getSelectedItemProps({ selectedItem: item, index })}
               >
+                {item.asc === 0 && <Descending className="w-4 h-4" />}
+                {item.asc === 1 && <Ascending className="w-4 h-4" />}
                 {item.exclude && <Minus className="w-4 h-4" />}
                 {item.name}
                 <span
@@ -161,7 +163,7 @@ export const Combobox = ({
             );
           })}
           <div className="flex gap-1 w-full items-center">
-            <ExcludeSearchField />
+            {field !== 'orderBy' && <ExcludeSearchField />}
             <Input
               variant="outline"
               className="grow"

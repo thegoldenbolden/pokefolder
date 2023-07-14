@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/ui/tooltip';
-import { Minus } from '@/ui/icons';
+import { Ascending, Descending, Minus } from '@/ui/icons';
 
 const ExcludeSearchField = () => {
   const { exclude } = useFormContext();
