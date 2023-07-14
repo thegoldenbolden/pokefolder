@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       crawlDelay: 30,
     },
-    sitemap: 'https://pokefolder.com/sitemap.xml',
+    sitemap: 'https://www.pokefolder.com/sitemap.xml',
   };
 }

@@ -1,15 +1,17 @@
-import Link from '@link/styled';
+import { getPrice } from '@/lib/utils';
+import { CardMarket, TCGPlayer } from '@/types/tcg';
+import { Link } from '@/ui/link';
 
 type PriceListProps = {
   market: 'Cardmarket' | 'TCGPlayer';
   url: string;
   updatedAt?: string;
-  prices?: { [key: string]: number };
+  prices?: TCGPlayer['prices'] | CardMarket['prices'];
 };
 type PriceItemProps = {
   euros?: boolean;
   type: string;
-  value: { [key: string]: number } | number;
+  value: TCGPlayer['prices'] | CardMarket['prices'];
 };
 
 export default function PriceList({
@@ -19,12 +21,13 @@ export default function PriceList({
   updatedAt,
 }: PriceListProps) {
   const priceEntries = prices ? Object.entries(prices) : null;
-  if (!priceEntries || !priceEntries.length) return null;
+  if (!priceEntries?.length) return null;
 
   return (
     <div className="flex flex-col gap-2">
       <h3 className="flex flex-col">
         <Link
+          variant="underline"
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`go to ${market}`}
@@ -53,6 +56,8 @@ export default function PriceList({
 
 function PriceItem({ type, value, euros }: PriceItemProps) {
   if (!value) return null;
+
+  // Recursively go through price object until a number is found
   if (typeof value !== 'number') {
     return (
       <>
@@ -63,12 +68,7 @@ function PriceItem({ type, value, euros }: PriceItemProps) {
     );
   }
 
-  const price = new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency: euros ? 'EUR' : 'USD',
-    maximumFractionDigits: 2,
-  }).format(value);
-
+  const price = getPrice(euros ? 'EUR' : 'USD', value);
   type = type.replace(/([A-Z])/g, ' $1');
   type = type.replace(
     /(avg1|avg7|avg30)/gi,

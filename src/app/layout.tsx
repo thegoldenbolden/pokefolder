@@ -1,17 +1,23 @@
 import type { Metadata } from 'next';
-import { passion, montserrat } from '@lib/fonts';
-import Footer from '@ui/footer';
-import Header from '@ui/header';
+import { bungee, rubik } from '@/lib/fonts';
+import Footer from '@/components/site-footer';
+import Header from '@/components/site-header';
 import './globals.css';
+import { getURL } from '@/lib/utils';
+import { keywords } from '@/lib/tcg';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.pokefolder.com'),
+  metadataBase: new URL(getURL()),
+  generator: 'Next.js',
+  referrer: 'origin-when-cross-origin',
+  colorScheme: 'dark',
+  themeColor: 'black',
   title: {
     default: 'Pokefolder',
-    template: '%s | Pokefolder',
+    template: '%s • Pokefolder',
   },
   applicationName: 'Pokefolder',
-  keywords: 'pokemon, trading card game, tcg',
+  keywords,
   robots: {
     index: true,
     follow: false,
@@ -28,18 +34,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout(props: React.PropsWithChildren) {
   return (
-    <html lang="en" className={`${passion.variable} ${montserrat.variable}`}>
-      <body className="px-3 max-w-screen-xl mx-auto font-montserrat bg-tw-black text-white">
+    <html lang="en" className={`${bungee.variable} ${rubik.variable}`}>
+      <body className="font-rubik bg-background text-foreground">
         <div className="bg-image" />
-        <Header />
-        <main className="py-3">{children}</main>
-        <Footer />
+        <div className="px-3 max-w-screen-xl mx-auto ">
+          <Header />
+          {props.children}
+          <Footer />
+        </div>
       </body>
     </html>
   );

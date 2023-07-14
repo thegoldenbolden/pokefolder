@@ -21,28 +21,17 @@
         "name": "next"
       }
     ],
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@buttons/*": ["components/buttons/*"],
-      "@modals/*": ["components/modals/*"],
-      "@inputs/*": ["components/inputs/*"],
-      "@forms/*": ["components/forms/*"],
-      "@link/*": ["components/link/*"],
-      "@card/*": ["components/card/*"],
-      "@icons": ["components/icons"],
-      "@ui/*": ["components/ui/*"],
-      "@hooks/*": ["hooks/*"],
-      "@tcg": ["types/tcg"],
-      "@lib/*": ["lib/*"]
+      "@/*": ["src/*"],
+						"@/ui/*": ["src/components/ui/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/components/ui",
-    "src/components/card"
+    ".next/types/**/*.ts", "src/components/search-form",
   ],
   "exclude": ["node_modules"]
 }
