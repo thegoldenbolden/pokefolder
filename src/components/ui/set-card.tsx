@@ -1,11 +1,11 @@
 import type { TSet } from '@/types/tcg';
-import Link from 'next/link';
+import { Link } from '@/ui/link';
 import Image from '@/ui/image';
 
 export default function Set(set: React.PropsWithChildren & TSet) {
   return (
     <Link
-      prefetch={false}
+						focus="ring"
       key={set.id}
       href={`/search?sets=${set.id}`}
       aria-label={set.name}
