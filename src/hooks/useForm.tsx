@@ -26,6 +26,11 @@ export function useForm() {
       if (!value.length) return;
 
       if (key === 'hp') {
+        const hpIncompatible = fields.supertypes.find(
+          (e) => !e.exclude && e.name !== 'Pokémon',
+        );
+
+        if (hpIncompatible) return;
         url.searchParams.set(`${key}_low`, `${Math.min(...fields[key])}`);
         url.searchParams.set(`${key}_high`, `${Math.max(...fields[key])}`);
         return;
