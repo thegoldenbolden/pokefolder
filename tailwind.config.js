@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 
-const { screens } = require("tailwindcss/defaultConfig");
+const { screens } = require('tailwindcss/defaultConfig');
 
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
@@ -13,10 +13,10 @@ module.exports = {
       },
     },
     extend: {
-					screens: {
-						'xs': '480px',
-						...screens
-					},
+      screens: {
+        xs: '480px',
+        ...screens,
+      },
       fontFamily: {
         bungee: 'var(--font-bungee)',
         rubik: 'var(--font-rubik)',
