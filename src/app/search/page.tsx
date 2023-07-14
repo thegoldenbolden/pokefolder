@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 type Params = { searchParams: TQueryParams };
 export default function Page({ searchParams }: Params) {
   return (
-    <main className="my-6 md:my-10 flex flex-col gap-2">
+    <main className="my-6 md:my-10 flex flex-col gap-3">
       <div className="flex items-center xs:justify-between gap-1 flex-wrap">
         <div className="flex gap-1 items-center">
           <Form />
@@ -45,15 +45,13 @@ export default function Page({ searchParams }: Params) {
         </div>
         <PageControls searchParams={searchParams} route="/search" />
       </div>
-      <section>
-        <Suspense fallback={<Spinner />}>
-          {searchParams.view === 'table' ? (
-            <Table params={searchParams} />
-          ) : (
-            <Images params={searchParams} />
-          )}
-        </Suspense>
-      </section>
+      <Suspense fallback={<Spinner />}>
+        {searchParams.view === 'table' ? (
+          <Table params={searchParams} />
+        ) : (
+          <Images params={searchParams} />
+        )}
+      </Suspense>
     </main>
   );
 }

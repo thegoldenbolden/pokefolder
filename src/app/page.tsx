@@ -24,13 +24,13 @@ export default function Page() {
             Build the perfect deck
           </h1>
           <Searchbar id="search" to="/search" size="md" />
-          <p>
+          <p className="w-4/5 md:w-3/5">
             Try searching&nbsp;
             <Link
               variant="primary"
               highlight="primary"
               focus="ring"
-														className="focus-visible:px-1"
+              className="focus-visible:px-1"
               size="bold"
               href="/search?cards=vikavolt"
             >
@@ -41,7 +41,7 @@ export default function Page() {
               variant="primary"
               highlight="primary"
               focus="ring"
-														className="focus-visible:px-1"
+              className="focus-visible:px-1"
               size="bold"
               href="/search?cards=mew,cynthia"
             >
@@ -52,7 +52,7 @@ export default function Page() {
               variant="primary"
               highlight="primary"
               focus="ring"
-														className="focus-visible:px-1"
+              className="focus-visible:px-1"
               size="bold"
               href="/sets"
             >

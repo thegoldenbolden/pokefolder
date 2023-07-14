@@ -1,7 +1,7 @@
 import type { TCardFull, TSet, TCard } from '@/types/tcg';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { getAbilityUrl, getAttackUrl, getTraitUrl } from '@/lib/utils';
+import { cn, getAbilityUrl, getAttackUrl, getTraitUrl } from '@/lib/utils';
 import PriceList from '@/components/card/prices';
 import { Optional, SearchLink, TypesImage } from '@/components/card/typings';
 import Spinner from '@/ui/spinner';
@@ -24,7 +24,7 @@ export async function generateMetadata({
   const series = card.set.series ? `${card.set.series}: ` : '' + card.set.name;
 
   return {
-    title: { absolute: `${card.name} | ${card.set.name}` },
+    title: { absolute: `${card.name} - ${card.set.name}` },
     description: `Get information about ${card.name} from ${series}.`,
     keywords: [card.name, series, ...keywords],
   };
@@ -167,21 +167,19 @@ export default async function Page({ params }: CardParams) {
             </ul>
           </Section>
           {(card.cardmarket?.prices || card.tcgplayer?.prices) && (
-            <Section heading="Prices">
-              <div className="flex flex-col gap-4">
-                <PriceList
-                  market="TCGPlayer"
-                  prices={card.tcgplayer?.prices}
-                  url={card.tcgplayer?.url ?? ''}
-                  updatedAt={card.tcgplayer?.updatedAt}
-                />
-                <PriceList
-                  market="Cardmarket"
-                  prices={card.cardmarket?.prices}
-                  url={card.cardmarket?.url ?? ''}
-                  updatedAt={card.cardmarket?.updatedAt}
-                />
-              </div>
+            <Section heading="Prices" className="flex flex-col gap-4">
+              <PriceList
+                market="TCGPlayer"
+                prices={card.tcgplayer?.prices}
+                url={card.tcgplayer?.url ?? ''}
+                updatedAt={card.tcgplayer?.updatedAt}
+              />
+              <PriceList
+                market="Cardmarket"
+                prices={card.cardmarket?.prices}
+                url={card.cardmarket?.url ?? ''}
+                updatedAt={card.cardmarket?.updatedAt}
+              />
             </Section>
           )}
           {card.ancientTrait?.name && card.ancientTrait?.text && (
@@ -257,12 +255,15 @@ export default async function Page({ params }: CardParams) {
   );
 }
 
-type SectionProps = React.PropsWithChildren & { heading: React.ReactNode };
-function Section({ heading, children }: SectionProps) {
+type SectionProps = React.PropsWithChildren<{
+  heading: React.ReactNode;
+  className?: string;
+}>;
+function Section({ heading, children, className }: SectionProps) {
   return (
     <section className="flex flex-col gap-2 py-3">
       <h2 className="flex gap-2 text-2xl flex-wrap font-bold">{heading}</h2>
-      <div className="px-2">{children ?? 'N/A'}</div>
+      <div className={cn('px-2', className)}>{children ?? 'N/A'}</div>
     </section>
   );
 }
@@ -334,45 +335,49 @@ function Legalities(props: LegalityProps) {
 function SetInfo({ set }: { set?: TCardFull['set'] }) {
   if (!set) return null;
   return (
-    <Section heading={`${set.series}: ${set.name}`}>
-      <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+    <Section
+      heading={`${set.series}: ${set.name}`}
+      className="flex flex-col sm:flex-row gap-2"
+    >
+      <span className="mx-auto">
         <Image
-          className="object-contain h-[128px] my-auto"
+          className="object-contain h-[128px]"
           src={set.images.logo}
           width={256}
           height={128}
           alt={`${set.name} logo`}
         />
-        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-          <Item title="Series">{set.series}</Item>
-          <Item title="Set">
-            <div key={set.id} className="flex gap-2 items-center">
-              <Image
-                src={set.images.symbol}
-                alt={`${set.name} symbol`}
-                height={24}
-                width={24}
-                className="object-contain"
-              />
-              <Link
-                aria-label={`search cards in ${set.name}`}
-                href={`/search?sets=${set.id}`}
-              >
-                {set.name}
-              </Link>
-            </div>
-          </Item>
-          <Item title="PTCGO Code">
-            <Optional data={set.ptcgoCode}>{set.ptcgoCode}</Optional>
-          </Item>
-          <Item title="Printed Total">
-            {`${set.printedTotal} / ${set.total}`}
-          </Item>
-          <Item title="Release Date">{set.releaseDate}</Item>
-          <Item title="Updated At">{set.updatedAt}</Item>
-          <Legalities name="sets" legalities={set.legalities} />
-        </ul>
-      </div>
+      </span>
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        <Item title="Series">{set.series}</Item>
+        <Item title="Set">
+          <div key={set.id} className="flex gap-2 items-center">
+            <Image
+              src={set.images.symbol}
+              alt={`${set.name} symbol`}
+              height={24}
+              width={24}
+              className="object-contain w-6 h-6"
+            />
+            <Link
+              variant="underline"
+              aria-label={`search cards in ${set.name}`}
+              href={`/search?sets=${set.id}`}
+            >
+              {set.name}
+            </Link>
+          </div>
+        </Item>
+        <Item title="PTCGO Code">
+          <Optional data={set.ptcgoCode}>{set.ptcgoCode}</Optional>
+        </Item>
+        <Item title="Printed Total">
+          {`${set.printedTotal} / ${set.total}`}
+        </Item>
+        <Item title="Release Date">{set.releaseDate}</Item>
+        <Item title="Updated At">{set.updatedAt}</Item>
+        <Legalities name="sets" legalities={set.legalities} />
+      </ul>
     </Section>
   );
 }

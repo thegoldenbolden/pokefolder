@@ -27,6 +27,7 @@ export default function PriceList({
     <div className="flex flex-col gap-2">
       <h3 className="flex flex-col">
         <Link
+          variant="underline"
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`go to ${market}`}

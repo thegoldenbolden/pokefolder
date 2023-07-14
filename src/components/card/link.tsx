@@ -5,7 +5,11 @@ import { getCardUrl } from '@/lib/utils';
 
 export default function Card(card: TCard) {
   return (
-    <Link focus="none" className='focus-visible:outline-1 focus-visible:outline-primary group' href={getCardUrl(card)}>
+    <Link
+      focus="none"
+      className="focus-visible:outline-1 focus-visible:outline-primary group"
+      href={getCardUrl(card)}
+    >
       <Image
         src={card.images.small || card.images.large || '/back.png'}
         alt={card.name}

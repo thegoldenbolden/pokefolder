@@ -5,7 +5,7 @@ import Image from '@/ui/image';
 export default function Set(set: React.PropsWithChildren & TSet) {
   return (
     <Link
-						focus="ring"
+      focus="ring"
       key={set.id}
       href={`/search?sets=${set.id}`}
       aria-label={set.name}
