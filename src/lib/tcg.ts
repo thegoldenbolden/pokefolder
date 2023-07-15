@@ -271,6 +271,8 @@ export function getNumberFromRange(options: NumberRangeOptions) {
   if (!options.value) return options.fallback;
   let value = parseInt(options.value) || options.fallback;
   if (typeof options.round === 'number') {
+			 // /cards/[id] uses 5 
+				if (value === 5) return value;
     value = Math.round(value / options.round) * options.round;
   }
   return Math.min(Math.max(value, options.min), options.max);

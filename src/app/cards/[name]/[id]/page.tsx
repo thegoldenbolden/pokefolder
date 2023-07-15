@@ -385,7 +385,7 @@ type CardFromSetProps = { set: TSet; cardName: string };
 async function MoreCardsFromSet({ set, cardName }: CardFromSetProps) {
   const cards = await getCards(
     new URLSearchParams(
-      `sets=${set.id}&orderBy=-cardmarket&exclude_cards=${cardName}`,
+      `sets=${set.id}&orderBy=-cardmarket&exclude_cards=${cardName}&pageSize=5`,
     ),
   );
 
