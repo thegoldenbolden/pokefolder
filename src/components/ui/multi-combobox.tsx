@@ -6,13 +6,19 @@ import {
   useMultipleSelection,
 } from 'downshift';
 import { useState, useMemo, useCallback } from 'react';
-import { Ascending, Descending, Minus, X } from '@/ui/icons';
+import {
+  Ascending,
+  Descending,
+  type Icon as TIcon,
+  Minus,
+  X,
+} from '@/ui/icons';
 import { Input } from '@/ui/input';
 import {
   type FieldValues,
-  type FormKeys,
   useFormContext,
   useDispatchContext,
+  ExcludedFormKeys,
 } from '@/context/search';
 import type { TSet } from '@/types/tcg';
 import { ExcludeSearchField } from '../exclude-field';
@@ -22,7 +28,7 @@ export type DefaultMultiComboboxValue = { name: string; id: string };
 type Props = {
   data: TSet[] | DefaultMultiComboboxValue[];
   placeholder?: string;
-  field: Exclude<FormKeys, 'hp' | 'exclude'>;
+  field: ExcludedFormKeys;
   item: (item: Props['data'][number]) => JSX.Element;
   label: { value: string; props?: UseComboboxGetLabelPropsOptions };
 };
@@ -38,20 +44,23 @@ export const Combobox = ({
   const [input, setInput] = useState('');
   const form = useFormContext();
 
-  const getFiltered = useCallback((selected: FieldValues, input: String) => {
-    const value = input.toLowerCase();
-    return data.filter((data) => {
-      return (
-        !selected.find((s) => s.id === data.id) &&
-        (data.name.toLowerCase().includes(value) ||
-          data.series?.toLowerCase().includes(value))
-      );
-    });
-  }, []);
+  const getFiltered = useCallback(
+    (selected: FieldValues, input: String) => {
+      const value = input.toLowerCase();
+      return data.filter((data) => {
+        return (
+          !selected.find((s) => s.id === data.id) &&
+          (data.name.toLowerCase().includes(value) ||
+            data.series?.toLowerCase().includes(value))
+        );
+      });
+    },
+    [data],
+  );
 
   const items = useMemo(
     () => getFiltered(form[field], input),
-    [form[field], input],
+    [form, field, input, getFiltered],
   );
 
   const { getSelectedItemProps, getDropdownProps, removeSelectedItem } =
@@ -116,7 +125,7 @@ export const Combobox = ({
               key: field,
               value: [
                 ...form[field],
-                { ...selectedItem, exclude: form.exclude },
+                { exclude: form.exclude, ...selectedItem },
               ],
             });
             setInput('');
@@ -140,15 +149,21 @@ export const Combobox = ({
         </label>
         <div className="text-sm inline-flex gap-1 items-center flex-wrap p-1.5">
           {form[field].map((item, index) => {
+            let Icon: TIcon | null = null;
+
+            if (field == 'orderBy') {
+              Icon = item.exclude ? Descending : Ascending;
+            } else {
+              Icon = item.exclude ? Minus : null;
+            }
+
             return (
               <span
                 className="flex items-center gap-1 border border-solid border-border rounded-sm px-2 focus-visible:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:bg-spotlight/75"
                 key={`selected-item-${index}`}
                 {...getSelectedItemProps({ selectedItem: item, index })}
               >
-                {item.asc === 0 && <Descending className="w-4 h-4" />}
-                {item.asc === 1 && <Ascending className="w-4 h-4" />}
-                {item.exclude && <Minus className="w-4 h-4" />}
+                {Icon && <Icon className="w-4 h-4" />}
                 {item.name}
                 <span
                   className="cursor-pointer hover:text-destructive"
@@ -163,7 +178,7 @@ export const Combobox = ({
             );
           })}
           <div className="flex gap-1 w-full items-center">
-            {field !== 'orderBy' && <ExcludeSearchField />}
+            <ExcludeSearchField field={field} />
             <Input
               variant="outline"
               className="grow"

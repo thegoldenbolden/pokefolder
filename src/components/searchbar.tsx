@@ -5,7 +5,7 @@ import { Search } from '@/ui/icons';
 import { Input } from '@/ui/input';
 import { type FormEventHandler, forwardRef, useCallback } from 'react';
 import { cn, getURL } from '@/lib/utils';
-import { query } from '@/lib/tcg';
+import { allowedTCGParams } from '@/lib/tcg';
 import { usePathname, useRouter } from 'next/navigation';
 
 const searchbarVariants = cva(
@@ -33,27 +33,27 @@ type SubmitHandler = FormEventHandler<HTMLFormElement>;
 
 const Searchbar = forwardRef<HTMLFormElement, SearchbarProps>(
   ({ className, size, ...props }, ref) => {
-    const pathname = usePathname();
     const router = useRouter();
 
-    const onSubmit: SubmitHandler = useCallback((e) => {
-      const form = new FormData(e.currentTarget);
-      const url = new URL(
-        `${getURL(props.to ?? pathname == '/' ? '/search' : pathname)}`,
-      );
+    const onSubmit: SubmitHandler = useCallback(
+      (e) => {
+        const form = new FormData(e.currentTarget);
+        const url = new URL(`${getURL('/search')}`);
 
-      query.forEach((q) => {
-        const value = form.getAll(q);
-        if (!value) return;
-        if (value.length && value[0].toString().length) {
-          url.searchParams.set(q, value.toString());
-        }
-      });
+        allowedTCGParams.forEach((q) => {
+          const value = form.getAll(q);
+          if (!value) return;
+          if (value.length && value[0].toString().length) {
+            url.searchParams.set(q, value.toString());
+          }
+        });
 
-      url.href = decodeURIComponent(url.href);
-      url.href = url.href.replaceAll(/(,\++)/gi, ',');
-      router.push(url.href);
-    }, []);
+        url.href = decodeURIComponent(url.href);
+        url.href = url.href.replaceAll(/(,\++)/gi, ',');
+        router.push(url.href);
+      },
+      [router],
+    );
 
     return (
       <form

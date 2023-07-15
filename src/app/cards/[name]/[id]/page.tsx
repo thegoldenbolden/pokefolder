@@ -1,4 +1,4 @@
-import type { TCardFull, TSet, TCard } from '@/types/tcg';
+import type { TCardFull, TSet } from '@/types/tcg';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { cn, getAbilityUrl, getAttackUrl, getTraitUrl } from '@/lib/utils';
@@ -8,12 +8,11 @@ import Spinner from '@/ui/spinner';
 import { Link } from '@/ui/link';
 import Image from '@/ui/image';
 import Card from '@/components/card/link';
-import { search, getCard } from '@/lib/fetch';
+import { getCards, getCard } from '@/lib/fetch';
 import type { Metadata } from 'next';
 import { keywords } from '@/lib/tcg';
 
 type CardParams = { params: { id: string } };
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -86,7 +85,7 @@ export default async function Page({ params }: CardParams) {
               </Item>
               <Item title="Rarity">
                 <Optional data={card.rarity}>
-                  <SearchLink q="rarities" value={card.rarity!}>
+                  <SearchLink q="rarities" value={card.rarity}>
                     {card.rarity}
                   </SearchLink>
                 </Optional>
@@ -94,7 +93,7 @@ export default async function Page({ params }: CardParams) {
               <Item title="Subtypes">
                 <Optional data={card.subtypes}>
                   {card.subtypes.map((subtype) => (
-                    <SearchLink q="subtypes" value={subtype}>
+                    <SearchLink key={subtype} q="subtypes" value={subtype}>
                       {subtype}
                     </SearchLink>
                   ))}
@@ -248,7 +247,7 @@ export default async function Page({ params }: CardParams) {
       </div>
       <div className="flex justify-center items-center min-h-[320px]">
         <Suspense fallback={<Spinner />}>
-          <MoreCardsFromSet set={card.set} cardId={card.id} />
+          <MoreCardsFromSet set={card.set} cardName={card.name} />
         </Suspense>
       </div>
     </main>
@@ -382,16 +381,13 @@ function SetInfo({ set }: { set?: TCardFull['set'] }) {
   );
 }
 
-type CardFromSetProps = { set: TSet; cardId: string };
-async function MoreCardsFromSet({ set, cardId }: CardFromSetProps) {
-  const cards = await search<TCard>('cards', {
-    dev: {
-      pageSize: 5,
-      q: [`set.id:${set.id} -id:${cardId}`],
-      select: ['id', 'images', 'name', 'cardmarket.prices', 'set'],
-      orderBy: '-cardmarket',
-    },
-  });
+type CardFromSetProps = { set: TSet; cardName: string };
+async function MoreCardsFromSet({ set, cardName }: CardFromSetProps) {
+  const cards = await getCards(
+    new URLSearchParams(
+      `sets=${set.id}&orderBy=-cardmarket&exclude_cards=${cardName}`,
+    ),
+  );
 
   const SetLink = (
     <SearchLink q="sets" value={set.id}>

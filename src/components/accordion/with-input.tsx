@@ -1,34 +1,31 @@
 'use client';
+import { ExcludeSearchField } from '@/components/exclude-field';
+import { cn } from '@/lib/utils';
+import { Minus, X } from '@/ui/icons';
+import { Input } from '@/ui/input';
+import { Button } from '@/ui/button';
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/ui/accordion';
-import { Button } from '@/ui/button';
 import {
-  type FormKeys,
+  type ExcludedFormKeys,
   useFormContext,
   useDispatchContext,
 } from '@/context/search';
-import { Minus, X } from '@/ui/icons';
-import { Input } from '@/ui/input';
 import {
-  useCallback,
   type InputHTMLAttributes,
+  type MouseEventHandler,
+  useCallback,
   KeyboardEventHandler,
-  MouseEventHandler,
   useState,
 } from 'react';
-import { cn } from '@/lib/utils';
-import { ExcludeSearchField } from '@/components/exclude-field';
 
 type Props = React.PropsWithChildren<{
   input: InputHTMLAttributes<HTMLInputElement>;
+  field: ExcludedFormKeys;
   heading: string;
-  field: Extract<
-    FormKeys,
-    'artists' | 'cards' | 'abilities' | 'attacks' | 'traits'
-  >;
 }>;
 
 const AccordionWithInput = ({ input, heading, field }: Props) => {
@@ -49,7 +46,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
         ],
       });
     },
-    [form[field], value, form.exclude],
+    [form, dispatch, field],
   );
 
   const removeValue = useCallback(
@@ -57,12 +54,12 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
       const lowercased = value.toLowerCase();
       dispatch({ type: 'delete', key: field, id: lowercased });
     },
-    [form[field], value, form.exclude],
+    [field, dispatch],
   );
 
   const onKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      if (e.key === 'Tab' || e.key === 'Enter') {
+      if (e.key === 'Tab') {
         if (!e.currentTarget.value.trim().length) return;
         addValue(e.currentTarget.value);
         setValue('');
@@ -70,7 +67,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
         return;
       }
     },
-    [form[field], value, form.exclude],
+    [addValue],
   );
 
   const onClick: MouseEventHandler<HTMLButtonElement> = useCallback(
@@ -78,7 +75,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
       addValue(value);
       setValue('');
     },
-    [form[field], value, form.exclude],
+    [addValue, setValue, value],
   );
 
   return (
@@ -128,7 +125,7 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
             </ul>
           )}
           <div className="flex items-center gap-1">
-            <ExcludeSearchField />
+            <ExcludeSearchField field={field} />
             <Input
               autoComplete="off"
               variant="outline"
@@ -138,7 +135,11 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
               value={value}
               className={cn('grow', input.className)}
             />
-            <Button onClick={onClick} type="button" className="rounded-none">
+            <Button
+              onClick={onClick}
+              type="button"
+              className="rounded-none border-2"
+            >
               Add
             </Button>
           </div>

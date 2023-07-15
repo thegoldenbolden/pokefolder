@@ -1,4 +1,4 @@
-import { QueryKeys } from '@/lib/tcg';
+import { QToTCGTableKeys } from '@/lib/tcg';
 import { cn } from '@/lib/utils';
 import { TCardFull } from '@/types/tcg';
 import Image from '@/ui/image';
@@ -8,7 +8,7 @@ type Props<T> = React.PropsWithChildren<{
   id: string;
   data: T;
   className?: string;
-  q: QueryKeys;
+  q: QToTCGTableKeys;
 }>;
 
 type Comp<T> = (x: Props<T>) => JSX.Element;
@@ -21,7 +21,7 @@ const TypesImage: Comp<TCardFull['types']> = (props) => {
   return (
     <>
       {props.data.map((type, i) => (
-        <SearchLink q={props.q} value={type}>
+        <SearchLink key={type} q={props.q} value={type}>
           <Image
             key={`${props.id}-${type}.${i}`}
             src={`/types/${type.toLowerCase()}.png`}

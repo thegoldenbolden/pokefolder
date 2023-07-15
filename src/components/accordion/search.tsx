@@ -1,4 +1,4 @@
-import { regionsTable } from '@/lib/tcg';
+import { regionsToHPTable } from '@/lib/tcg';
 import { AccordionWithCombobox } from './with-combobox';
 import { getSets, getTypes } from '@/lib/fetch';
 
@@ -75,7 +75,10 @@ export function PokedexAccordion() {
       heading="National Pokedex"
       placeholder="Type a generation"
       field="pokedex"
-      data={Object.entries(regionsTable).map(([name, id]) => ({ id, name }))}
+      data={Object.entries(regionsToHPTable).map(([name, id]) => ({
+        id,
+        name,
+      }))}
     />
   );
 }
@@ -114,18 +117,12 @@ export function MarksAccordion() {
 
 export function SortAccordion() {
   const order = [
-    { id: '-cardmarket', name: 'Cardmarket Prices', asc: 0 },
-    { id: 'cardmarket', name: 'Cardmarket Prices', asc: 1 },
-    { id: '-tcgplayer', name: 'TCGPlayer Prices', asc: 0 },
-    { id: 'tcgplayer', name: 'TCGPlayer Prices', asc: 1 },
-    { id: '-name', name: 'Card Name', asc: 0 },
-    { id: 'name', name: 'Card Name', asc: 1 },
-    { id: '-number', name: 'Card Number', asc: 0 },
-    { id: 'number', name: 'Card Number', asc: 1 },
-    { id: '-pokedex', name: 'National Pokedex', asc: 0 },
-    { id: 'pokedex', name: 'National Pokedex', asc: 1 },
-    { id: '-release', name: 'Release Date', asc: 0 },
-    { id: 'release', name: 'Release Date', asc: 1 },
+    { id: 'cardmarket', name: 'Cardmarket Prices' },
+    { id: 'tcgplayer', name: 'TCGPlayer Prices' },
+    { id: 'name', name: 'Card Name' },
+    { id: 'number', name: 'Card Number' },
+    { id: 'pokedex', name: 'National Pokedex' },
+    { id: 'release', name: 'Release Date' },
   ];
 
   return (

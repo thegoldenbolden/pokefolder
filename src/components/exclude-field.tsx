@@ -1,4 +1,8 @@
-import { useDispatchContext, useFormContext } from '@/context/search';
+import {
+  type ExcludedFormKeys,
+  useDispatchContext,
+  useFormContext,
+} from '@/context/search';
 import { Toggle } from '@/ui/toggle';
 import {
   Tooltip,
@@ -8,9 +12,10 @@ import {
 } from '@/ui/tooltip';
 import { Ascending, Descending, Minus } from '@/ui/icons';
 
-const ExcludeSearchField = () => {
+const ExcludeSearchField = ({ field }: { field: ExcludedFormKeys }) => {
   const { exclude } = useFormContext();
   const dispatch = useDispatchContext();
+  const Icon = field == 'orderBy' ? (exclude ? Descending : Ascending) : Minus;
 
   return (
     <TooltipProvider>
@@ -22,11 +27,11 @@ const ExcludeSearchField = () => {
             variant="outline"
             type="button"
             className="flex capitalize border-2 aspect-square items-center rounded-none gap-1 px-1 py-0.5"
-            onClick={() =>
-              dispatch({ type: 'set', key: 'exclude', value: !exclude })
-            }
+            onPressedChange={(e) => {
+              dispatch({ type: 'set', key: 'exclude', value: !exclude });
+            }}
           >
-            <Minus className="w-5 h-5" />
+            <Icon className="w-5 h-5" />
           </Toggle>
         </TooltipTrigger>
         <TooltipContent>

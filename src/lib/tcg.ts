@@ -1,8 +1,11 @@
-import type { OrderBy, TAPIParams, TQueryParams } from '@/types/tcg';
+import { FieldValues, InitialState } from '@/context/search';
+import type { Legality, OrderBy, TQueryParams } from '@/types/tcg';
+import type { ReadonlyURLSearchParams } from 'next/navigation';
 
-const MAX_PAGE_SIZE = 50;
-const MIN_PAGE_SIZE = 10;
-const DEFAULT_PAGE_SIZE = 30;
+export const MAX_PAGE_SIZE = 50;
+export const MIN_PAGE_SIZE = 10;
+export const DEFAULT_PAGE_SIZE = 30;
+export const DEFAULT_HP = [10, 400];
 
 export const keywords = [
   'Pokemon cards',
@@ -22,10 +25,9 @@ export const keywords = [
   'Trading card game',
 ];
 
-type Resource = 'types' | 'subtypes' | 'supertypes' | 'rarities';
-type Tags = Resource | 'sets';
-
-const revalidateTags: Tags[] = [
+export type Resource = 'types' | 'subtypes' | 'supertypes' | 'rarities';
+export type Tags = Resource | 'sets';
+export const revalidateTags: Tags[] = [
   'rarities',
   'sets',
   'subtypes',
@@ -33,17 +35,11 @@ const revalidateTags: Tags[] = [
   'types',
 ];
 
-const query: QueryKeys[] = [
-  'artists',
-  'cards',
-  'rarities',
-  'sets',
-  'types',
-  'subtypes',
-  'supertypes',
-];
-
-const tcgParamTable = {
+type LegalParam = [keyof Legality, string];
+/**
+ * Map search params to tcg params
+ */
+const qToTCGTable = {
   cards: 'name',
   artists: 'artist',
   sets: 'set.id',
@@ -53,16 +49,43 @@ const tcgParamTable = {
   rarities: 'rarity',
   marks: 'regulationMark',
   series: 'set.series',
-  standard: 'legalities.standard',
-  expanded: 'legalities.expanded',
-  unlimited: 'legalities.unlimited',
-  pokedex: 'nationalPokedexNumbers.0',
   traits: 'ancientTrait.name',
   abilities: '!abilities.name',
   attacks: '!attacks.name',
-} as const;
+  pokedex: (value: string) => {
+    return `nationalPokedexNumber:[${value}]`;
+  },
+  hp: (values: string[] | undefined) => {
+    let low = getNumberFromRange({
+      value: values?.[0],
+      min: DEFAULT_HP[0],
+      max: DEFAULT_HP[1],
+      fallback: DEFAULT_HP[0],
+    });
 
-const orderTable: Record<OrderBy, string> = {
+    let high = getNumberFromRange({
+      value: values?.[1],
+      min: DEFAULT_HP[0],
+      max: DEFAULT_HP[1],
+      fallback: DEFAULT_HP[1],
+    });
+
+    (low = Math.min(low, high)), (high = Math.max(low, high));
+    return `HP:[${low ?? '*'} TO ${high ?? '*'}]`;
+  },
+  legalities: ([type, legal]: LegalParam) => {
+    return `legalities.${type}:${legal}`;
+  },
+} as const;
+export type QToTCGTableKeys = keyof typeof qToTCGTable;
+
+export const allowedTCGParams = [...Object.keys(qToTCGTable)];
+export const defaultQueryParams = ['page', 'pageSize', 'orderBy', 'view'];
+
+/**
+ * Map orderBy param to TCG orderBy params
+ */
+export const orderByToTCG: Record<OrderBy, string> = {
   name: 'name',
   number: 'number',
   release: 'releaseDate',
@@ -72,7 +95,10 @@ const orderTable: Record<OrderBy, string> = {
   series: 'set.series',
 };
 
-const regionsTable = {
+/**
+ * Map Pokemon Regions to Pokedex Number
+ */
+export const regionsToHPTable = {
   kanto: '1 TO 151',
   johto: '152 TO 251',
   hoenn: '252 TO 386',
@@ -84,112 +110,182 @@ const regionsTable = {
   paldea: '906 TO 1010',
 };
 
-type QueryKeys =
-  | Exclude<keyof typeof tcgParamTable, 'standard' | 'unlimited' | 'expanded'>
-  | 'legalities';
+export type AddToQuery = (x: QToTCGTableKeys, i: number, arr: string[]) => void;
 
-type ApiParams = {
-  user?: Partial<TQueryParams>;
-  dev?: Partial<TAPIParams>;
+/**
+ * Check if supertypes allows for HP filtering
+ * @param params
+ * @returns
+ */
+export const isHPCompatible = (
+  params: URLSearchParams | ReadonlyURLSearchParams,
+) => {
+  const includedSupertypes = params.get('supertypes');
+  const excludedSupertypes = params.get('exclude_supertypes');
+  if (!includedSupertypes && !excludedSupertypes) return true;
+  return (
+    includedSupertypes?.includes('pokemon') ||
+    !excludedSupertypes?.includes('pokemon')
+  );
 };
 
-function getQuery(params: ApiParams['user']) {
-  if (!params) return [];
-  const query: string[] = [];
+/**
+ * Format search params to an accepted TCG param
+ * @param params
+ * @returns
+ */
+function formatTCGQueryParams(params: URLSearchParams) {
+  const tcgQueryArgs: string[] = [];
 
-  if (params.hp_low && params.hp_high) {
-    query.push(`HP:[${params.hp_low} TO ${params.hp_high}]`);
-  }
-
-  Object.keys(tcgParamTable).forEach((key) => {
-    const isLegality = ['standard', 'unlimited', 'expanded'].includes(key);
-    key = isLegality ? 'legalities' : key;
-    const include: string = params[key];
-    const exclude: string = params[`exclude_${key}`];
+  const addToQuery: AddToQuery = (q) => {
+    const include = params.get(q);
+    const exclude = params.get(`exclude_${q}`);
     if (!include && !exclude) return;
 
-    if (typeof include !== 'string' && typeof exclude !== 'string') {
-      throw new Error(`${key}: Invalid parameters - "${include}"`);
-    }
-
-    const includedValues = include?.split(/[,]+/g) ?? [];
-    const excludedValues = exclude?.split(/[,]+/g) ?? [];
-    const values = [...includedValues, ...excludedValues];
+    const included = include?.split(/[,]+/g) ?? [];
+    const excluded = exclude?.split(/[,]+/g) ?? [];
+    const values = [...included, ...excluded];
 
     const args = values.map((value, i) => {
-      const exclude = i > includedValues.length - 1 ? '-' : '';
+      const exclude = i > included.length - 1 ? '-' : '';
       value = value.trim();
 
-      if (isLegality) {
-        const [legality, legal] = value.split('_');
-        const param = `${exclude}${tcgParamTable[legality]}`;
-        return `${param}:${legal}`;
+      switch (q) {
+        case 'legalities':
+          return (
+            exclude + qToTCGTable.legalities(value.split('_') as LegalParam)
+          );
+        case 'hp':
+          if (!isHPCompatible(params)) return;
+          return qToTCGTable.hp(params.get('hp')?.split('-'));
+        case 'pokedex':
+          return exclude + qToTCGTable.pokedex(value);
+        default:
+          return exclude + `${qToTCGTable[q]}:"${value}"`;
       }
-
-      const param = `${exclude}${tcgParamTable[key]}`;
-      if (key === 'pokedex') {
-        return `${param}:[${regionsTable[value]}]`;
-      }
-
-      return `${exclude}${tcgParamTable[key]}:"${value}"`;
     });
 
-    const join = excludedValues.length ? ` AND ` : ` OR `;
-    query.push(`(${args.join(join)})`);
-  });
-
-  return query;
-}
-
-function createApiQuery(params: ApiParams) {
-  const page = parseInt(`${params.user?.page ?? 1}`) || 1;
-  return {
-    page,
-    pageSize: getPageSize(params.user?.pageSize),
-    orderBy: getOrderBy(params.user?.orderBy),
-    ...params.dev,
-    q: params.dev?.q ?? getQuery(params.user),
+    const join = excluded.length ? ` AND ` : ` OR `;
+    tcgQueryArgs.push(`(${args.join(join)})`);
   };
+
+  allowedTCGParams.forEach(addToQuery);
+  return tcgQueryArgs;
 }
 
-function createSearchParams(params: ApiParams) {
-  const searchParams = new URLSearchParams();
-  const query = createApiQuery(params);
-  Object.entries(query).forEach(([key, value]) => {
+/**
+ * Create TCG Query string from search params
+ * @param params
+ * @returns
+ */
+export function createTCGQueryString(params: URLSearchParams) {
+  const q = new URLSearchParams();
+  Object.entries({
+    q: formatTCGQueryParams(params),
+    orderBy: getOrderBy(params.get('orderBy') as TQueryParams['orderBy']),
+    page: parseInt(params.get('page') || '1') || 1,
+    pageSize: getNumberFromRange({
+      min: MIN_PAGE_SIZE,
+      max: MAX_PAGE_SIZE,
+      round: 10,
+      value: params.get('pageSize'),
+      fallback: DEFAULT_PAGE_SIZE,
+    }),
+  }).forEach(([key, value]) => {
     if (!value) return;
-    if (!Array.isArray(value)) return searchParams.set(key, `${value}`);
-    const separator = key === 'q' ? ' ' : ',';
-    return searchParams.set(key, value.join(separator));
+    if (!Array.isArray(value)) return q.set(key, `${value}`);
+    return q.set(key, value.join(key === 'q' ? ' ' : ','));
   });
-  searchParams.sort();
-  return searchParams;
+
+  q.sort();
+  return decodeURIComponent(q.toString());
 }
 
-export function getPageSize(size: string | null = `${DEFAULT_PAGE_SIZE}`) {
-  if (!size) return DEFAULT_PAGE_SIZE;
-  let value = parseInt(size);
-  value = isNaN(value) || value == 0 ? DEFAULT_PAGE_SIZE : value;
-  value = Math.round(value / 10) * 10;
-  return Math.min(Math.max(value, MIN_PAGE_SIZE), MAX_PAGE_SIZE);
+/**
+ * Create API Query String from form values
+ * @param fields
+ */
+export function createQueryStringFromForm(
+  fields: InitialState,
+  searchParams: ReadonlyURLSearchParams,
+) {
+  const params = new URLSearchParams(searchParams.toString());
+  params.set('page', '1');
+
+  Object.entries(fields).forEach(([key, value]) => {
+    if (!(value instanceof Array)) return;
+    if (!value.length) return;
+
+    if (key === 'hp') {
+      if (!isHPCompatible(params)) return;
+      const min = Math.min(...fields[key]);
+      const max = Math.max(...fields[key]);
+      if (min === DEFAULT_HP[0] && max === DEFAULT_HP[1]) return;
+      params.set(`hp`, `${min}-${max}`);
+      return;
+    }
+
+    if (key === 'orderBy') {
+      params.set(
+        'orderBy',
+        (value as FieldValues)
+          .map((v) => `${v.exclude ? '-' : ''}${v.id}`)
+          .join(','),
+      );
+      return;
+    }
+
+    const exclude: string[] = [];
+    const include: string[] = [];
+
+    (value as FieldValues).forEach((r) => {
+      if (!r.exclude) {
+        include.push(key === 'sets' || key === 'legalities' ? r.id : r.name);
+      } else {
+        exclude.push(key === 'sets' || key === 'legalities' ? r.id : r.name);
+      }
+    });
+
+    exclude.length && params.set(`exclude_${key}`, exclude.join(','));
+    include.length && params.set(key, include.join(','));
+  });
+
+  params.sort();
+  return decodeURIComponent(params.toString());
 }
 
-function getOrderBy(value: TQueryParams['orderBy'] = '-cardmarket') {
+type NumberRangeOptions = {
+  min: number;
+  max: number;
+  fallback: number;
+  value: string | null | undefined;
+  round?: number;
+};
+
+/**
+ * Ensures a number is within specified range
+ * @param options
+ * @returns
+ */
+export function getNumberFromRange(options: NumberRangeOptions) {
+  if (!options.value) return options.fallback;
+  let value = parseInt(options.value) || options.fallback;
+  if (typeof options.round === 'number') {
+    value = Math.round(value / options.round) * options.round;
+  }
+  return Math.min(Math.max(value, options.min), options.max);
+}
+
+/**
+ * Get allowed orderBy param
+ * @param value
+ * @returns
+ */
+function getOrderBy(value: TQueryParams['orderBy'] | null = '-cardmarket') {
+  if (!value) return '-cardmarket.prices.trendPrice';
   const values = value.split('-');
   const desc = values.length === 2;
-  const lookup = orderTable[values[desc ? 1 : 0]];
+  const lookup = orderByToTCG[values[desc ? 1 : 0]];
   if (!value || !lookup) return '-cardmarket.prices.trendPrice';
   return `${desc ? '-' : ''}` + lookup;
 }
-
-export {
-  MAX_PAGE_SIZE,
-  revalidateTags,
-  query,
-  regionsTable,
-  orderTable,
-  createSearchParams,
-  type ApiParams,
-  type Resource,
-  type Tags,
-  type QueryKeys,
-};

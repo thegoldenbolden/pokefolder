@@ -24,6 +24,7 @@ export const blur = `data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`;
 export default function Image(props: ImageProps) {
   return (
     <NextImage
+      referrerPolicy="no-referrer"
       sizes="(max-width:768px) 12rem, (max-width: 1280px) 18rem"
       {...props}
       src={props.src}

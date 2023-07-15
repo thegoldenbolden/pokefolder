@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 
-const { screens } = require("tailwindcss/defaultConfig");
+const { screens } = require('tailwindcss/defaultConfig');
 
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
@@ -13,10 +13,10 @@ module.exports = {
       },
     },
     extend: {
-					screens: {
-						'xs': '480px',
-						...screens
-					},
+      screens: {
+        xs: '480px',
+        ...screens,
+      },
       fontFamily: {
         bungee: 'var(--font-bungee)',
         rubik: 'var(--font-rubik)',
@@ -24,7 +24,6 @@ module.exports = {
       gridTemplateColumns: {
         ['fluid-sm']: 'repeat(auto-fit, minmax(min(9rem, 100%), 1fr))',
         fluid: 'repeat(auto-fit, minmax(min(13rem, 100%), 1fr))',
-        folder: 'repeat(auto-fit, minmax(min(75px, 100%), 18rem))',
       },
       colors: {
         border: 'hsl(var(--border))',

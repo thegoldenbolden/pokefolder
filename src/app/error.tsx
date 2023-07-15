@@ -13,9 +13,9 @@ export default function Error({
   }, [error]);
 
   return (
-    <div>
+    <div className="grid place-content-center min-h-96">
       <h2>Something went wrong!</h2>
-      <button onClick={() => reset()}>Try again</button>
+      <button onClick={() => reset()}>Try again?</button>
     </div>
   );
 }

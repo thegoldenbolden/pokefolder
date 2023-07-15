@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { bungee, rubik } from '@/lib/fonts';
 import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
-import './globals.css';
 import { getURL } from '@/lib/utils';
 import { keywords } from '@/lib/tcg';
+import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(getURL()),

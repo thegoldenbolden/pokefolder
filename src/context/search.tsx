@@ -1,12 +1,21 @@
 'use client';
 
-import { type Dispatch, createContext, useReducer, useContext } from 'react';
+import {
+  type Dispatch,
+  createContext,
+  useReducer,
+  useContext,
+  useEffect,
+} from 'react';
 import type { OrderBy } from '@/types/tcg';
+import type { QToTCGTableKeys } from '@/lib/tcg';
+import { useSearchParams } from 'next/navigation';
 
 const defaults: InitialState = {
   exclude: false,
   orderBy: [],
   hp: [10, 400],
+  series: [],
   pokedex: [],
   traits: [],
   abilities: [],
@@ -37,15 +46,11 @@ const reducer = (state: InitialState, action: FormAction): InitialState => {
     default:
       throw Error('Unknown action: ' + (action as any).type);
     case 'reset':
-      if (!action.key) return defaults;
+      if (!action.key) return { ...defaults };
       return { ...state, [action.key]: defaults[action.key] };
     case 'set':
       return { ...state, [action.key]: action.value };
     case 'delete':
-      if (action.key === 'hp' || action.key === 'exclude') {
-        throw new Error(`Action delete cannot be used with ${action.key}`);
-      }
-
       return {
         ...state,
         [action.key]: state[action.key].filter((v) => v.id !== action.id),
@@ -55,6 +60,9 @@ const reducer = (state: InitialState, action: FormAction): InitialState => {
 
 const FormProvider = (props: React.PropsWithChildren) => {
   const [fields, dispatch] = useReducer(reducer, initial);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {}, [searchParams]);
 
   return (
     <FormContext.Provider value={fields}>
@@ -75,7 +83,7 @@ type SetAction = {
 
 type DeleteAction = {
   type: 'delete';
-  key: FormKeys;
+  key: ExcludedFormKeys;
   id: string;
 };
 
@@ -92,26 +100,19 @@ type FieldValues<T = string> = Array<{
   exclude?: boolean;
 }>;
 
+type ExcludedFormKeys = Exclude<
+  FormKeys,
+  'hp' | 'page' | 'pageSize' | 'exclude'
+>;
+
 type InitialState = {
   hp: number[];
   orderBy: FieldValues<OrderBy>;
   exclude: boolean;
-  pokedex: FieldValues;
-  cards: FieldValues;
-  artists: FieldValues;
-  rarities: FieldValues;
-  supertypes: FieldValues;
-  subtypes: FieldValues;
-  sets: FieldValues;
-  attacks: FieldValues;
-  types: FieldValues;
-  traits: FieldValues;
-  marks: FieldValues;
-  abilities: FieldValues;
-  legalities: FieldValues;
-};
+} & Record<Exclude<QToTCGTableKeys, 'hp'>, FieldValues>;
 
 export {
+  type ExcludedFormKeys,
   type InitialState,
   type FieldValues,
   type FormKeys,

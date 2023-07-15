@@ -1,17 +1,22 @@
 'use client';
+import type { SliderProps } from '@/ui/slider';
+import { Button } from '@/ui/button';
+import dynamic from 'next/dynamic';
+import { X } from '@/ui/icons';
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/ui/accordion';
-import { Button } from '@/ui/button';
 import {
   type FormKeys,
   useFormContext,
   useDispatchContext,
 } from '@/context/search';
-import { X } from '@/ui/icons';
-import { MultiSlider, type SliderProps } from '@/ui/slider';
+
+const MultiSlider = dynamic(() =>
+  import('@/ui/slider').then((mod) => mod.MultiSlider),
+);
 
 type Props = React.PropsWithChildren<{
   heading: string;
