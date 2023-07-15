@@ -3,18 +3,31 @@
 import { useState } from 'react';
 import { ChevronUpDown } from '@/ui/icons';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/components/ui/command';
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+
+import dynamic from 'next/dynamic';
+
+const Command = dynamic(() =>
+  import('@/ui/command').then((mod) => mod.Command),
+);
+
+const CommandEmpty = dynamic(() =>
+  import('@/ui/command').then((mod) => mod.CommandEmpty),
+);
+const CommandGroup = dynamic(() =>
+  import('@/ui/command').then((mod) => mod.CommandGroup),
+);
+const CommandInput = dynamic(() =>
+  import('@/ui/command').then((mod) => mod.CommandInput),
+);
+const CommandItem = dynamic(() =>
+  import('@/ui/command').then((mod) => mod.CommandItem),
+);
 
 export default function SeriesCombobox({ series }: { series: string[] }) {
   const [open, setOpen] = useState(false);
@@ -38,27 +51,29 @@ export default function SeriesCombobox({ series }: { series: string[] }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Jump to series..." className="h-9" />
-          <CommandEmpty>No series found.</CommandEmpty>
-          <CommandGroup>
-            {series.map((series) => (
-              <CommandItem
-                key={series}
-                onSelect={(currentValue) => {
-                  setValue(currentValue === value ? '' : currentValue);
-                  setOpen(false);
-                  if (document) {
-                    const el = document.getElementById(series);
-                    el && el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-              >
-                {series}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
+        {open && (
+          <Command>
+            <CommandInput placeholder="Jump to series..." className="h-9" />
+            <CommandEmpty>No series found.</CommandEmpty>
+            <CommandGroup>
+              {series.map((series) => (
+                <CommandItem
+                  key={series}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue === value ? '' : currentValue);
+                    setOpen(false);
+                    if (document) {
+                      const el = document.getElementById(series);
+                      el && el.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  {series}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        )}
       </PopoverContent>
     </Popover>
   );

@@ -1,15 +1,13 @@
-import type { TQueryParams } from '@/types/tcg';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import PageControls from '@/components/gallery/page-controls';
-import { ViewAs } from '@/components/gallery/view-as';
-import Spinner from '@/components/ui/spinner';
+import ViewAs from '@/components/gallery/view-as';
 import Form from '@/components/search-form';
-import Table from '@/components/gallery/table';
-import Images from '@/components/gallery/images';
 import { keywords } from '@/lib/tcg';
+import Gallery from '@/components/gallery';
+import { FormProvider } from '@/context/search';
+import SWRConfig from '@/components/swr-config';
 
-export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Search',
   keywords: [
@@ -34,23 +32,22 @@ export const metadata: Metadata = {
     'Discover and find your favorite Pokemon cards with ease. Our powerful search feature allows you to quickly locate specific cards, explore rarities, and build your perfect deck. Unleash your strategic skills in the Pokemon TCG and dominate the competition',
 };
 
-type Params = { searchParams: TQueryParams };
-export default function Page({ searchParams }: Params) {
+export default function Page() {
   return (
     <main className="my-6 md:my-10 flex flex-col gap-3">
-      <div className="flex items-center xs:justify-between gap-1 flex-wrap">
-        <div className="flex gap-1 items-center">
-          <Form />
-          <ViewAs searchParams={searchParams} />
-        </div>
-        <PageControls searchParams={searchParams} route="/search" />
-      </div>
-      <Suspense fallback={<Spinner />}>
-        {searchParams.view === 'table' ? (
-          <Table params={searchParams} />
-        ) : (
-          <Images params={searchParams} />
-        )}
+      <Suspense>
+        <SWRConfig>
+          <FormProvider>
+            <div className="flex items-center xs:justify-between gap-1 flex-wrap">
+              <div className="flex gap-1 items-center">
+                <Form />
+                <ViewAs />
+              </div>
+              <PageControls />
+            </div>
+            <Gallery />
+          </FormProvider>
+        </SWRConfig>
       </Suspense>
     </main>
   );

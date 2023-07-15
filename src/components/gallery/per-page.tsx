@@ -1,30 +1,27 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/ui/select';
+import dynamic from 'next/dynamic';
+import { Select, SelectTrigger, SelectValue } from '@/ui/select';
 
-const ItemsPerPage = ({
-  size,
-  currentPage,
-}: {
-  size: number;
-  currentPage: number;
-}) => {
+const SelectContent = dynamic(() =>
+  import('@/ui/select').then((mod) => mod.SelectContent),
+);
+const SelectItem = dynamic(() =>
+  import('@/ui/select').then((mod) => mod.SelectItem),
+);
+
+const ItemsPerPage = () => {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const readonlyParams = useSearchParams();
-  const params = new URLSearchParams(readonlyParams.toString());
-  params.set('page', `${currentPage}`);
+
   return (
     <Select
-      defaultValue={`${size}`}
+      defaultValue={`${searchParams.get('pageSize')}`}
       onValueChange={(v) => {
-        params.set('pageSize', `${v}`);
-        router.push(`/search?${params}`);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('pageSize', v);
+        params.set('page', '1');
+        router.push(`/search?=${params}`);
       }}
     >
       <SelectTrigger className="w-auto focus-visible:ring-2 focus-visible:ring-primary">

@@ -1,5 +1,10 @@
-import { search } from '@/lib/fetch';
-import type { TCardFull, TQueryParams } from '@/types/tcg';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/ui/hover-card';
+import { Optional, SearchLink, TypesImage } from '@/components/card/typings';
+import { getCardUrl, getPrice } from '@/lib/utils';
+import PageControls from './page-controls';
+import useCards from '@/hooks/use-cards';
+import { Link } from '@/ui/link';
+import Image from '@/ui/image';
 import {
   TableBody,
   TableCaption,
@@ -10,24 +15,70 @@ import {
   Table as TableRoot,
   TableRow,
 } from '@/ui/table';
-import { Optional, SearchLink, TypesImage } from '@/components/card/typings';
-import { Link } from '@/ui/link';
-import { getCardUrl, getPrice } from '@/lib/utils';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/ui/hover-card';
-import Image from '@/ui/image';
-import PageControls from './page-controls';
 
-const Table = async ({ params }: { params: TQueryParams }) => {
-  const cards = await search<TCardFull>('cards', { user: params });
+export default function Table() {
+  const { cards, isLoading, error } = useCards();
 
-  if (!cards?.data.length || !cards.count || !cards.totalCount) {
-    return <div>No cards were found</div>;
+  if (isLoading) {
+    return (
+      <TableRoot>
+        <TableCaption>
+          <PageControls />
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Set</TableHead>
+            <TableHead>No.</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Rarity</TableHead>
+            <TableHead>Supertype</TableHead>
+            <TableHead>Types</TableHead>
+            <TableHead>Subtypes</TableHead>
+            <TableHead>TCGPlayer</TableHead>
+            <TableHead>Cardmarket</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className=" min-h-[648px]">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <TableRow
+              key={`row-fallback-${i}`}
+              className="motion-safe:animate-pulse duration-500 h-9 odd:bg-spotlight even:bg-spotlight/75 "
+            >
+              {Array.from({ length: 9 }).map((_, i) => (
+                <TableCell key={`cell-fallback-${i}`} />
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow className="hover:bg-primary focus-visible:bg-primary">
+            <TableHead>Set</TableHead>
+            <TableHead>No.</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Rarity</TableHead>
+            <TableHead>Supertype</TableHead>
+            <TableHead>Types</TableHead>
+            <TableHead>Subtypes</TableHead>
+            <TableHead>TCGPlayer</TableHead>
+            <TableHead>Cardmarket</TableHead>
+          </TableRow>
+        </TableFooter>
+      </TableRoot>
+    );
+  }
+
+  if (error) {
+    return <span>An error occurred</span>;
+  }
+
+  if (!cards?.count) {
+    return <span>No cards were found</span>;
   }
 
   return (
     <TableRoot>
       <TableCaption>
-        <PageControls showPageInfo searchParams={params} route="/search" />
+        <PageControls />
       </TableCaption>
       <TableHeader>
         <TableRow>
@@ -95,7 +146,7 @@ const Table = async ({ params }: { params: TQueryParams }) => {
                   <Optional data={card.subtypes}>
                     {card.subtypes &&
                       card.subtypes.map((subtype) => (
-                        <SearchLink q="subtypes" value={subtype}>
+                        <SearchLink key={subtype} q="subtypes" value={subtype}>
                           {subtype}
                         </SearchLink>
                       ))}
@@ -170,6 +221,4 @@ const Table = async ({ params }: { params: TQueryParams }) => {
       </TableFooter>
     </TableRoot>
   );
-};
-
-export default Table;
+}

@@ -1,36 +1,38 @@
 'use client';
+import { type DefaultMultiComboboxValue } from '@/ui/multi-combobox';
+import type { TSet } from '@/types/tcg';
+import { Button } from '@/ui/button';
+import dynamic from 'next/dynamic';
+import { X } from '@/ui/icons';
+import Image from '@/ui/image';
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/ui/accordion';
-import { Button } from '@/ui/button';
-import { Combobox, type DefaultMultiComboboxValue } from '@/ui/multi-combobox';
 import {
-  type FormKeys,
   useFormContext,
   useDispatchContext,
+  type ExcludedFormKeys,
 } from '@/context/search';
-import { X } from '@/ui/icons';
-import type { TSet } from '@/types/tcg';
-import Image from '@/ui/image';
 
 type Props = React.PropsWithChildren<{
   data: any[];
   heading: string;
-  field: Exclude<FormKeys, 'hp' | 'exclude'>;
+  field: ExcludedFormKeys;
   placeholder?: string;
 }>;
+
+const Combobox = dynamic(() =>
+  import('@/ui/multi-combobox').then((mod) => mod.Combobox),
+);
 
 const items: Partial<
   Record<Props['field'], (p: DefaultMultiComboboxValue) => JSX.Element>
 > = {
-  orderBy: (item: DefaultMultiComboboxValue & { asc: 0 | 1 }) => (
+  orderBy: (item: DefaultMultiComboboxValue & { exclude: boolean }) => (
     <div className="flex flex-col">
       <span className="capitalize">{item.name}</span>
-      <span className="text-xs text-ellipsis">
-        {item.asc ? 'Ascending' : 'Descending'}
-      </span>
     </div>
   ),
   pokedex: (item) => (

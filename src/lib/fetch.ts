@@ -1,13 +1,7 @@
-import type {
-  TCGApiResponse,
-  TCard,
-  TCardFull,
-  TSet,
-  TSetFull,
-} from '@/types/tcg';
-import 'server-only';
-import { type ApiParams, type Resource, createSearchParams } from './tcg';
+import type { TCGApiResponse, TCardFull, TSet, TSetFull } from '@/types/tcg';
+import { type Resource, createTCGQueryString } from './tcg';
 import { cache } from 'react';
+import 'server-only';
 
 const API_URL = 'https://api.pokemontcg.io/v2/';
 const headers: RequestInit['headers'] = {
@@ -18,7 +12,7 @@ const headers: RequestInit['headers'] = {
 type GetSets = () => Promise<TCGApiResponse<TSet> | null>;
 export const getSets: GetSets = cache(async () => {
   const url = new URL('sets', API_URL);
-  url.searchParams.set('orderBy', 'name');
+  url.searchParams.set('orderBy', 'series');
   url.searchParams.set('select', 'id,name,series,releaseDate,images');
 
   try {
@@ -46,40 +40,19 @@ export const getTypes: GetTypes = cache(async (resource) => {
     return response.json();
   } catch (error) {
     console.error({ error, url });
-    return {
-      data: [],
-      totalCount: 0,
-      count: 0,
-      page: 0,
-      pageSize: 0,
-    };
+    return null;
   }
 });
 
-type Search = <T extends TSet | TCard>(
-  resource: T extends TSet ? 'sets' : 'cards',
-  params: ApiParams,
-) => Promise<TCGApiResponse<T>>;
+type Search = (params: URLSearchParams) => Promise<TCGApiResponse<TCardFull>>;
 
-export const search: Search = cache(async (resource, params) => {
-  const searchParams = createSearchParams(params);
-  const url = `${API_URL}${resource}?${searchParams}`;
-
-  try {
-    const response = await fetch(url, { headers, next: { revalidate: 86400 } });
-    if (!response.ok) throw new Error('Failed to fetch');
-    return response.json();
-  } catch (error) {
-    console.error(`${url} encountered an error`, error);
-    return {
-      data: [],
-      page: 0,
-      pageSize: 0,
-      count: 0,
-      totalCount: 0,
-    };
-  }
-});
+export const getCards: Search = async (params) => {
+  const searchParams = createTCGQueryString(params);
+  const url = decodeURIComponent(`${API_URL}cards?${searchParams}`);
+  const response = await fetch(url, { headers, next: { revalidate: 86400 } });
+  if (!response.ok) throw response;
+  return response.json();
+};
 
 type GetItem<T> = (id: string) => Promise<{ data: T } | null>;
 export const getCard: GetItem<TCardFull> = cache(async (id) => {

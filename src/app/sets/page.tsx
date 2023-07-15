@@ -1,9 +1,8 @@
-import type { TSet } from '@/types/tcg';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { groupSetsBySeries } from '@/lib/utils';
 import SetCard from '@/ui/set-card';
-import { search } from '@/lib/fetch';
+import { getSets } from '@/lib/fetch';
 import SeriesCombobox from '@/components/series-combobox';
 import { keywords } from '@/lib/tcg';
 
@@ -35,23 +34,26 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <main className="my-6 md:my-10 flex flex-col gap-2">
-      <Suspense fallback={<span>Loading..</span>}>
+      <Suspense fallback={<SetsFallback />}>
         <Sets />
       </Suspense>
     </main>
   );
 }
 
-async function Sets() {
-  const sets = await search<TSet>('sets', {
-    dev: {
-      pageSize: 250,
-      select: ['set', 'id', 'images', 'name', 'series', 'releaseDate'],
-      orderBy: '-release',
-    },
-  });
+async function SetsFallback() {
+  return (
+    <div className="grid gap-2 grid-cols-fluid lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div key={`sets-fallback-${i}`} className="h-40 aspect-video" />
+      ))}
+    </div>
+  );
+}
 
-  if (!sets?.totalCount) return <div>No sets found</div>;
+async function Sets() {
+  const sets = await getSets();
+  if (!sets?.count) return <div>No sets found</div>;
   const { series: seriesNames, setsBySeries: series } = groupSetsBySeries(
     sets.data,
   );

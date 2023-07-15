@@ -24,7 +24,6 @@ module.exports = {
       gridTemplateColumns: {
         ['fluid-sm']: 'repeat(auto-fit, minmax(min(9rem, 100%), 1fr))',
         fluid: 'repeat(auto-fit, minmax(min(13rem, 100%), 1fr))',
-        folder: 'repeat(auto-fit, minmax(min(75px, 100%), 18rem))',
       },
       colors: {
         border: 'hsl(var(--border))',

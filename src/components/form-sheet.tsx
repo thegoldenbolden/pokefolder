@@ -1,6 +1,6 @@
 'use client';
-import { useState, type FormHTMLAttributes } from 'react';
-import { useForm } from '@/hooks/useForm';
+import { type FormHTMLAttributes } from 'react';
+import { useForm } from '@/hooks/use-form';
 import {
   Sheet,
   SheetClose,
@@ -13,11 +13,14 @@ import {
 import { Button } from '@/ui/button';
 import { Accordion } from '@/ui/accordion';
 import { ArrowRightLong, Filter } from '@/ui/icons';
+import { useDispatchContext } from '@/context/search';
 
 type Props = FormHTMLAttributes<HTMLFormElement>;
 
 export default function FormSheet(props: Props) {
   const { onSubmit } = useForm();
+  const dispatch = useDispatchContext();
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -37,6 +40,7 @@ export default function FormSheet(props: Props) {
               <span>Search</span>
               <Button
                 variant="destructive"
+                onClick={() => dispatch({ type: 'reset', key: null })}
                 className="bg-transparent hover:bg-transparent"
               >
                 Clear All

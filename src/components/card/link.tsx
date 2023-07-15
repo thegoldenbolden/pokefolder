@@ -11,6 +11,7 @@ export default function Card(card: TCard) {
       href={getCardUrl(card)}
     >
       <Image
+        referrerPolicy="no-referrer"
         src={card.images.small || card.images.large || '/back.png'}
         alt={card.name}
         width={250}

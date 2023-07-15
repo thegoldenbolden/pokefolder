@@ -1,7 +1,11 @@
-import { QueryKeys } from '@/lib/tcg';
+import type { QToTCGTableKeys } from '@/lib/tcg';
 
 type Base = { id: string; name: string };
-type Legality = { standard: string; expanded: string; unlimited: string };
+export type Legality = {
+  standard: string;
+  expanded: string;
+  unlimited: string;
+};
 type CardImage = { small: string; large: string };
 type Supertype = 'Pokémon' | 'Energy' | 'Trainer';
 type Ability = { name: string; text: string; type: string };
@@ -80,30 +84,11 @@ export interface TCardFull extends TCard {
   resistances?: WeaknessResistance[];
 }
 
-export type TQueryParams = Record<QueryKeys, string> & {
+export type TQueryParams = Record<QToTCGTableKeys, string> & {
   page: string;
   pageSize: string;
   orderBy: OrderBy | `-${OrderBy}`;
-  hp_low: string;
-  hp_high: string;
   view: 'table' | 'grid';
-};
-
-type TAPISelectParam =
-  | 'name'
-  | 'set'
-  | 'id'
-  | `images${`.symbol` | '.logo' | ''}`
-  | 'releaseDate'
-  | 'series'
-  | 'cardmarket.prices';
-
-export type TAPIParams = {
-  select?: TAPISelectParam[];
-  orderBy?: OrderBy | `-${OrderBy}`;
-  pageSize?: number;
-  page?: number;
-  q?: string[];
 };
 
 export type TCGApiResponse<T> = {

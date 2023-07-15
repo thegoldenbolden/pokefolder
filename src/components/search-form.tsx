@@ -13,61 +13,59 @@ import {
 } from '@/components/accordion/search';
 import TextAccordion from '@/components/accordion/with-input';
 import SliderAccordion from '@/components/accordion/with-slider';
-import { FormProvider } from '@/context/search';
+import { DEFAULT_HP } from '@/lib/tcg';
 import { Suspense } from 'react';
 
 export default function SearchForm() {
   return (
-    <FormProvider>
-      <FormSheet>
-        <SortAccordion />
-        <TextAccordion
-          input={{ id: 'cards', placeholder: 'Type a card' }}
-          heading="Name"
-          field="cards"
-        />
-        <TextAccordion
-          input={{ id: 'artists', placeholder: 'Type an artist' }}
-          heading="Artists"
-          field="artists"
-        />
-        <TextAccordion
-          input={{ id: 'abilities', placeholder: 'Type an ability' }}
-          heading="Abilities"
-          field="abilities"
-        />
-        <TextAccordion
-          input={{ id: 'traits', placeholder: 'Type an ancient trait' }}
-          heading="Ancient Traits"
-          field="traits"
-        />
-        <TextAccordion
-          input={{ id: 'attacks', placeholder: 'Type an attack' }}
-          heading="Attacks"
-          field="attacks"
-        />
-        <Suspense fallback={<span>Loading..</span>}>
-          <SetsAccordion />
-          <RaritiesAccordion />
-          <SubtypesAccordion />
-          <SupertypesAccordion />
-          <TypesAccordion />
-        </Suspense>
-        <PokedexAccordion />
-        <LegalitiesAccordion />
-        <MarksAccordion />
-        <SliderAccordion
-          field="hp"
-          heading="HP"
-          slider={{
-            max: 400,
-            min: 10,
-            step: 10,
-            minStepsBetweenThumbs: 0,
-            defaultValue: [10, 400],
-          }}
-        />
-      </FormSheet>
-    </FormProvider>
+    <FormSheet>
+      <SortAccordion />
+      <TextAccordion
+        input={{ id: 'cards', placeholder: 'Type a card' }}
+        heading="Name"
+        field="cards"
+      />
+      <TextAccordion
+        input={{ id: 'artists', placeholder: 'Type an artist' }}
+        heading="Artists"
+        field="artists"
+      />
+      <TextAccordion
+        input={{ id: 'abilities', placeholder: 'Type an ability' }}
+        heading="Abilities"
+        field="abilities"
+      />
+      <TextAccordion
+        input={{ id: 'traits', placeholder: 'Type an ancient trait' }}
+        heading="Ancient Traits"
+        field="traits"
+      />
+      <TextAccordion
+        input={{ id: 'attacks', placeholder: 'Type an attack' }}
+        heading="Attacks"
+        field="attacks"
+      />
+      <Suspense fallback={<span>Loading..</span>}>
+        <SetsAccordion />
+        <RaritiesAccordion />
+        <SubtypesAccordion />
+        <SupertypesAccordion />
+        <TypesAccordion />
+      </Suspense>
+      <PokedexAccordion />
+      <LegalitiesAccordion />
+      <MarksAccordion />
+      <SliderAccordion
+        field="hp"
+        heading="HP"
+        slider={{
+          step: 10,
+          max: DEFAULT_HP[1],
+          min: DEFAULT_HP[0],
+          minStepsBetweenThumbs: 1,
+          defaultValue: DEFAULT_HP,
+        }}
+      />
+    </FormSheet>
   );
 }

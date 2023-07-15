@@ -17,7 +17,7 @@ const pages = [
 
 export default function Page() {
   return (
-    <main className="my-12 lg:my-36 flex flex-col gap-12 lg:gap-36">
+    <main className="my-12 lg:my-36 flex flex-col gap-20 lg:gap-36">
       <section className="flex flex-col items-center justify-center gap-2 relative">
         <div className="flex text-center flex-col items-center justify-center gap-3 w-full sm:w-3/4">
           <h1 className="font-bungee select-none gradient-text break-words text-5xl md:text-6xl uppercase">
@@ -49,6 +49,7 @@ export default function Page() {
             </Link>
             &nbsp;or&nbsp;
             <Link
+              prefetch={true}
               variant="primary"
               highlight="primary"
               focus="ring"
@@ -61,14 +62,15 @@ export default function Page() {
           </p>
         </div>
       </section>
-      <section className="grid grid-cols-folder gap-6 lg:gap-3 place-content-center lg:justify-evenly relative after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-z-10 after:-translate-y-1/2 after:content-[''] after:w-1/2 after:mx-auto after:h-8 after:bg-gradient-to-r after:from-foreground after:via-spotlight after:to-accent">
+      <section className="flex items-center justify-evenly flex-wrap gap-6 lg:gap-3 relative after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-z-10 after:-translate-y-1/2 after:hidden lg:after:block after:content-[''] after:w-1/2 after:mx-auto after:h-8 after:bg-gradient-to-r after:from-foreground after:via-spotlight after:to-accent">
         {pages.map((page, i) => (
           <Link
+            prefetch={page.href !== '/search'}
             key={page.href}
             href={page.href}
             highlight="none"
             className={cn(
-              'relative w-full aspect-video overflow-hidden rounded-sm text-xl uppercase font-bold transition-transform hover:-translate-y-1 focus-visible:-translate-y-1',
+              'relative w-full h-screen max-h-[9rem] xs:aspect-video xs:max-w-[16rem] overflow-hidden rounded-sm text-xl uppercase font-bold transition-transform hover:-translate-y-1 focus-visible:-translate-y-1 sm:last:col-span-2 sm:last:max-h-[9rem] lg:last:col-span-1 lg:last:max-h-auto',
               {
                 'bg-foreground text-background': i == 0,
                 'bg-spotlight text-foreground': i == 1,
