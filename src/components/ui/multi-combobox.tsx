@@ -6,7 +6,13 @@ import {
   useMultipleSelection,
 } from 'downshift';
 import { useState, useMemo, useCallback } from 'react';
-import { Ascending, Descending, Minus, X } from '@/ui/icons';
+import {
+  Ascending,
+  Descending,
+  type Icon as TIcon,
+  Minus,
+  X,
+} from '@/ui/icons';
 import { Input } from '@/ui/input';
 import {
   type FieldValues,
@@ -143,12 +149,13 @@ export const Combobox = ({
         </label>
         <div className="text-sm inline-flex gap-1 items-center flex-wrap p-1.5">
           {form[field].map((item, index) => {
-            const Icon =
-              field === 'orderBy'
-                ? item.exclude
-                  ? Descending
-                  : Ascending
-                : Minus;
+            let Icon: TIcon | null = null;
+
+            if (field == 'orderBy') {
+              Icon = item.exclude ? Descending : Ascending;
+            } else {
+              Icon = item.exclude ? Minus : null;
+            }
 
             return (
               <span
@@ -156,7 +163,7 @@ export const Combobox = ({
                 key={`selected-item-${index}`}
                 {...getSelectedItemProps({ selectedItem: item, index })}
               >
-                <Icon className="w-4 h-4" />
+                {Icon && <Icon className="w-4 h-4" />}
                 {item.name}
                 <span
                   className="cursor-pointer hover:text-destructive"
