@@ -38,7 +38,7 @@ const Searchbar = forwardRef<HTMLFormElement, SearchbarProps>(
     const onSubmit: SubmitHandler = useCallback(
       (e) => {
         const form = new FormData(e.currentTarget);
-        const url = new URL(`${getURL('search')}`);
+        const url = new URL(`${getURL('/search')}`);
 
         allowedTCGParams.forEach((q) => {
           const value = form.getAll(q);
