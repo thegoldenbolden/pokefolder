@@ -8,16 +8,12 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(getURL()),
-  generator: 'Next.js',
-  referrer: 'origin-when-cross-origin',
-  colorScheme: 'dark',
-  themeColor: 'black',
+  applicationName: 'Pokefolder',
+  keywords,
   title: {
     default: 'Pokefolder',
     template: '%s • Pokefolder',
   },
-  applicationName: 'Pokefolder',
-  keywords,
   robots: {
     index: true,
     follow: false,

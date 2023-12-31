@@ -10,6 +10,7 @@ import SWRConfig from '@/components/swr-config';
 
 export const metadata: Metadata = {
   title: 'Search',
+  alternates: { canonical: '/search' },
   keywords: [
     'Pokemon card search',
     'Card lookup',
