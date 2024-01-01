@@ -250,6 +250,7 @@ export function createQueryStringFromForm(
     include.length && params.set(key, include.join(','));
   });
 
+  addDefaultParams(params);
   params.sort();
   return decodeURIComponent(params.toString());
 }
@@ -290,4 +291,36 @@ function getOrderBy(value: TQueryParams['orderBy'] | null = '-cardmarket') {
   const lookup = orderByToTCG[values[desc ? 1 : 0]];
   if (!value || !lookup) return '-cardmarket.prices.trendPrice';
   return `${desc ? '-' : ''}` + lookup;
+}
+
+export function addDefaultParams(params: URLSearchParams) {
+  const allowedParams = [...allowedTCGParams, ...defaultQueryParams];
+
+  for (const [param, value] of params.entries()) {
+    if (allowedParams.includes(param)) {
+      params.set(param, value);
+    } else {
+      params.delete(param);
+    }
+  }
+
+  if (!params.get('page')) {
+    params.set('page', '1');
+  }
+
+  if (!params.get('pageSize')) {
+    params.set('pageSize', `${DEFAULT_PAGE_SIZE}`);
+  }
+
+  if (!params.get('view')) {
+    params.set('view', 'grid');
+  }
+
+  if (!params.get('orderBy')) {
+    params.set('orderBy', '-cardmarket');
+  }
+
+  params.sort();
+
+  return params;
 }
