@@ -1,18 +1,35 @@
 'use client';
 import type { TCGApiResponse, TCardFull } from '@/types/tcg';
 import { useSearchParams } from 'next/navigation';
-import useSWRImmutable from 'swr/immutable';
+import { search } from '@/app/actions/search';
+import useSWR from 'swr';
+
+type Search = TCGApiResponse<TCardFull> | null;
 
 export default function useCards() {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
-
-  // Removing invalid api param so two keys wont have same result
-  params.delete('view');
   params.sort();
 
-  const { data, error, isLoading } = useSWRImmutable<TCGApiResponse<TCardFull>>(
+  const { data, error, isLoading } = useSWR<Search>(
     `/api/cards?${params.toString()}`,
+    async () => {
+      try {
+        const data = await search(params);
+        if (data.error) {
+          throw data.error;
+        }
+
+        return data.cards ?? null;
+      } catch (error) {
+        return null;
+      }
+    },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
+    }
   );
 
   return {
