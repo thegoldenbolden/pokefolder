@@ -2,14 +2,10 @@
 
 import { forwardRef } from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
-import { X } from '@/ui/icons';
-import { cva, type VariantProps } from 'class-variance-authority';
-
-import { cn } from '@/lib/utils';
+import { cn, cva, type VariantProps } from '@/lib/utils';
+import { buttonVariants } from './button';
 
 const Sheet = SheetPrimitive.Root;
-const SheetTrigger = SheetPrimitive.Trigger;
-const SheetClose = SheetPrimitive.Close;
 const SheetPortal = SheetPrimitive.Portal;
 
 const SheetOverlay = forwardRef<
@@ -28,7 +24,7 @@ const SheetOverlay = forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-background p-6 transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  'fixed z-50 bg-background border-border transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
   {
     variants: {
       side: {
@@ -62,36 +58,10 @@ const SheetContent = forwardRef<
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </SheetPrimitive.Close>
     </SheetPrimitive.Content>
   </SheetPortal>
 ));
 SheetContent.displayName = SheetPrimitive.Content.displayName;
-
-const SheetHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn(className)} {...props} />
-);
-SheetHeader.displayName = 'SheetHeader';
-
-const SheetFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className,
-    )}
-    {...props}
-  />
-);
-SheetFooter.displayName = 'SheetFooter';
 
 const SheetTitle = forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
@@ -117,13 +87,37 @@ const SheetDescription = forwardRef<
 ));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
+const SheetTrigger = forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Trigger> &
+    VariantProps<typeof buttonVariants>
+>(({ className, variant, size, ...props }, ref) => (
+  <SheetPrimitive.Trigger
+    ref={ref}
+    className={cn(buttonVariants({ variant, size, className }))}
+    {...props}
+  />
+));
+SheetTrigger.displayName = SheetPrimitive.Trigger.displayName;
+
+const SheetClose = forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Close>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Close> &
+    VariantProps<typeof buttonVariants>
+>(({ className, variant, size, ...props }, ref) => (
+  <SheetPrimitive.Close
+    ref={ref}
+    className={cn(buttonVariants({ variant, size, className }))}
+    {...props}
+  />
+));
+SheetClose.displayName = SheetPrimitive.Close.displayName;
+
 export {
   Sheet,
   SheetTrigger,
   SheetClose,
   SheetContent,
-  SheetHeader,
-  SheetFooter,
   SheetTitle,
   SheetDescription,
 };

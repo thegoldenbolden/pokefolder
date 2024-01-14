@@ -1,7 +1,7 @@
 'use server';
 
-import { getCards } from '@/lib/fetch';
 import { addDefaultParams } from '@/lib/tcg';
+import { getCards } from '@/lib/fetch';
 
 export async function search(searchParams: URLSearchParams) {
   const params = addDefaultParams(new URLSearchParams(searchParams));

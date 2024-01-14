@@ -9,21 +9,20 @@
     --spotlight: 0 0% 10%;
     --border: 0 0% 15%;
     --input: 0 0% 89.8%;
-    --ring: 0 0% 63.9%;
     --radius: 0.5rem;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 88%;
 
     --popover: 0 0% 0%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 48 100% 100%;
+    --primary: 48 100% 50%;
     --primary-foreground: 0 0% 0%;
+    --ring: var(--primary);
 
     --secondary: 223 47% 44%;
     --secondary-foreground: 0 0% 100%;
-
     --accent: 0 100% 50%;
     --accent-foreground: 0 0% 100%;
 
@@ -33,32 +32,6 @@
 
   :disabled {
     cursor: not-allowed;
-  }
-
-  /*! Firefox */
-  html {
-    scrollbar-color: hsl(var(--foreground)) hsl(var(--background));
-  }
-
-  /*! Other Browser */
-  ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  body {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--foreground)) hsl(var(--background));
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--foreground));
-    border-radius: 6px;
-    border: 3px solid hsl(var(--foreground));
   }
 
   .bg-image {
@@ -80,7 +53,6 @@
 @layer components {
   .logo {
     color: hsl(var(--primary));
-    text-stroke: 0.15rem hsl(var(--secondary));
     -webkit-text-stroke: 0.15rem hsl(var(--secondary));
   }
 

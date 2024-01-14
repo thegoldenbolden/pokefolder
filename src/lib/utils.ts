@@ -1,6 +1,8 @@
+import type { TCard, TCardFull } from '@/types/tcg';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import type { TCard, TCardFull, TSet } from '@/types/tcg';
+
+export { type VariantProps, cva } from 'class-variance-authority';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,7 +27,7 @@ type Config = {
   exceptions: string[];
 };
 
-export default function format(text: string, config: Partial<Config>) {
+function format(text: string, config: Partial<Config>) {
   config.exceptions ||= [];
   if (config.exceptions.includes(text)) return text;
 
@@ -57,34 +59,10 @@ export default function format(text: string, config: Partial<Config>) {
   return text;
 }
 
-export function formatSetName(name: string, config?: Partial<Config>) {
-  return format(name, {
-    case: 'lowercase',
-    '&': { from: '&', to: 'and' },
-    "'s": { from: "'s", to: 's' },
-    ...config,
-  });
-}
-
 export function createSearchParams(key: string, name: string | undefined) {
   const params = new URLSearchParams();
   name && params.set(key, name);
   return params;
-}
-
-export function groupSetsBySeries(sets: TSet[]) {
-  const group: { [key: string]: TSet[] } = {};
-
-  sets.forEach((set) => {
-    if (!set.series) return;
-    group[set.series] ??= [];
-    group[set.series].push(set);
-  });
-
-  return {
-    series: Object.keys(group),
-    setsBySeries: Object.entries(group),
-  };
 }
 
 export function getCardUrl(card: TCard) {

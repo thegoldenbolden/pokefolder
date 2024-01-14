@@ -239,3 +239,39 @@ export const Descending: Icon = (props) => {
     </BaseIcon>
   );
 };
+
+export const BookImage: Icon = (props) => {
+  return (
+    <BaseIcon aria-label="book images icon" {...props}>
+      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+      <circle cx="10" cy="8" r="2" />
+      <path d="m20 13.7-2.1-2.1c-.8-.8-2-.8-2.8 0L9.7 17" />
+    </BaseIcon>
+  );
+};
+
+export const ScanSearch: Icon = (props) => {
+  return (
+    <BaseIcon aria-label="book images icon" {...props}>
+      <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+      <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+      <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+      <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="m16 16-1.9-1.9" />
+    </BaseIcon>
+  );
+};
+
+export const AlarmClock: Icon = (props) => {
+  return (
+    <BaseIcon aria-label="alarm clock icon" {...props}>
+      <circle cx="12" cy="13" r="8" />
+      <path d="M12 9v4l2 2" />
+      <path d="M5 3 2 6" />
+      <path d="m22 6-3-3" />
+      <path d="M6.38 18.7 4 21" />
+      <path d="M17.64 18.67 20 21" />
+    </BaseIcon>
+  );
+};

@@ -1,19 +1,17 @@
-import { QToTCGTableKeys } from '@/lib/tcg';
+import type { QueryParams } from '@/lib/tcg';
+import type { TCardFull } from '@/types/tcg';
 import { cn } from '@/lib/utils';
-import { TCardFull } from '@/types/tcg';
-import Image from '@/ui/image';
+import { Image } from '@/ui/image';
 import { Link } from '@/ui/link';
 
 type Props<T> = React.PropsWithChildren<{
   id: string;
   data: T;
   className?: string;
-  q: QToTCGTableKeys;
+  q: QueryParams;
 }>;
 
-type Comp<T> = (x: Props<T>) => JSX.Element;
-
-const TypesImage: Comp<TCardFull['types']> = (props) => {
+export function TypesImage(props: Props<TCardFull['types']>) {
   if (!props.data?.length) {
     return <>--</>;
   }
@@ -21,37 +19,26 @@ const TypesImage: Comp<TCardFull['types']> = (props) => {
   return (
     <>
       {props.data.map((type, i) => (
-        <SearchLink key={type} q={props.q} value={type}>
+        <Link href={`/search?${props.q}=${type}`} key={type}>
           <Image
             key={`${props.id}-${type}.${i}`}
             src={`/types/${type.toLowerCase()}.png`}
             height={24}
             width={24}
-            className={cn('object-contain', props.className)}
+            className={cn('object-contain size-4', props.className)}
             alt={`${type} icon`}
           />
           {props.children}
-        </SearchLink>
+        </Link>
       ))}
     </>
   );
-};
+}
 
-type SearcLinkProps = React.PropsWithChildren<{ q: string; value: any }>;
-const SearchLink = ({ children, q, value }: SearcLinkProps) => {
-  return (
-    <Link focus="none" variant="underline" href={`/search?${q}=${value}`}>
-      {children}
-    </Link>
-  );
-};
-
-// pretty dumb imo
-const Optional = (
-  props: Pick<Parameters<Comp<any>>[0], 'data' | 'children'>,
-) => {
-  if (!props.data?.length) return <>--</>;
-  return <>{props.children}</>;
-};
-
-export { TypesImage, SearchLink, Optional };
+export function Optional({
+  data = [],
+  children,
+}: Pick<Props<unknown[] | string | undefined>, 'data' | 'children'>) {
+  if (!data?.length) return <>--</>;
+  return <>{children}</>;
+}

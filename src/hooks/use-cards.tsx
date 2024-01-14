@@ -6,7 +6,7 @@ import useSWR from 'swr';
 
 type Search = TCGApiResponse<TCardFull> | null;
 
-export default function useCards() {
+export function useCards() {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   params.sort();
@@ -16,8 +16,9 @@ export default function useCards() {
     async () => {
       try {
         const data = await search(params);
-        if (data.error) {
-          throw data.error;
+
+        if (data?.error) {
+          throw new Error(data.error);
         }
 
         return data.cards ?? null;
@@ -28,8 +29,8 @@ export default function useCards() {
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
-      revalidateOnReconnect: false
-    }
+      revalidateOnReconnect: false,
+    },
   );
 
   return {

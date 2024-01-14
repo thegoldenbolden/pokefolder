@@ -1,9 +1,8 @@
 import { forwardRef } from 'react';
-import { cn } from '@/lib/utils';
-import { VariantProps, cva } from 'class-variance-authority';
+import { cn, cva, type VariantProps } from '@/lib/utils';
 
 const inputVariants = cva(
-  'flex w-full text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-foreground/75 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'flex w-full rounded-sm text-sm file:border-0 file:bg-transparent file:text-sm placeholder:text-foreground/75 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -11,7 +10,7 @@ const inputVariants = cva(
         outline: 'bg-transparent border-border border-2 border-solid',
       },
       variantSize: {
-        default: 'h-9 px-3 py-1',
+        default: 'h-9 px-3 py-3',
         sm: 'py-1.5 px-2',
       },
     },

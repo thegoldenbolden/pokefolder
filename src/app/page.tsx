@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import { Clock, Gem, Search } from '@/ui/icons';
+import { BookImage, ScanSearch, AlarmClock } from '@/components/icons';
 import { Searchbar } from '@/components/searchbar';
-import { cn } from '@/lib/utils';
 import { Link } from '@/ui/link';
 
 export const metadata: Metadata = {
@@ -10,77 +9,64 @@ export const metadata: Metadata = {
 };
 
 const pages = [
-  { title: 'view sets', href: '/sets', icon: Gem },
-  { title: 'search', href: '/search', icon: Search },
-  { title: 'coming soon', href: '/', icon: Clock },
-] as const;
+  { title: 'sets', href: '/sets', icon: BookImage },
+  { title: 'search', href: '/search', icon: ScanSearch },
+  { title: 'coming soon', href: '/', icon: AlarmClock },
+];
 
 export default function Page() {
   return (
-    <main className="my-12 lg:my-36 flex flex-col gap-20 lg:gap-36">
-      <section className="flex flex-col items-center justify-center gap-2 relative">
-        <div className="flex text-center flex-col items-center justify-center gap-3 w-full sm:w-3/4">
-          <h1 className="font-bungee select-none gradient-text break-words text-5xl md:text-6xl uppercase">
-            Build the perfect deck
-          </h1>
-          <Searchbar id="search" to="/search" size="md" />
-          <p className="w-4/5 md:w-3/5">
-            Try searching&nbsp;
-            <Link
-              variant="primary"
-              highlight="primary"
-              focus="ring"
-              className="focus-visible:px-1"
-              size="bold"
-              href="/search?cards=vikavolt"
-            >
-              vikavolt
-            </Link>
-            ,&nbsp;
-            <Link
-              variant="primary"
-              highlight="primary"
-              focus="ring"
-              className="focus-visible:px-1"
-              size="bold"
-              href="/search?cards=mew,cynthia"
-            >
-              mew, cynthia
-            </Link>
-            &nbsp;or&nbsp;
-            <Link
-              prefetch={true}
-              variant="primary"
-              highlight="primary"
-              focus="ring"
-              className="focus-visible:px-1"
-              size="bold"
-              href="/sets"
-            >
-              browse by sets
-            </Link>
-          </p>
-        </div>
-      </section>
-      <section className="flex items-center justify-evenly flex-wrap gap-6 lg:gap-3 relative after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-z-10 after:-translate-y-1/2 after:hidden lg:after:block after:content-[''] after:w-1/2 after:mx-auto after:h-8 after:bg-gradient-to-r after:from-foreground after:via-spotlight after:to-accent">
-        {pages.map((page, i) => (
+    <main className="z-10 flex flex-col gap-12 lg:gap-20 py-16 max-w-screen-lg mx-auto">
+      <section className="py-8 flex flex-col gap-6 items-center justify-center z-10">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bungee select-none gradient-text text-center uppercase">
+          Build the perfect deck
+        </h1>
+        <Searchbar id="search" className="max-w-[80%] bg-muted w-full p-2" />
+        <p className="max-w-[80%] w-full text-center">
+          Try searching&nbsp;
           <Link
-            prefetch={page.href !== '/search'}
-            key={page.href}
-            href={page.href}
-            highlight="none"
-            className={cn(
-              'relative w-full h-screen max-h-[9rem] xs:aspect-video xs:max-w-[16rem] overflow-hidden rounded-sm text-xl uppercase font-bold transition-transform hover:-translate-y-1 focus-visible:-translate-y-1 sm:last:col-span-2 sm:last:max-h-[9rem] lg:last:col-span-1 lg:last:max-h-auto',
-              {
-                'bg-foreground text-background': i == 0,
-                'bg-spotlight text-foreground': i == 1,
-                'bg-accent text-accent-foreground': i == 2,
-              },
-            )}
+            className="text-primary hover:text-primary/80"
+            href="/search?cards=vikavolt"
           >
-            <span className="absolute bottom-3 right-3">{page.title}</span>
-            <page.icon className="w-full h-full absolute top-0 -left-1/3 opacity-25" />
+            vikavolt
           </Link>
+          ,&nbsp;
+          <Link
+            className="text-primary hover:text-primary/80"
+            href="/search?cards=mew,cynthia"
+          >
+            mew, cynthia
+          </Link>
+          &nbsp;or&nbsp;
+          <Link
+            prefetch={true}
+            className="text-primary hover:text-primary/80"
+            href="/sets"
+          >
+            browse by sets
+          </Link>
+        </p>
+      </section>
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-y-16 lg:grid-cols-3 sm:gap-16 rounded-sm items-center">
+        {pages.map((page, i) => (
+          <div
+            key={page.href}
+            className="group flex items-center flex-col-reverse gap-8 lg:last:col-span-1 last:col-span-full"
+          >
+            <Link
+              variant={null}
+              href={page.href}
+              prefetch={page.href !== '/search'}
+              className="peer shadow-2xl w-4/5 lg:w-full shadow-foreground group-first:shadow-primary group-last:shadow-accent block bg-foreground text-background group-first:text-primary-foreground group-first:bg-primary group-last:text-accent-foreground group-last:bg-accent border py-2 text-center border-border rounded-sm uppercase text-sm tracking-wide font-semibold"
+            >
+              {page.title}
+            </Link>
+            <div className="flex items-center opacity-25 peer-hover:opacity-100 peer-focus-visible:opacity-100 duration-200 peer-hover:text-foreground peer-focus-visible:text-foreground group-first:peer-hover:text-primary group-first:peer-focus-visible:text-primary group-last:peer-hover:text-accent group-last:peer-focus-visible:text-accent peer-hover:-translate-y-1 peer-focus-visible:-translate-y-1 lg:peer-hover:-translate-y-6 lg:peer-focus-visible:-translate-y-6">
+              <page.icon className="transition-all size-24 text-inherit opacity-[inherit] lg:size-24 -rotate-12 translate-y-4 translate-x-2" />
+              <page.icon className="transition-all size-24 text-inherit opacity-[inherit] lg:size-24 " />
+              <page.icon className="transition-all size-24 text-inherit opacity-[inherit] lg:size-24 rotate-12 translate-y-4 -translate-x-2" />
+            </div>
+          </div>
         ))}
       </section>
     </main>

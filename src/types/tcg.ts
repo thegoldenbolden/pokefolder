@@ -1,4 +1,4 @@
-import type { QToTCGTableKeys } from '@/lib/tcg';
+import type { QueryParams } from '@/lib/tcg';
 
 type Base = { id: string; name: string };
 export type Legality = {
@@ -12,24 +12,16 @@ type Ability = { name: string; text: string; type: string };
 type AncientTrait = { name: string; text: string };
 type WeaknessResistance = { type: string; value: string };
 
-export interface TSet extends Base {
+export type TSet = Base & {
   releaseDate: string;
   images: { symbol: string; logo: string };
   series?: string;
-}
-export interface TSetFull extends TSet {
-  legalities: Partial<Legality>;
-  series: string;
-  ptcgoCode: string;
-  updatedAt: string;
-  printedTotal: number;
-  total: number;
-}
+};
 
-export interface TCard extends Base {
+export type TCard = Base & {
   images: Partial<CardImage>;
   set: TSet;
-}
+};
 
 type Attack = {
   cost: string[];
@@ -38,8 +30,14 @@ type Attack = {
   damage: string;
   convertedEnergyCost: string;
 };
-// prettier-ignore
-type TCGPrice = "normal" | "holofoil" | "reverseHolofoil" | "1stEditionHolofoil" | "1stEditionNormal";
+
+type TCGPrice =
+  | 'normal'
+  | 'holofoil'
+  | 'reverseHolofoil'
+  | '1stEditionHolofoil'
+  | '1stEditionNormal';
+
 type TCGPriceTrend = 'low' | 'mid' | 'high' | 'market' | 'directLow';
 
 export type TCGPlayer = {
@@ -48,8 +46,15 @@ export type TCGPlayer = {
   prices: Record<TCGPrice, Record<TCGPriceTrend, number | null>>;
 };
 
-// prettier-ignore
-type CardmarketPrice = "trendPrice" | "avg1" | "avg7" | "avg30" | "reverseHoloAvg1" | "reverseHoloAvg7" | "reverseHoloAvg7";
+type CardmarketPrice =
+  | 'trendPrice'
+  | 'avg1'
+  | 'avg7'
+  | 'avg30'
+  | 'reverseHoloAvg1'
+  | 'reverseHoloAvg7'
+  | 'reverseHoloAvg7';
+
 export type CardMarket = {
   url: string;
   updatedAt: string;
@@ -58,7 +63,6 @@ export type CardMarket = {
 
 export interface TCardFull extends TCard {
   supertype: Supertype;
-  set: TSetFull;
   number: number;
   subtypes?: string[];
   level?: string;
@@ -82,9 +86,17 @@ export interface TCardFull extends TCard {
   attacks?: Attack[];
   weaknesses?: WeaknessResistance[];
   resistances?: WeaknessResistance[];
+  set: TSet & {
+    legalities: Partial<Legality>;
+    series: string;
+    ptcgoCode: string;
+    updatedAt: string;
+    printedTotal: number;
+    total: number;
+  };
 }
 
-export type TQueryParams = Record<QToTCGTableKeys, string> & {
+export type TQueryParams = Record<QueryParams, string> & {
   page: string;
   pageSize: string;
   orderBy: OrderBy | `-${OrderBy}`;

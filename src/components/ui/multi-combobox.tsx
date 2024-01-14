@@ -1,51 +1,53 @@
 'use client';
+
+import { useState, useMemo, useCallback } from 'react';
+import { Input } from '@/ui/input';
 import { cn } from '@/lib/utils';
+import type { TSet } from '@/types/tcg';
+import { Toggle } from './toggle';
 import {
   type UseComboboxGetLabelPropsOptions,
   useCombobox,
   useMultipleSelection,
 } from 'downshift';
-import { useState, useMemo, useCallback } from 'react';
 import {
   Ascending,
   Descending,
   type Icon as TIcon,
   Minus,
   X,
-} from '@/ui/icons';
-import { Input } from '@/ui/input';
+} from '@/components/icons';
 import {
-  type FieldValues,
-  useFormContext,
-  useDispatchContext,
-  ExcludedFormKeys,
-} from '@/context/search';
-import type { TSet } from '@/types/tcg';
-import { ExcludeSearchField } from '../exclude-field';
+  type StateKeysWithoutHP,
+  type StateValues,
+  useForm,
+} from '@/hooks/use-form';
 
 export type DefaultMultiComboboxValue = { name: string; id: string };
 
 type Props = {
   data: TSet[] | DefaultMultiComboboxValue[];
   placeholder?: string;
-  field: ExcludedFormKeys;
-  item: (item: Props['data'][number]) => JSX.Element;
+  stateKey: StateKeysWithoutHP;
+  render: (item: Props['data'][number]) => JSX.Element;
   label: { value: string; props?: UseComboboxGetLabelPropsOptions };
+  sets?: TSet[];
 };
 
 export const Combobox = ({
   data,
   placeholder,
-  field,
+  stateKey,
   label,
+  sets,
   ...props
 }: Props) => {
-  const dispatch = useDispatchContext();
+  const [excluded, setExcluded] = useState(false);
   const [input, setInput] = useState('');
-  const form = useFormContext();
+  const { state, dispatch } = useForm();
 
   const getFiltered = useCallback(
-    (selected: FieldValues, input: String) => {
+    (selected: StateValues, input: String) => {
       const value = input.toLowerCase();
       return data.filter((data) => {
         return (
@@ -59,13 +61,13 @@ export const Combobox = ({
   );
 
   const items = useMemo(
-    () => getFiltered(form[field], input),
-    [form, field, input, getFiltered],
+    () => getFiltered(state[stateKey], input),
+    [state, stateKey, input, getFiltered],
   );
 
   const { getSelectedItemProps, getDropdownProps, removeSelectedItem } =
     useMultipleSelection({
-      selectedItems: form[field],
+      selectedItems: state[stateKey],
       onStateChange({ selectedItems: newSelectedItems, type }) {
         switch (type) {
           default:
@@ -77,8 +79,8 @@ export const Combobox = ({
           case useMultipleSelection.stateChangeTypes.FunctionRemoveSelectedItem:
             dispatch({
               type: 'set',
-              key: field,
-              value: newSelectedItems ?? [],
+              key: stateKey,
+              values: newSelectedItems ?? [],
             });
             break;
         }
@@ -99,7 +101,7 @@ export const Combobox = ({
     defaultHighlightedIndex: 0, // after selection, highlight the first item.
     selectedItem: null,
     inputValue: input,
-    stateReducer: (state, actionAndChanges) => {
+    stateReducer: (_, actionAndChanges) => {
       const { changes, type } = actionAndChanges;
 
       switch (type) {
@@ -122,11 +124,8 @@ export const Combobox = ({
           if (selectedItem) {
             dispatch({
               type: 'set',
-              key: field,
-              value: [
-                ...form[field],
-                { exclude: form.exclude, ...selectedItem },
-              ],
+              key: stateKey,
+              values: [...state[stateKey], { excluded, ...selectedItem }],
             });
             setInput('');
           }
@@ -148,18 +147,18 @@ export const Combobox = ({
           {label.value}
         </label>
         <div className="text-sm inline-flex gap-1 items-center flex-wrap p-1.5">
-          {form[field].map((item, index) => {
+          {state[stateKey].map((item, index) => {
             let Icon: TIcon | null = null;
 
-            if (field == 'orderBy') {
-              Icon = item.exclude ? Descending : Ascending;
+            if (stateKey == 'orderBy') {
+              Icon = item.excluded ? Descending : Ascending;
             } else {
-              Icon = item.exclude ? Minus : null;
+              Icon = item.excluded ? Minus : null;
             }
 
             return (
               <span
-                className="flex items-center gap-1 border border-solid border-border rounded-sm px-2 focus-visible:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:bg-spotlight/75"
+                className="flex items-center gap-1 capitalize border border-solid border-border rounded-sm px-2 focus-visible:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:bg-muted"
                 key={`selected-item-${index}`}
                 {...getSelectedItemProps({ selectedItem: item, index })}
               >
@@ -177,14 +176,28 @@ export const Combobox = ({
               </span>
             );
           })}
-          <div className="flex gap-1 w-full items-center">
-            <ExcludeSearchField field={field} />
+          <div className="flex flex-col w-full gap-1">
             <Input
               variant="outline"
               className="grow"
               placeholder={placeholder}
               {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
             />
+            <Toggle
+              aria-label="exclude from search"
+              defaultPressed={excluded}
+              type="button"
+              className="basis-1/2 rounded-sm border-2 px-2 py-1 data-[state='on']:bg-foreground data-[state='on']:text-background"
+              onPressedChange={(e) => {
+                setExcluded((p) => !p);
+              }}
+            >
+              {stateKey === 'orderBy'
+                ? excluded
+                  ? 'Descending'
+                  : 'Ascending'
+                : 'Exclude'}
+            </Toggle>
           </div>
         </div>
       </div>
@@ -196,14 +209,14 @@ export const Combobox = ({
       >
         {items.map((item, index) => (
           <li
-            className={cn('py-2 px-3 flex items-center gap-2', {
-              'bg-spotlight/75 text-foreground': highlightedIndex === index,
+            className={cn('py-2 px-3 flex items-center gap-2 rounded-sm', {
+              'bg-foreground/5 text-foreground': highlightedIndex === index,
               'font-bold': selectedItem === item,
             })}
             key={`${item.name}${index}`}
             {...getItemProps({ item, index })}
           >
-            <props.item {...item} />
+            <props.render {...item} />
           </li>
         ))}
       </ul>

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-export default function Spinner({ className }: { className?: string }) {
+export function Spinner({ className }: { className?: string }) {
   return (
     <span
       className={cn(

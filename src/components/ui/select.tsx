@@ -1,9 +1,8 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { ChevronUpDown, Check } from '@/ui/icons';
+import { ChevronUpDown, Check } from '@/components/icons';
 import * as SelectPrimitive from '@radix-ui/react-select';
-
 import { cn } from '@/lib/utils';
 
 const Select = SelectPrimitive.Root;
@@ -17,7 +16,7 @@ const SelectTrigger = forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex h-9 w-full items-center gap-1 justify-between rounded-sm border border-border bg-transparent px-2 py-2 text-sm ring-offset-background placeholder:text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+      'flex h-9 w-full items-center gap-1 justify-between rounded-sm border border-border bg-transparent px-2 py-2 text-sm ring-offset-background placeholder:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -79,7 +78,7 @@ const SelectItem = forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-spotlight/75 focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-foreground/5 focus-visible:bg-foreground/10 focus-visible:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}
     {...props}

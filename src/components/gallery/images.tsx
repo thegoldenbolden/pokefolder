@@ -1,12 +1,11 @@
 'use client';
-import Card from '@/components/card/link';
-import PageControls from './page-controls';
-import useCards from '@/hooks/use-cards';
-import Image, { blur } from '@/ui/image';
+import { CardLink } from '@/components/card/link';
+import { useCards } from '@/hooks/use-cards';
+import { blur, Image } from '@/ui/image';
 import { DEFAULT_PAGE_SIZE } from '@/lib/tcg';
 import { useSearchParams } from 'next/navigation';
 
-export default function Images() {
+export function Images() {
   const { cards, isLoading, error } = useCards();
   const params = useSearchParams();
   const size = parseInt(`${params.get('pageSize')}`) || DEFAULT_PAGE_SIZE;
@@ -30,23 +29,28 @@ export default function Images() {
   }
 
   if (error) {
-    return <span>An error occurred</span>;
+    return (
+      <div className="grow flex items-center justify-center">
+        An error occurred
+      </div>
+    );
   }
 
   if (!cards?.count) {
-    return <span>No cards found</span>;
+    return (
+      <div className="grow flex items-center justify-center">
+        No cards found
+      </div>
+    );
   }
 
   return (
-    <>
-      <ul className="grid gap-3 mb-2 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
-        {cards.data.map((card) => (
-          <li key={`${card.id}-list`}>
-            <Card {...card} />
-          </li>
-        ))}
-      </ul>
-      <PageControls />
-    </>
+    <ul className="grid gap-3 mb-2 justify-items-center items-center grid-cols-fluid-sm md:grid-cols-fluid">
+      {cards.data.map((card) => (
+        <li key={`${card.id}-list`}>
+          <CardLink {...card} />
+        </li>
+      ))}
+    </ul>
   );
 }

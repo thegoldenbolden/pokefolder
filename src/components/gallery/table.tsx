@@ -1,10 +1,10 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/ui/hover-card';
-import { Optional, SearchLink, TypesImage } from '@/components/card/typings';
+import { Optional, TypesImage } from '@/components/card/typings';
 import { getCardUrl, getPrice } from '@/lib/utils';
-import PageControls from './page-controls';
-import useCards from '@/hooks/use-cards';
+import { PageControls } from './page-controls';
+import { useCards } from '@/hooks/use-cards';
 import { Link } from '@/ui/link';
-import Image from '@/ui/image';
+import { Image } from '@/ui/image';
 import {
   TableBody,
   TableCaption,
@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/ui/table';
 
-export default function Table() {
+export function Table() {
   const { cards, isLoading, error } = useCards();
 
   if (isLoading) {
@@ -38,11 +38,11 @@ export default function Table() {
             <TableHead>Cardmarket</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className=" min-h-[648px]">
+        <TableBody className="min-h-[648px]">
           {Array.from({ length: 20 }).map((_, i) => (
             <TableRow
               key={`row-fallback-${i}`}
-              className="motion-safe:animate-pulse duration-500 h-9 odd:bg-spotlight even:bg-spotlight/75 "
+              className="motion-safe:animate-pulse duration-500 h-9 odd:bg-muted even:bg-muted/75 "
             >
               {Array.from({ length: 9 }).map((_, i) => (
                 <TableCell key={`cell-fallback-${i}`} />
@@ -77,9 +77,6 @@ export default function Table() {
 
   return (
     <TableRoot>
-      <TableCaption>
-        <PageControls />
-      </TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Set</TableHead>
@@ -99,37 +96,24 @@ export default function Table() {
             <HoverCardTrigger asChild>
               <TableRow>
                 <TableCell>
-                  <Link
-                    variant="underline"
-                    focus="none"
-                    href={`/search?sets=${card.set.id}`}
-                  >
+                  <Link variant="link" href={`/search?sets=${card.set.id}`}>
                     {card.set.name}
                   </Link>
                 </TableCell>
                 <TableCell>{card.number}</TableCell>
                 <TableCell>
-                  <Link
-                    variant="underline"
-                    focus="none"
-                    href={getCardUrl(card)}
-                  >
+                  <Link variant="link" href={getCardUrl(card)}>
                     {card.name}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link
-                    variant="underline"
-                    focus="none"
-                    href={`/search?rarities=${card.rarity}`}
-                  >
+                  <Link variant="link" href={`/search?rarities=${card.rarity}`}>
                     {card.rarity}
                   </Link>
                 </TableCell>
                 <TableCell>
                   <Link
-                    variant="underline"
-                    focus="none"
+                    variant="link"
                     href={`/search?supertypes=${card.supertype}`}
                   >
                     {card.supertype}
@@ -146,20 +130,22 @@ export default function Table() {
                   <Optional data={card.subtypes}>
                     {card.subtypes &&
                       card.subtypes.map((subtype) => (
-                        <SearchLink key={subtype} q="subtypes" value={subtype}>
+                        <Link
+                          href={`/search?subtypes=${subtype}`}
+                          key={subtype}
+                        >
                           {subtype}
-                        </SearchLink>
+                        </Link>
                       ))}
                   </Optional>
                 </TableCell>
                 <TableCell>
                   {card.tcgplayer?.url ? (
                     <Link
+                      variant="link"
                       href={card.tcgplayer.url}
-                      variant="underline"
-                      focus="none"
                       target="_blank"
-                      rel="norefer nopenner"
+                      rel="noreferrer noopener"
                     >
                       {getPrice(
                         'USD',
@@ -178,11 +164,10 @@ export default function Table() {
                 <TableCell>
                   {card.cardmarket?.url ? (
                     <Link
+                      variant="link"
                       href={card.cardmarket.url}
-                      focus="none"
-                      variant="underline"
                       target="_blank"
-                      rel="norefer nopenner"
+                      rel="noreferrer noopener"
                     >
                       {getPrice('EUR', card.cardmarket?.prices?.trendPrice)}
                     </Link>
@@ -207,7 +192,7 @@ export default function Table() {
         ))}
       </TableBody>
       <TableFooter>
-        <TableRow className="hover:bg-primary focus-visible:bg-primary">
+        <TableRow>
           <TableHead>Set</TableHead>
           <TableHead>No.</TableHead>
           <TableHead>Name</TableHead>

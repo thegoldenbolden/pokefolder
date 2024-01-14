@@ -1,12 +1,12 @@
 'use client';
 
 import { Link } from '@/ui/link';
-import { ChevronLeft, ChevronRight, Icon } from '@/ui/icons';
+import { ChevronLeft, ChevronRight, Icon } from '@/components/icons';
 import { ItemsPerPage } from './per-page';
-import useCards from '@/hooks/use-cards';
+import { useCards } from '@/hooks/use-cards';
 import { useSearchParams } from 'next/navigation';
 
-export default function PageControls() {
+export function PageControls() {
   const { cards, isLoading } = useCards();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
@@ -27,11 +27,9 @@ export default function PageControls() {
   const BackPage =
     cards.page !== 1 ? (
       <Link
-        highlight="none"
         aria-label="go to previous page"
         href={`/search?${params}`}
-        button="foreground"
-        className="rounded-sm p-2 flex h-9 w-9 items-center justify-center"
+        className="rounded-sm p-2 flex h-9 w-9 items-center justify-center bg-muted border border-border hover:bg-foreground/10"
       >
         <ChevronLeft className="w-6 h-6" />
       </Link>
@@ -42,11 +40,9 @@ export default function PageControls() {
   params.set('page', `${cards.page + 1}`);
   const NextPage = !lastPage ? (
     <Link
-      highlight="none"
       aria-label="go to next page"
       href={`/search?${params}`}
-      button="foreground"
-      className="rounded-sm p-2 flex h-9 w-9 items-center justify-center"
+      className="rounded-sm p-2 flex h-9 w-9 items-center justify-center bg-muted border border-border hover:bg-foreground/10"
     >
       <ChevronRight className="w-6 h-6" />
     </Link>
@@ -57,7 +53,7 @@ export default function PageControls() {
   return (
     <div className="flex items-center gap-1">
       <ItemsPerPage />
-      <div className="flex gap-2 items-center justify-center">
+      <div className="flex gap-1 items-center justify-center">
         {BackPage}
         {NextPage}
       </div>

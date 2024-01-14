@@ -1,7 +1,7 @@
 'use client';
 import { SWRConfig as SWRSWRConfig } from 'swr';
 
-export default function SWRConfig(props: React.PropsWithChildren) {
+export function SWRConfig(props: React.PropsWithChildren) {
   return (
     <SWRSWRConfig
       value={{

@@ -1,7 +1,7 @@
 'use client';
-import { ExcludeSearchField } from '@/components/exclude-field';
+
 import { cn } from '@/lib/utils';
-import { Minus, X } from '@/ui/icons';
+import { Minus, X } from '@/components/icons';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
 import {
@@ -9,68 +9,59 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/ui/accordion';
-import {
-  type ExcludedFormKeys,
-  useFormContext,
-  useDispatchContext,
-} from '@/context/search';
-import {
-  type InputHTMLAttributes,
-  type MouseEventHandler,
-  useCallback,
-  KeyboardEventHandler,
-  useState,
-} from 'react';
+import * as React from 'react';
+import { Toggle } from '@/ui/toggle';
+import { type StateKeys, useForm } from '@/hooks/use-form';
 
 type Props = React.PropsWithChildren<{
-  input: InputHTMLAttributes<HTMLInputElement>;
-  field: ExcludedFormKeys;
+  input: React.InputHTMLAttributes<HTMLInputElement>;
+  stateKey: Exclude<StateKeys, 'hp'>;
   heading: string;
 }>;
 
-const AccordionWithInput = ({ input, heading, field }: Props) => {
-  const form = useFormContext();
-  const [value, setValue] = useState('');
-  const dispatch = useDispatchContext();
+const AccordionWithInput = ({ input, heading, stateKey }: Props) => {
+  const [excluded, setExcluded] = React.useState(false);
+  const [value, setValue] = React.useState('');
+  const { state, dispatch } = useForm();
+  const values = state[stateKey];
 
-  const addValue = useCallback(
+  const addValue = React.useCallback(
     (value: string) => {
+      if (!value.trim().length) return;
       const lowercased = value.toLowerCase();
-      if (form[field].find((f) => f.id === lowercased)) return;
+      if (values.find((f) => f.id === lowercased)) return;
       dispatch({
         type: 'set',
-        key: field,
-        value: [
-          ...form[field],
-          { id: lowercased, name: value, exclude: form['exclude'] },
-        ],
+        key: stateKey,
+        values: [...values, { id: lowercased, name: value, excluded }],
       });
     },
-    [form, dispatch, field],
+    [values, dispatch, stateKey, excluded],
   );
 
-  const removeValue = useCallback(
+  const removeValue = React.useCallback(
     (value: string) => {
       const lowercased = value.toLowerCase();
-      dispatch({ type: 'delete', key: field, id: lowercased });
+      dispatch({ type: 'delete', key: stateKey, id: lowercased });
     },
-    [field, dispatch],
+    [stateKey, dispatch],
   );
 
-  const onKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      if (e.key === 'Tab') {
-        if (!e.currentTarget.value.trim().length) return;
-        addValue(e.currentTarget.value);
-        setValue('');
-        e.preventDefault();
-        return;
-      }
-    },
-    [addValue],
-  );
+  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> =
+    React.useCallback(
+      (e) => {
+        if (e.key === 'Tab') {
+          if (!e.currentTarget.value.trim().length) return;
+          addValue(e.currentTarget.value);
+          setValue('');
+          e.preventDefault();
+          return;
+        }
+      },
+      [addValue],
+    );
 
-  const onClick: MouseEventHandler<HTMLButtonElement> = useCallback(
+  const onClick: React.MouseEventHandler<HTMLButtonElement> = React.useCallback(
     (e) => {
       addValue(value);
       setValue('');
@@ -80,68 +71,72 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
 
   return (
     <AccordionItem value={heading} className="border-border group">
-      <AccordionTrigger className="px-3 gap-2 py-1 hover:no-underline group-hover:bg-spotlight/75 group-focus-within:bg-spotlight/75">
-        <div className="text-lg flex w-full gap-2 items-center">
-          <Button
-            type="button"
-            variant="ghost"
-            aria-label={`reset ${heading}`}
-            className="rounded-none bg-transparent p-0 hover:text-destructive focus-visible:text-destructive hover:bg-transparent"
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({ type: 'reset', key: field });
-            }}
-          >
-            <X className="w-4 h-4" />
-          </Button>
-          <span>
+      <AccordionTrigger className="px-3 gap-1 flex py-2 group-hover:bg-foreground/5 group-focus-within:bg-foreground/5">
+        <div className="flex flex-col gap-1 text-start">
+          <span className="text-sm uppercase tracking-wide">
             {heading}&nbsp;
-            <span className="text-sm">{`(${form[field].length})`}</span>
           </span>
+          {state[stateKey].length <= 0 ? null : (
+            <span className="text-xs italic">{`${state[stateKey].length} selected`}</span>
+          )}
         </div>
       </AccordionTrigger>
-      <AccordionContent className="px-3 h-full py-1.5">
-        <div className="flex flex-col gap-1">
-          {form[field].length > 0 && (
-            <ul className="flex text-sm items-center flex-wrap gap-1">
-              {form[field].map((value) => (
-                <li
-                  key={value.id}
-                  className="flex items-center gap-1 border border-solid border-border rounded-sm px-2 focus-visible:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:bg-spotlight/75"
+      <AccordionContent>
+        <div className="px-3 flex flex-col gap-1">
+          <ul className="flex text-sm items-center flex-wrap gap-1">
+            {state[stateKey].map((value) => (
+              <li
+                key={value.id}
+                className="flex items-center gap-1 border border-solid border-border rounded-sm px-2 focus-visible:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:bg-muted"
+              >
+                {value.excluded && <Minus className="w-4 h-4" />}
+                {value.name}
+                <Button
+                  variant="ghost"
+                  className="p-0 h-auto hover:bg-transaprent hover:text-destructive focus-visible:text-destructive"
+                  aria-label={`remove ${value.name}`}
+                  onClick={() => removeValue(value.id)}
+                  type="button"
                 >
-                  {value.exclude && <Minus className="w-4 h-4" />}
-                  {value.name}
-                  <Button
-                    variant="ghost"
-                    className="p-0 h-auto hover:bg-transaprent hover:text-destructive focus-visible:text-destructive"
-                    aria-label={`remove ${value.name}`}
-                    onClick={() => removeValue(value.id)}
-                    type="button"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="flex items-center gap-1">
-            <ExcludeSearchField field={field} />
+                  <X className="w-4 h-4" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-col gap-1">
+            <label className="sr-only" htmlFor={`search-${stateKey}`}>
+              type a {stateKey}
+            </label>
             <Input
+              id={`search-${stateKey}`}
               autoComplete="off"
               variant="outline"
               onKeyDown={onKeyDown}
               onChange={(e) => setValue(e.currentTarget.value)}
               {...input}
               value={value}
-              className={cn('grow', input.className)}
+              className={cn('grow rounded-sm', input.className)}
             />
-            <Button
-              onClick={onClick}
-              type="button"
-              className="rounded-none border-2"
-            >
-              Add
-            </Button>
+            <div className="flex w-full items-center gap-1">
+              <Toggle
+                aria-label="excluded from search"
+                defaultPressed={excluded}
+                type="button"
+                className="basis-1/2 rounded-sm border-2 p-0 px-2 py-1 data-[state='on']:bg-foreground data-[state='on']:text-background"
+                onPressedChange={(e) => {
+                  setExcluded((p) => !p);
+                }}
+              >
+                Exclude
+              </Toggle>
+              <Button
+                onClick={onClick}
+                type="button"
+                className="basis-1/2 rounded-sm border-2 px-2 py-1"
+              >
+                Add
+              </Button>
+            </div>
           </div>
         </div>
       </AccordionContent>
@@ -149,4 +144,4 @@ const AccordionWithInput = ({ input, heading, field }: Props) => {
   );
 };
 
-export default AccordionWithInput;
+export { AccordionWithInput };
