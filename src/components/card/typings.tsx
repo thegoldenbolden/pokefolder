@@ -1,44 +1,35 @@
-import type { QueryParams } from '@/lib/tcg';
-import type { TCardFull } from '@/types/tcg';
-import { cn } from '@/lib/utils';
-import { Image } from '@/ui/image';
-import { Link } from '@/ui/link';
+import { Image } from "@/components/ui/image";
+import { Link } from "@/components/ui/link";
+import { cn, getQueryKey, getSearchUrl } from "@/lib/utils";
 
-type Props<T> = React.PropsWithChildren<{
+type CardTypeProps = React.PropsWithChildren<{
   id: string;
-  data: T;
+  data: any;
   className?: string;
-  q: QueryParams;
 }>;
 
-export function TypesImage(props: Props<TCardFull['types']>) {
-  if (!props.data?.length) {
+export function TypesImage({ id, data, className, children }: CardTypeProps) {
+  if (!data?.length) {
     return <>--</>;
   }
 
+  const typesKey = getQueryKey("types");
+
   return (
     <>
-      {props.data.map((type, i) => (
-        <Link href={`/search?${props.q}=${type}`} key={type}>
+      {data.map((type, i) => (
+        <Link href={getSearchUrl(`${typesKey}=${type}`)} key={type}>
           <Image
-            key={`${props.id}-${type}.${i}`}
+            key={`${id}-${type}.${i}`}
             src={`/types/${type.toLowerCase()}.png`}
             height={24}
             width={24}
-            className={cn('object-contain size-4', props.className)}
+            className={cn("size-4 object-contain", className)}
             alt={`${type} icon`}
           />
-          {props.children}
+          {children}
         </Link>
       ))}
     </>
   );
-}
-
-export function Optional({
-  data = [],
-  children,
-}: Pick<Props<unknown[] | string | undefined>, 'data' | 'children'>) {
-  if (!data?.length) return <>--</>;
-  return <>{children}</>;
 }

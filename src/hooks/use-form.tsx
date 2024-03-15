@@ -1,203 +1,120 @@
-'use client';
-import * as React from 'react';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import type { TSet } from '@/types/tcg';
-import {
-  DEFAULT_HP,
-  QUERY_PARAMS,
-  QueryParams,
-  getNumberFromRange,
-} from '@/lib/tcg';
+import { getNumberFromRange } from "@/lib/pokemon-tcg/utils";
+import { getQueryFallback } from "@/lib/utils";
+import type { QueryKey } from "@/types";
+import type { SimpleSet } from "@/types/api/pokemon-tcg";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
 
-export type State = Record<Exclude<StateKeys, 'hp'>, StateValues> & {
-  hp: number[];
-};
+export type FormHPValue = number[];
 
-export type StateKeys = Exclude<QueryParams | 'orderBy', 'series'>;
-export type StateKeysWithoutHP = Exclude<StateKeys, 'hp'>;
-
-export type StateValues = Array<{
+export type FormValue = {
   id: string;
   name: string;
-  excluded: boolean;
-}>;
+};
 
-const initial: State = {
-  orderBy: [],
-  hp: [10, 400],
-  pokedex: [],
-  traits: [],
-  abilities: [],
-  marks: [],
+export type FormField = Exclude<
+  QueryKey,
+  "limit" | "order" | "page" | "sort" | "series" | "view"
+>;
+
+export type FormValues = {
+  [P in FormField]: P extends "hp" ? FormHPValue : FormValue[];
+};
+
+const DEFAULT_FORM_VALUES: FormValues = {
+  hp: getQueryFallback("hp"),
   cards: [],
   artists: [],
-  rarities: [],
-  supertypes: [],
-  subtypes: [],
+  abilities: [],
+  traits: [],
   attacks: [],
   sets: [],
+  rarities: [],
+  subtypes: [],
+  supertypes: [],
   types: [],
+  region: [],
   legalities: [],
+  marks: [],
 };
 
-function reducer(state: State, action: FormAction): State {
-  if (action.key && state[action.key] === undefined) {
-    throw new Error(`Invalid key: ${action.key}`);
-  }
-
-  switch (action.type) {
-    default:
-      throw new Error(`Action not supported`);
-    case 'reset':
-      if (!action.key) {
-        return { ...initial };
-      }
-
-      return {
-        ...state,
-        [action.key]: initial[action.key],
-      };
-    case 'set':
-      return {
-        ...state,
-        [action.key]: action.values,
-      };
-    case 'delete':
-      return {
-        ...state,
-        [action.key]: state[action.key].filter((v) => v.id !== action.id),
-      };
-  }
-}
-
-type FormContext = {
-  state: State;
-  dispatch: React.Dispatch<FormAction<StateKeys>>;
-};
-
-const FormContext = React.createContext<FormContext | null>(null);
+const FormContext = React.createContext<{
+  state: FormValues;
+  dispatch: React.Dispatch<PayloadValue>;
+} | null>(null);
 
 export function useForm() {
-  const ctx = React.useContext(FormContext);
-
-  if (!ctx) {
-    throw new Error('useForm must be used inside FormProvider');
+  const context = React.use(FormContext);
+  if (!context) {
+    throw new Error("FormContext must be used inside <FormProvider />");
   }
 
-  return ctx;
+  return context;
 }
 
-type FormProvider = React.PropsWithChildren<{
-  sets?: TSet[] | null;
+type FormProviderProps = React.PropsWithChildren<{
+  sets: SimpleSet[];
 }>;
 
-export function FormProvider({ sets, children }: FormProvider) {
-  const [state, dispatch] = React.useReducer(reducer, initial);
-  const searchParams = useSearchParams();
+export function FormProvider({ children, sets }: FormProviderProps) {
+  const [state, dispatch] = React.useReducer(reducer, DEFAULT_FORM_VALUES);
+  const params = useSearchParams();
 
   React.useEffect(() => {
-    [...QUERY_PARAMS, 'orderBy' as const].forEach((key) => {
-      if (key === 'series') return;
-      const values: StateValues = [];
+    /**
+     * Add search parameters to form
+     */
+    let values: Partial<FormValues> = {};
+    const keys = Object.keys(DEFAULT_FORM_VALUES) as FormField[];
 
-      if (key === 'orderBy') {
-        const orderBy = searchParams.get('orderBy');
-        if (!orderBy) return;
-        const args = orderBy.split(',');
+    keys.forEach((param) => {
+      const value = params.get(param);
+      if (!value) return;
+      if (value.length < 1) return;
 
-        args.forEach((arg) => {
-          const excluded = arg.startsWith('-');
-          const id = excluded ? arg.substring(1) : arg;
-          const name = excluded ? arg.substring(1) : arg;
-          values.push({ excluded, name, id });
-        });
-
-        dispatch({
-          type: 'set',
-          key: 'orderBy',
-          values,
-        });
-        return;
-      }
-
-      if (key === 'hp') {
-        const hp = searchParams.get('hp');
-        if (!hp) return;
-        const range = hp.split('-');
+      if (param === "hp") {
+        const range = value.split("-");
+        const fallback = getQueryFallback("hp");
 
         let low = getNumberFromRange({
           value: range?.[0],
-          min: DEFAULT_HP[0],
-          max: DEFAULT_HP[1],
-          fallback: DEFAULT_HP[0],
+          min: fallback[0],
+          max: fallback[1],
+          fallback: fallback[0],
         });
 
         let high = getNumberFromRange({
           value: range?.[1],
-          min: DEFAULT_HP[0],
-          max: DEFAULT_HP[1],
-          fallback: DEFAULT_HP[1],
+          min: fallback[0],
+          max: fallback[1],
+          fallback: fallback[1],
         });
 
         (low = Math.min(low, high)), (high = Math.max(low, high));
-
-        dispatch({
-          type: 'set',
-          key: 'hp',
-          values: [low, high],
-        });
+        values.hp = [low, high];
         return;
       }
 
-      const included = searchParams.get(`${key}`);
-      const excluded = searchParams.get(`excluded_${key}`);
+      const q = value.split(",");
 
-      included?.split(',').forEach((value) => {
-        let name = value;
+      if (param === "sets") {
+        values = {
+          ...values,
+          sets: q.map((v) => ({
+            id: v,
+            name: sets.find((e) => e.id === v)?.name ?? v,
+          })),
+        };
+        return;
+      }
 
-        switch (key) {
-          case 'legalities':
-            name = value.replace('_', ': ');
-            break;
-          case 'sets':
-            if (sets) {
-              const set = sets.find((s) => s.id === value);
-              name = set ? set.name : name;
-            }
-            break;
-        }
-        values.push({
-          id: value,
-          excluded: false,
-          name,
-        });
-      });
-      excluded?.split(',').forEach((value) => {
-        let name = value;
-
-        switch (key) {
-          case 'legalities':
-            name = value.replace('_', ': ');
-            break;
-          case 'sets':
-            if (sets) {
-              const set = sets.find((s) => s.id === value);
-              name = set ? set.name : name;
-            }
-            break;
-        }
-
-        values.push({
-          id: value,
-          excluded: true,
-          name,
-        });
-      });
-
-      dispatch({ type: 'set', key, values });
+      values[param] = q.map((v) => ({ id: v, name: v }));
     });
-  }, [searchParams, sets]);
+
+    dispatch({ type: "initialize", values });
+  }, [params, sets]);
 
   return (
     <FormContext.Provider value={{ state, dispatch }}>
@@ -206,28 +123,74 @@ export function FormProvider({ sets, children }: FormProvider) {
   );
 }
 
-type FormAction<T extends StateKeys = StateKeys> =
-  | SetAction<T>
+type PayloadValue =
+  | SetAction
   | DeleteAction
-  | ResetAction;
+  | AddAction
+  | ResetAction
+  | InitialAction;
 
-type SetAction<T extends StateKeys> = {
-  type: 'set';
-  key: T;
-  values: T extends 'exclude'
-    ? boolean
-    : T extends 'hp'
-      ? number[]
-      : StateValues;
-};
+type SetAction = {
+  type: "set";
+} & (
+  | {
+      key: Extract<FormField, "hp">;
+      values: FormHPValue;
+    }
+  | {
+      key: Exclude<FormField, "hp">;
+      values: FormValue[];
+    }
+);
 
 type DeleteAction = {
-  type: 'delete';
-  key: Exclude<StateKeys, 'hp'>;
+  type: "delete";
+  key: Exclude<FormField, "hp">;
   id: string;
 };
 
-type ResetAction = {
-  type: 'reset';
-  key?: StateKeys | null;
+type AddAction = {
+  type: "add";
+  key: Exclude<FormField, "hp">;
+  values: FormValue[];
 };
+
+type ResetAction = {
+  type: "reset";
+};
+
+type InitialAction = {
+  type: "initialize";
+  values: Partial<Omit<FormValues, "hp">>;
+};
+
+function reducer(state: FormValues, payload: PayloadValue): FormValues {
+  switch (payload.type) {
+    default:
+      throw new Error("Invalid payload");
+    case "delete":
+      return {
+        ...state,
+        [payload.key]: state[payload.key].filter(
+          (value) => value.id !== payload.id,
+        ),
+      };
+    case "set":
+      return {
+        ...state,
+        [payload.key]: payload.values,
+      };
+    case "add":
+      return {
+        ...state,
+        [payload.key]: [...payload.values, ...state[payload.key]],
+      };
+    case "reset":
+      return DEFAULT_FORM_VALUES;
+    case "initialize":
+      return {
+        ...DEFAULT_FORM_VALUES,
+        ...payload.values,
+      };
+  }
+}

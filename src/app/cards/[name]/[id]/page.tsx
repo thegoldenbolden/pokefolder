@@ -1,23 +1,28 @@
-import type { Metadata, ResolvingMetadata } from 'next';
-import type { CardMarket, TCGPlayer } from '@/types/tcg';
-import type { TCardFull, TSet } from '@/types/tcg';
-import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
-import { cn, getAbilityUrl, getAttackUrl, getTraitUrl } from '@/lib/utils';
-import { Optional, TypesImage } from '@/components/card/typings';
-import { Spinner } from '@/ui/spinner';
-import { Link } from '@/ui/link';
-import { Image } from '@/ui/image';
-import { CardLink } from '@/components/card/link';
-import { getCards, getCard } from '@/lib/fetch';
-import { getPrice } from '@/lib/utils';
+import { CardLink } from "@/components/card/link";
+import { ExternalLink } from "@/components/icons";
+import { Anchor } from "@/components/ui/anchor";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from "@/components/ui/carousel";
+import { Image } from "@/components/ui/image";
+import { Link } from "@/components/ui/link";
+import { Spinner } from "@/components/ui/spinner";
+import { getCard, getCards } from "@/lib/pokemon-tcg";
+import { getBackgroundColor } from "@/lib/pokemon-tcg/utils";
+import { getCardPrice, getQueryKey, getSearchUrl } from "@/lib/utils";
+import type {
+  CardObject,
+  Cardmarket,
+  SimpleSet,
+  TCGPlayer,
+} from "@/types/api/pokemon-tcg";
+import type { Metadata, ResolvingMetadata } from "next";
+import { notFound } from "next/navigation";
+import { Suspense, cache } from "react";
 
 type CardParams = {
   params: {
@@ -25,24 +30,27 @@ type CardParams = {
   };
 };
 
+export const revalidate = 86400;
+
+const findCard = cache(getCard);
+
 export async function generateMetadata(
   { params }: CardParams,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const response = await getCard(params.id);
+  const response = await findCard(params.id);
 
   if (!response?.data) {
-    return {
-      title: 'Not Found',
-    };
+    notFound();
   }
 
   const card = response.data;
+
   const keywords = (await parent)?.keywords || [];
 
   let from = card.name;
   if (card.set.series && card.set.name) {
-    from = `${card.set.series}: ${card.set.name}`;
+    from = `expansion ${card.set.series}: ${card.set.name}`;
     keywords.push(card.set.series);
     keywords.push(card.set.name);
   } else if (card.set.name) {
@@ -60,423 +68,314 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: CardParams) {
-  const response = await getCard(params.id);
+  const response = await findCard(params.id);
 
-  const card = response?.data;
-  if (!card) {
+  if (!response?.data) {
     notFound();
   }
 
-  card.artist ||= '';
-  card.types ||= [];
-  card.subtypes ||= [];
-  card.evolvesTo ||= [];
-  card.retreatCost ||= [];
-  card.weaknesses ||= [];
-  card.resistances ||= [];
-  card.nationalPokedexNumbers ||= [];
+  const card = response.data;
 
   return (
-    <main className="flex flex-col gap-16 my-16 px-3 md:px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[max-content_1fr] xl:grid-cols-[max-content_1fr_.5fr] gap-6">
-        <aside className="md:sticky md:top-6 md:self-start md:row-start-2">
-          <Image
-            className="mx-auto"
-            height={450}
-            width={300}
-            alt={card.name ?? 'a pokemon card'}
-            src={card.images.large || card.images.small || './back.png'}
-          />
-        </aside>
+    <main>
+      <section className="relative overflow-clip rounded-xl py-16 md:border md:border-border">
+        <div
+          style={{ background: getBackgroundColor(card.types?.[0]) }}
+          className="absolute top-0 -z-[1] h-full w-full shadow-inner shadow-background"
+        >
+          {!card.types?.[0] ? null : (
+            <Image
+              src={`/types/${card.types[0].toLowerCase()}.png`}
+              fill
+              className="absolute top-0 w-full object-contain object-center py-4 opacity-20"
+              alt={`${card.types[0]} icon`}
+            />
+          )}
+        </div>
+        <Image
+          className="z-0 mx-auto px-4"
+          height={450}
+          width={300}
+          alt={card.name ?? "a pokemon card"}
+          src={card.images.large || card.images.small || "./back.png"}
+        />
+      </section>
 
-        <header className="flex flex-col gap-2 text-center md:text-start md:col-start-2 md:row-start-1 md:col-span-2">
-          <h1 className="text-3xl font-bold text-center md:text-start">
-            {card.name}&nbsp;
-            {!card.level ? null : (
-              <span className="text-sm uppercase">lv. {card.level}</span>
+      <div className="flex flex-wrap">
+        <div className="flex basis-full flex-col gap-8 px-4 py-8 md:basis-1/2">
+          <header>
+            <h1 className="text-center text-3xl font-bold lg:text-start">
+              {card.name}&nbsp;
+              {!card.level?.length ? null : (
+                <span className="text-sm uppercase">lv. {card.level}</span>
+              )}
+            </h1>
+            <span className="block text-center lg:text-start">
+              {card.supertype}
+            </span>
+            {!card.flavorText?.length ? null : (
+              <p className="mx-auto w-2/3 text-center text-sm font-normal italic lg:mx-0 lg:w-auto lg:text-start">
+                {card.flavorText}
+              </p>
             )}
-          </h1>
-          <span className="block">{card.supertype}</span>
-          {!card.flavorText ? null : (
-            <p className="italic text-sm font-normal w-2/3 mx-auto md:mx-0 md:w-auto">
-              {card.flavorText}
-            </p>
-          )}
-        </header>
-
-        <Container className="md:row-start-2">
-          {!(card.cardmarket?.prices || card.tcgplayer?.prices) ? null : (
-            <Section className="shadow-2xl shadow-border bg-muted text-muted-foreground border border-border p-6">
-              <SectionHeading>Prices</SectionHeading>
-              <SectionContent className="flex flex-col gap-4">
-                <PristListItem
-                  market="TCGPlayer"
-                  prices={card.tcgplayer?.prices}
-                  url={card.tcgplayer?.url ?? ''}
-                  updatedAt={card.tcgplayer?.updatedAt}
-                />
-                <PristListItem
-                  market="Cardmarket"
-                  prices={card.cardmarket?.prices}
-                  url={card.cardmarket?.url ?? ''}
-                  updatedAt={card.cardmarket?.updatedAt}
-                />
-              </SectionContent>
-            </Section>
-          )}
-          {!card.abilities?.length ? null : (
-            <Section>
-              <SectionHeading>Effects</SectionHeading>
-              <SectionContent>
-                {card.abilities.map((ability) => {
-                  let style =
-                    ability.type === 'Poké-Body'
-                      ? {
-                          backgroundColor: 'hsl(131.26, 87.9%, 68.76%)',
-                          color: 'hsl(111.32, 93.17%, 13.29%)',
-                        }
-                      : {
-                          backgroundColor: 'hsl(0.8, 44%, 49%)',
-                        };
-                  return (
-                    <li key={ability.name} className="flex flex-col gap-3">
-                      <h3 className="flex gap-2 flex-wrap font-bold">
-                        <span
-                          style={style}
-                          className="text-xs px-3 flex items-center py-0.5 rounded-sm -skew-x-12 tracking-wider"
-                        >
-                          {ability.type}
-                        </span>
-                        <Link
-                          className="font-semibold"
-                          href={getAbilityUrl(ability)}
-                        >
-                          {ability.name}
-                        </Link>
-                      </h3>
-                      {!ability.text ? null : (
-                        <p className="mx-2 px-3 text-sm py-2 bg-foreground/5 rounded-sm border-border border">
-                          {ability.text}
-                        </p>
-                      )}{' '}
-                    </li>
-                  );
-                })}
-              </SectionContent>
-            </Section>
-          )}
-          {!card.attacks?.length ? null : (
-            <Section>
-              <SectionHeading>Attacks</SectionHeading>
-              <SectionContent>
-                {card.attacks.map(({ name, damage, cost, text }) => {
-                  return (
-                    <li key={name} className="flex flex-col gap-3">
-                      <h3 className="flex gap-2 flex-wrap font-bold">
-                        <div className="flex gap-2 items-center flex-wrap">
-                          <TypeIcon
-                            types={cost.map((type) => ({ type }))}
-                            id="attacks"
-                          />
-                          <Link href={getAttackUrl(name)}>{name}</Link>
-                        </div>
-                        <span className="ml-auto">{damage}</span>
-                      </h3>
-                      {!text ? null : (
-                        <p className="mx-2 px-3 text-sm py-2 bg-foreground/5 rounded-sm border-border border">
-                          {text}
-                        </p>
-                      )}
-                    </li>
-                  );
-                })}
-              </SectionContent>
-            </Section>
-          )}
-
-          {!card.rules?.length ? null : (
-            <Section>
-              <SectionHeading>Rules</SectionHeading>
-              <SectionContent>
-                {card.rules.map((rule, i) => {
-                  const ruleText = rule.split(':');
-                  let name = '',
-                    text = '';
-
-                  if (ruleText.length === 2) {
-                    name = ruleText[0];
-                    text = ruleText[1];
-                  } else {
-                    text = ruleText[ruleText.length - 1];
-                  }
-
-                  return (
-                    <li key={`rules-${i}`} className="flex flex-col gap-2">
-                      {!name ? null : (
-                        <h3 className="italic rounded-sm self-start text-sm font-semibold">
-                          {name}
-                        </h3>
-                      )}
-                      {!text ? null : (
-                        <p
-                          key={`rules-${i}`}
-                          className="mx-2 px-3 text-sm py-2 bg-foreground/5 rounded-sm border-border border"
-                        >
-                          {text.trim()}
-                        </p>
-                      )}
-                    </li>
-                  );
-                })}
-              </SectionContent>
-            </Section>
-          )}
-
-          {card.ancientTrait?.name && card.ancientTrait?.text && (
-            <Section>
-              <SectionHeading>Ancient Trait</SectionHeading>
-              <SectionContent>
-                <li className="flex flex-col gap-2">
-                  <h3 className="font-bold">
-                    <Link href={getTraitUrl(card.ancientTrait)}>
-                      {card.ancientTrait.name}
-                    </Link>
-                  </h3>
-                  {!card.ancientTrait?.text ? null : (
-                    <p className="mx-2 px-3 text-sm py-2 bg-foreground/5 rounded-sm border-border border">
-                      {card.ancientTrait.text}
-                    </p>
-                  )}
-                </li>
-              </SectionContent>
-            </Section>
-          )}
-        </Container>
-
-        <Container className="md:row-start-3 md:col-start-2 xl:col-start-3 xl:row-start-2">
-          <Section>
-            <SectionHeading>General</SectionHeading>
-            <ul className="grid grid-cols-2 gap-4">
-              <Item title="Artists">
-                <Optional data={card.artist}>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    {card.artist.split('+').map((name) => {
+          </header>
+          <section className="flex flex-col gap-4 rounded-lg">
+            <h2 className="text-xl font-semibold">General</h2>
+            <ul className="flex flex-wrap gap-4">
+              <Item
+                title="Artists"
+                data={card.artist}
+                render={({ data: artist }) => (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {artist.split("+").map((name) => {
                       return (
-                        <Link href={`/search?artists=${name}`} key={name}>
+                        <Link
+                          variant="underline"
+                          href={getSearchUrl(`artists=${name}`)}
+                          key={name}
+                        >
                           {name}
                         </Link>
                       );
                     })}
                   </div>
-                </Optional>
-              </Item>
-              <Item title="Rarity">
-                <Optional data={card.rarity}>
-                  <Link href={`/search?rarities=${card.rarity}`}>
-                    {card.rarity}
+                )}
+              />
+              <Item
+                title="Rarity"
+                data={card.rarity}
+                render={({ data: rarity }) => (
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`rarities=${rarity}`)}
+                  >
+                    {rarity}
                   </Link>
-                </Optional>
-              </Item>
-              <Item title="Subtypes">
-                <Optional data={card.subtypes}>
-                  {card.subtypes.map((subtype) => (
-                    <Link href={`/search?subtypes=${subtype}`} key={subtype}>
-                      {subtype}
-                    </Link>
-                  ))}
-                </Optional>
-              </Item>
-              <Item title="Types">
-                <Optional data={card.types}>
-                  <TypesImage q="types" id="types" data={card.types!} />
-                </Optional>
-              </Item>
-              <Item title="Weaknesses">
-                <Optional data={card.weaknesses}>
-                  <TypeIcon id="weaknesses" types={card.weaknesses!} />
-                </Optional>
-              </Item>
-              <Item title="Resistances">
-                <Optional data={card.resistances}>
-                  <TypeIcon id="resistances" types={card.resistances!} />
-                </Optional>
-              </Item>
-              <Item title="Retreat Cost">
-                <Optional data={card.retreatCost}>
-                  <TypeIcon
-                    id="retreatCost"
-                    types={card.retreatCost.map((type) => ({ type }))}
+                )}
+              />
+              <Item
+                title="Subtypes"
+                data={card.subtypes}
+                render={({ data: subtypes }) => (
+                  <>
+                    {subtypes.map((subtype) => (
+                      <Link
+                        variant="underline"
+                        href={getSearchUrl(`subtypes=${subtype}`)}
+                        key={subtype}
+                      >
+                        {subtype}
+                      </Link>
+                    ))}
+                  </>
+                )}
+              />
+              <Item
+                title="Types"
+                data={card.types}
+                render={({ data: types }) => (
+                  <TypeIcons
+                    id="types"
+                    types={types.map((p) => ({ type: p }))}
                   />
-                </Optional>
-              </Item>
-              <Item title="Evolves From">
-                <Optional data={card.evolvesFrom}>
-                  <Link href={`/search?cards=${card.evolvesFrom}`}>
-                    {card.evolvesFrom}
+                )}
+              />
+              <Item
+                title="Weaknesses"
+                data={card.weaknesses}
+                render={({ data: weaknesses }) => (
+                  <TypeIcons id="weaknesses" types={weaknesses} />
+                )}
+              />
+              <Item
+                title="Resistances"
+                data={card.resistances}
+                render={({ data: resistances }) => (
+                  <TypeIcons id="resistances" types={resistances} />
+                )}
+              />
+              <Item
+                title="Retreat Cost"
+                data={card.retreatCost}
+                render={({ data: retreatCost }) => (
+                  <TypeIcons
+                    id="retreatCost"
+                    types={retreatCost.map((type) => ({ type }))}
+                  />
+                )}
+              />
+              <Item
+                title="Evolves From"
+                data={card.evolvesFrom}
+                render={({ data: evolvesFrom }) => (
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`cards=${evolvesFrom}`)}
+                  >
+                    {evolvesFrom}
                   </Link>
-                </Optional>
-              </Item>
-              <Item title="Evolves To">
-                <Optional data={card.evolvesTo}>
-                  {card.evolvesTo.map((val) => (
-                    <Link
-                      key={`evolvesTo-${val}`}
-                      href={`/search?cards=${val}`}
-                    >
-                      {val}
-                    </Link>
-                  ))}
-                </Optional>
-              </Item>
-              <Item title="Regulation Mark">
-                <Optional data={card.regulationMark}>
-                  <Link href={`/search?marks=${card.regulationMark}`}>
-                    {card.regulationMark}
+                )}
+              />
+              <Item
+                title="Evolves To"
+                data={card.evolvesTo}
+                render={({ data: evolvesTo }) => (
+                  <>
+                    {evolvesTo.map((val) => (
+                      <Link
+                        variant="underline"
+                        key={`evolves-to-${val}`}
+                        href={getSearchUrl(`cards=${val}`)}
+                      >
+                        {val}
+                      </Link>
+                    ))}
+                  </>
+                )}
+              />
+              <Item
+                title="Regulation Mark"
+                data={card.regulationMark}
+                render={({ data: regulationMark }) => (
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`marks=${regulationMark}`)}
+                  >
+                    {regulationMark}
                   </Link>
-                </Optional>
-              </Item>
-              <Item title="National Pokedex">
-                <Optional data={card.nationalPokedexNumbers}>
-                  {card.nationalPokedexNumbers.join(', ')}
-                </Optional>
-              </Item>
-              <Item title="HP">
-                <Optional data={card.hp}>
-                  <Link href={`/search?hp=${card.hp}-${card.hp}`}>
-                    {card.hp}
+                )}
+              />
+              <Item
+                data={card.nationalPokedexNumbers}
+                title="National Pokedex"
+                render={({ data: nationalPokedexNumbers }) => (
+                  <>{nationalPokedexNumbers.join(", ")}</>
+                )}
+              />
+              <Item
+                title="HP"
+                data={card.hp}
+                render={({ data: hp }) => (
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`hp=${hp}-${hp}`)}
+                  >
+                    {hp}
                   </Link>
-                </Optional>
-              </Item>
-              <Item title="Number">
-                <Optional data={card.number?.toString()}>
-                  {`${card.number} / ${card.set.printedTotal}`}
-                </Optional>
-              </Item>
+                )}
+              />
+              <Item
+                title="Card No."
+                data={card.number}
+                render={({ data: number }) => <>{number.toString()}</>}
+              />
               <Legalities legalities={card.legalities} />
             </ul>
-          </Section>
+          </section>
 
-          <Section>
-            <SectionHeading>{`${card.set.series}: ${card.set.name}`}</SectionHeading>
-            <SectionContent>
-              <span className="rounded-sm border border-border bg-foreground p-4 flex items-center justify-center">
+          <section className="flex flex-col gap-4 rounded-lg">
+            <h2 className="text-xl font-semibold">{`${card.set.series}: ${card.set.name}`}</h2>
+            <div className="flex flex-col gap-4">
+              <span className="flex items-center justify-center rounded-xl border border-border bg-foreground p-4">
                 <Image
-                  className="object-contain h-[128px]"
+                  className="h-[128px] object-contain"
                   src={card.set.images.logo}
                   width={256}
                   height={128}
                   alt={`${card.set.name} logo`}
                 />
               </span>
-              <ul className="grid grid-cols-2 gap-2">
-                <Item title="Series">{card.set.series}</Item>
-                <Item title="Set">
-                  <div key={card.set.id} className="flex gap-2">
-                    <span className="rounded-sm aspect-square flex items-center justify-center size-6 p-1 bg-foreground">
-                      <Image
-                        src={card.set.images.symbol}
-                        alt={`${card.set.name} symbol`}
-                        height={24}
-                        width={24}
-                        className="object-contain size-4"
-                      />
-                    </span>
+              <ul className="flex flex-wrap gap-4">
+                <Item
+                  title="Series"
+                  data={card.set.series}
+                  render={({ data: series }) => <>{series}</>}
+                />
+                <Item
+                  title="Set"
+                  data={card.set}
+                  render={({ data: set }) => (
                     <Link
-                      variant="link"
-                      aria-label={`search cards in ${card.set.name}`}
-                      href={`/search?sets=${card.set.id}`}
+                      variant="underline"
+                      href={getSearchUrl(`${getQueryKey("sets")}=${set.id}`)}
                     >
-                      {card.set.name}
+                      {set.name}
                     </Link>
-                  </div>
-                </Item>
-                <Item title="PTCGO Code">
-                  <Optional data={card.set.ptcgoCode}>
-                    {card.set.ptcgoCode}
-                  </Optional>
-                </Item>
-                <Item title="Printed Total">
-                  {`${card.set.printedTotal} / ${card.set.total}`}
-                </Item>
-                <Item title="Release Date">{card.set.releaseDate}</Item>
-                <Item title="Updated At">{card.set.updatedAt}</Item>
-                <Legalities name="sets" legalities={card.set.legalities} />
+                  )}
+                />
+                <Item
+                  title="PTCGO Code"
+                  data={card.set.ptcgoCode}
+                  render={({ data: ptcgoCode }) => <>{ptcgoCode}</>}
+                />
+                <Item
+                  title="Printed Total"
+                  data={card.set.printedTotal}
+                  render={({ data: printedTotal }) => <>{printedTotal}</>}
+                />
+                <Item
+                  title="Total"
+                  data={card.set.total}
+                  render={({ data: total }) => <>{total}</>}
+                />
+                <Item
+                  title="Release Date"
+                  data={card.set.releaseDate}
+                  render={({ data: releaseDate }) => <>{releaseDate}</>}
+                />
+                <Item
+                  title="Updated At"
+                  data={card.set.updatedAt}
+                  render={({ data: updatedAt }) => <>{updatedAt}</>}
+                />
+                <Legalities
+                  name="expansions"
+                  legalities={card.set.legalities}
+                />
               </ul>
-            </SectionContent>
-          </Section>
-        </Container>
+            </div>
+          </section>
+        </div>
+
+        <div className="flex basis-full flex-col gap-8 px-4 py-8 md:basis-1/2">
+          <PriceSection
+            tcgplayer={card.tcgplayer}
+            cardmarket={card.cardmarket}
+          />
+          <AbilitySection abilities={card.abilities} />
+          <AttackSection attacks={card.attacks} />
+          <RuleSection rules={card.rules} />
+          <TraitSection ancientTrait={card.ancientTrait} />
+        </div>
       </div>
 
-      <Section>
-        <Suspense fallback={<Spinner />}>
-          <MoreCardsFromSet set={card.set} cardName={card.name} />
+      <section className="flex flex-col gap-4 rounded-lg">
+        <Suspense fallback={<ExpansionCards.Fallback name={card.name} />}>
+          <ExpansionCards set={card.set} cardId={card.id} />
         </Suspense>
-      </Section>
+      </section>
     </main>
   );
 }
 
-function Container({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div {...props} className={cn('flex flex-col gap-8', className)}>
-      {props.children}
-    </div>
-  );
-}
-
-function Section({ className, ...props }: React.ComponentProps<'section'>) {
-  return (
-    <section
-      {...props}
-      className={cn('flex flex-col gap-4 rounded-md', className)}
-    >
-      {props.children}
-    </section>
-  );
-}
-
-type Heading = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-type HeadingProps = React.ComponentProps<Heading> & {
-  as?: Heading;
+type ItemProps<T> = {
+  title: string;
+  data: T;
+  render: (props: { data: NonNullable<T> }) => React.JSX.Element;
 };
 
-function SectionHeading({
-  as: Comp = 'h2',
-  className,
-  ...props
-}: HeadingProps) {
-  return (
-    <Comp {...props} className={cn('font-semibold text-xl', className)}>
-      {props.children}
-    </Comp>
-  );
-}
-
-type SectionContentComp = 'ul';
-type SectionContentProps = React.ComponentProps<SectionContentComp> & {
-  as?: SectionContentComp;
-};
-
-function SectionContent({
-  as: Comp = 'ul',
-  className,
-  ...props
-}: SectionContentProps) {
-  return (
-    <Comp {...props} className={cn('flex flex-col gap-4', className)}>
-      {props.children}
-    </Comp>
-  );
-}
-
-function Item(props: React.PropsWithChildren<{ title: string }>) {
+function Item<T>(props: ItemProps<T>) {
   return (
     <li className="flex flex-col gap-1">
-      <h3 className="uppercase text-foreground/60 text-xs tracking-wider">
+      <h3 className="text-xs uppercase tracking-wider text-foreground/60">
         {props.title}
       </h3>
-      <div className="flex flex-wrap gap-2 text-sm items-center">
-        {props.children}
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        {!props.data || (props.data instanceof Array && !props.data.length) ? (
+          "--"
+        ) : (
+          <props.render data={props.data} />
+        )}
       </div>
     </li>
   );
@@ -487,7 +386,7 @@ type CardTypeProps = {
   id: string;
 };
 
-function TypeIcon({ types, id }: CardTypeProps) {
+function TypeIcons({ types, id }: CardTypeProps) {
   if (!types.length) return <>--</>;
   return (
     <>
@@ -495,14 +394,15 @@ function TypeIcon({ types, id }: CardTypeProps) {
         return (
           <Link
             key={`${id}-${type}-${i}`}
-            className="flex items-center flex-wrap gap-2"
-            href={`/search?types=${type}`}
+            variant={null}
+            className="flex shrink-0 flex-wrap items-center gap-2 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-safe:transition-colors"
+            href={getSearchUrl(`types=${type}`)}
           >
             <Image
               src={`/types/${type.toLowerCase()}.png`}
               height={24}
               width={24}
-              className="object-contain size-4"
+              className="size-4 shrink-0 object-contain"
               alt={`${type} icon`}
             />
             {value}
@@ -514,8 +414,8 @@ function TypeIcon({ types, id }: CardTypeProps) {
 }
 
 type LegalityProps = {
-  legalities: TCardFull['legalities'];
-  name?: 'sets' | 'card';
+  legalities: CardObject["legalities"];
+  name?: "expansions" | "card";
 };
 
 function Legalities(props: LegalityProps) {
@@ -530,43 +430,67 @@ function Legalities(props: LegalityProps) {
 
   return (
     <>
-      {legalities.map(([legality, value]) => (
-        <Item key={`${props.name ?? 'card'}-${legality}`} title={legality}>
-          <Optional data={value}>
-            <Link href={`/search?legalities=${legality}_${value}`}>
-              {value}
-            </Link>
-          </Optional>
-        </Item>
-      ))}
+      {legalities.map(([legality, value]) => {
+        return (
+          <Item
+            key={`${props.name ?? "card"}-${legality}`}
+            data={legality && value ? `${legality}_${value}` : null}
+            title={legality}
+            render={({ data: legal }) => (
+              <Link
+                variant="underline"
+                href={getSearchUrl(`legalities=${legal}`)}
+              >
+                {value}
+              </Link>
+            )}
+          />
+        );
+      })}
     </>
   );
 }
 
-type CardFromSetProps = { set: TSet; cardName: string };
-async function MoreCardsFromSet({ set, cardName }: CardFromSetProps) {
-  const cards = await getCards(
-    new URLSearchParams(
-      `sets=${set.id}&orderBy=-cardmarket&exclude_cards=${cardName}&pageSize=25`,
-    ),
+type ExpansionCardsProps = {
+  set: SimpleSet;
+  cardId: string;
+};
+async function ExpansionCards({ set, cardId }: ExpansionCardsProps) {
+  const searchParams = new URLSearchParams();
+  searchParams.set("pageSize", "20");
+  searchParams.set("orderBy", "name");
+  searchParams.set("q", `set.id:${set.id} -id:${cardId}`);
+  const cards = await getCards(searchParams.toString());
+
+  const setKey = getQueryKey("sets");
+
+  const ExpansionLink = (
+    <Link
+      variant="underline"
+      className="text-primary"
+      href={getSearchUrl(`${setKey}=${set.id}`)}
+    >
+      {set.name}
+    </Link>
   );
 
-  const SetLink = <Link href={`/search?sets=${set.id}`}>{set.name}</Link>;
-
   if (!cards?.data || cards.totalCount === 0) {
-    return <p>No cards found from {SetLink}</p>;
+    return <p>No cards found from {ExpansionLink}</p>;
   }
 
   return (
-    <Carousel className="max-w-screen-lg mx-auto w-full">
-      <div className="flex justify-between items-center flex-wrap gap-2">
-        <h2 className="text-2xl">More from {SetLink}</h2>
-        <div className="flex flex-wrap gap-4 items-center justify-end">
-          <CarouselPrevious className="border border-border" />
-          <CarouselNext className="border border-border" />
+    <Carousel className="w-full">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4">
+        <h2 className="text-lg font-medium">
+          More from&nbsp;
+          {ExpansionLink}
+        </h2>
+        <div className="flex flex-wrap items-center justify-end gap-1">
+          <CarouselPrevious size={null} className="p-2" variant="border" />
+          <CarouselNext size={null} className="p-2" variant="border" />
         </div>
       </div>
-      <CarouselContent className="py-4 px-2">
+      <CarouselContent className="px-2 py-4">
         {cards.data.map((card) => (
           <CarouselItem
             className="basis-1/2 sm:basis-1/4 lg:basis-1/5"
@@ -580,39 +504,51 @@ async function MoreCardsFromSet({ set, cardName }: CardFromSetProps) {
   );
 }
 
-type PriceListProps = {
-  market: 'Cardmarket' | 'TCGPlayer';
-  url: string;
-  updatedAt?: string;
-  prices?: TCGPlayer['prices'] | CardMarket['prices'];
+ExpansionCards.Fallback = function Fallback({ name }) {
+  return (
+    <div
+      className="flex w-full flex-wrap items-center gap-4 py-8 text-lg"
+      role="status"
+    >
+      <Spinner />
+      <span>Loading cards from {name}</span>
+    </div>
+  );
 };
 
-function PristListItem({ market, url, prices, updatedAt }: PriceListProps) {
+// #region Price Card
+type PriceListProps = {
+  market: "Cardmarket" | "TCGPlayer";
+  url: string;
+  updatedAt?: string;
+  prices?: Cardmarket["prices"] | TCGPlayer["prices"];
+};
+
+function PriceItem({ market, url, prices, updatedAt }: PriceListProps) {
   const priceEntries = prices ? Object.entries(prices) : null;
   if (!priceEntries?.length) return null;
 
   return (
     <li className="flex flex-col gap-2">
-      <h3 className="flex flex-wrap items-center justify-between gap-3 border-b-foreground/10 border-b">
-        <Link
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`go to ${market}`}
+      <h3 className="flex flex-wrap items-center justify-between gap-3 border-b border-b-foreground/10">
+        <Anchor
+          aria-label={`external link to ${market}`}
           href={url}
-          variant="link"
-          className="capitalize py-1"
+          variant="underline"
+          className="items-center gap-1 py-1 capitalize"
         >
-          Buy From {market}
-        </Link>
-        {updatedAt && <span className="text-xs">as of - {updatedAt}</span>}
+          <ExternalLink className="size-4" />
+          {market}
+        </Anchor>
+        {updatedAt && <span className="text-sm">as of {updatedAt}</span>}
       </h3>
-      <ul className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {priceEntries.map(([type, value]) => (
-          <PriceItem
+          <Price
             key={type}
             type={type}
             value={value}
-            euros={market === 'Cardmarket'}
+            euros={market === "Cardmarket"}
           />
         ))}
       </ul>
@@ -623,32 +559,32 @@ function PristListItem({ market, url, prices, updatedAt }: PriceListProps) {
 type PriceItemProps = {
   euros?: boolean;
   type: string;
-  value: TCGPlayer['prices'] | CardMarket['prices'];
-  maxTraverse?: number;
+  value: TCGPlayer["prices"] | Cardmarket["prices"];
+  depthLimit?: number;
 };
 
-function PriceItem({ type, value, euros, maxTraverse = 5 }: PriceItemProps) {
-  if (!value || maxTraverse === 0) {
+function Price({ type, value, euros, depthLimit = 5 }: PriceItemProps) {
+  if (!value || depthLimit === 0) {
     return null;
   }
 
   // Recursively go through price object until a number is found
-  if (typeof value !== 'number') {
-    type = type.replace(/([A-Z])/g, ' $1');
+  if (typeof value !== "number") {
+    type = type.replace(/([A-Z])/g, " $1");
     type = type.replace(
       /(avg1|avg7|avg30)/gi,
       (match) => `${match.slice(3)} Day Average`,
     );
 
     return (
-      <li className="flex flex-col gap-2 col-span-full">
-        <span className="text-xs font-semibold tracking-wider text-foreground/75 bg-border border border-foreground/5 rounded-sm p-1 uppercase">
+      <li className="col-span-full flex flex-col gap-2">
+        <span className="text-sm font-semibold uppercase tracking-wider text-foreground/75">
           {type}
         </span>
-        <ul className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {Object.entries(value).map(([type, value]) => (
-            <PriceItem
-              maxTraverse={maxTraverse - 1}
+            <Price
+              depthLimit={depthLimit - 1}
               key={type}
               type={type}
               value={value}
@@ -660,36 +596,238 @@ function PriceItem({ type, value, euros, maxTraverse = 5 }: PriceItemProps) {
     );
   }
 
-  const price = getPrice(euros ? 'EUR' : 'USD', value);
+  const price = getCardPrice(euros ? "EUR" : "USD", value);
 
-  type = type.replace(/([A-Z])/g, ' $1');
+  type = type.replace(/([A-Z])/g, " $1");
   type = type.replace(
     /(avg1|avg7|avg30)/gi,
     (match) => `${match.slice(3)} Day Average`,
   );
 
-  let color = 'hsl(0 30% 60%)';
+  let color = "hsl(0 30% 60%)";
 
   switch (type) {
-    case 'low':
-      color = 'hsl(110 50% 70%)';
+    case "low":
+      color = "hsl(110 50% 70%)";
       break;
-    case 'mid':
-      color = 'hsl(210 70% 60%)';
+    case "mid":
+      color = "hsl(210 70% 60%)";
       break;
-    case 'high':
-      color = 'hsl(0 100% 60%)';
+    case "high":
+      color = "hsl(0 100% 60%)";
       break;
-    case 'market':
-      color = 'hsl(50 70% 50%)';
+    case "market":
+      color = "hsl(50 70% 50%)";
   }
 
   return (
     <li className="flex flex-col gap-2 text-balance">
-      <span className="uppercase  text-xs tracking-wider">{type}</span>
+      <span className="text-xs uppercase tracking-wider">{type}</span>
       <span style={{ color }} className="mt-auto">
         {price}
       </span>
     </li>
+  );
+}
+
+type CardSectionProps<T extends keyof CardObject> = {
+  [P in T]: CardObject[P];
+};
+
+function PriceSection({
+  tcgplayer,
+  cardmarket,
+}: CardSectionProps<"tcgplayer" | "cardmarket">) {
+  const TCGPrices = () => {
+    if (!tcgplayer?.prices) {
+      return <li>No TCGPlayer prices available</li>;
+    }
+
+    return (
+      <PriceItem
+        market="TCGPlayer"
+        prices={tcgplayer?.prices}
+        url={tcgplayer?.url ?? ""}
+        updatedAt={tcgplayer?.updatedAt}
+      />
+    );
+  };
+
+  const CardmarketPrices = () => {
+    if (!cardmarket?.prices) {
+      return <li>No cardmarket prices available</li>;
+    }
+
+    return (
+      <PriceItem
+        market="Cardmarket"
+        prices={cardmarket?.prices}
+        url={cardmarket?.url ?? ""}
+        updatedAt={cardmarket?.updatedAt}
+      />
+    );
+  };
+
+  return (
+    <section className="p-0 md:rounded-xl md:border md:border-border md:p-6">
+      <h2 className="text-xl font-semibold">Prices</h2>
+      <ul className="flex flex-col gap-4">
+        <TCGPrices />
+        <CardmarketPrices />
+      </ul>
+    </section>
+  );
+}
+// #endregion
+
+function AbilitySection({ abilities }: CardSectionProps<"abilities">) {
+  if (!abilities?.length) return null;
+  const abilityKey = getQueryKey("abilities");
+
+  const getAbilityStyle = (type: "Poké-Body" | string) => {
+    if (type === "Poké-Body") {
+      return {
+        backgroundColor: "hsl(131.26, 87.9%, 68.76%)",
+        color: "hsl(111.32, 93.17%, 13.29%)",
+      };
+    }
+
+    return {
+      backgroundColor: "hsl(0.8, 44%, 49%)",
+    };
+  };
+
+  return (
+    <section className="flex flex-col gap-4 rounded-lg">
+      <h2 className="text-xl font-semibold">Effects</h2>
+      <ul className="flex flex-col gap-4">
+        {abilities.map((ability) => {
+          return (
+            <li key={ability.name} className="flex flex-col gap-3">
+              <h3 className="flex flex-wrap gap-2 font-bold">
+                <span
+                  style={getAbilityStyle(ability.type)}
+                  className="flex -skew-x-12 items-center rounded-sm px-3 py-0.5 text-xs tracking-wider"
+                >
+                  {ability.type}
+                </span>
+                <Link
+                  variant="underline"
+                  className="font-semibold"
+                  href={getSearchUrl(`${abilityKey}=${ability.name}`)}
+                >
+                  {ability.name}
+                </Link>
+              </h3>
+              <Description text={ability.text} />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function AttackSection({ attacks }: CardSectionProps<"attacks">) {
+  if (!attacks?.length) return null;
+
+  const attacksKey = getQueryKey("attacks");
+
+  return (
+    <section className="flex flex-col gap-4 rounded-lg">
+      <h2 className="text-xl font-semibold">Attacks</h2>
+      <ul className="flex flex-col gap-4">
+        {attacks.map(({ name, damage, cost, text }) => {
+          return (
+            <li key={name} className="flex flex-col gap-3">
+              <h3 className="flex flex-wrap gap-2 font-bold">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-2">
+                    <TypeIcons
+                      types={cost.map((type) => ({ type }))}
+                      id="attacks"
+                    />
+                  </div>
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`${attacksKey}=${name}`)}
+                  >
+                    {name}
+                  </Link>
+                </div>
+                <span className="ml-auto">{damage}</span>
+              </h3>
+              <Description text={text} />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function RuleSection({ rules }: CardSectionProps<"rules">) {
+  if (!rules?.length) return null;
+
+  return (
+    <section className="flex flex-col gap-4 rounded-lg">
+      <h2 className="text-xl font-semibold">Rules</h2>
+      <ul className="flex flex-col gap-4">
+        {rules.map((rule, i) => {
+          const ruleText = rule.split(":");
+          let name = "",
+            text = "";
+
+          if (ruleText.length === 2) {
+            name = ruleText[0];
+            text = ruleText[1];
+          } else {
+            text = ruleText[ruleText.length - 1];
+          }
+
+          return (
+            <li key={`rules-${i}`} className="flex flex-col gap-2">
+              {!name ? null : <h3 className="font-semibold">{name}</h3>}
+              <Description key={`rules-${i}`} text={text.trim()} />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function TraitSection({ ancientTrait }: CardSectionProps<"ancientTrait">) {
+  if (!ancientTrait || !ancientTrait?.name) return null;
+
+  const traitKey = getQueryKey("traits");
+
+  return (
+    <section className="flex flex-col gap-4 rounded-lg">
+      <h2 className="text-xl font-semibold">Ancient Trait</h2>
+      <ul className="flex flex-col gap-4">
+        <li className="flex flex-col gap-2">
+          <h3 className="font-bold">
+            <Link
+              variant="underline"
+              href={getSearchUrl(`${traitKey}=${ancientTrait.name}`)}
+            >
+              {ancientTrait.name}
+            </Link>
+          </h3>
+          <Description text={ancientTrait.text} />
+        </li>
+      </ul>
+    </section>
+  );
+}
+
+function Description({ text }: { text?: string | null }) {
+  if (!text) return null;
+
+  return (
+    <p className="mx-2 rounded-xl border border-border bg-foreground/5 px-3 py-2 text-sm">
+      {text}
+    </p>
   );
 }

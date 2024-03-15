@@ -1,24 +1,16 @@
-import NextLink, { type LinkProps as NextLinkProps } from 'next/link';
-import { type AnchorHTMLAttributes, forwardRef } from 'react';
-import { cn, type VariantProps } from '@/lib/utils';
-import { buttonVariants } from './button';
+import { cn } from "@/lib/utils";
+import NextLink, { type LinkProps as NextLinkProps } from "next/link";
+import { forwardRef, type AnchorHTMLAttributes } from "react";
+import { ButtonVariants, buttonVariants } from "./button";
 
-export interface LinkProps
-  extends NextLinkProps,
-    VariantProps<typeof buttonVariants> {}
+export interface LinkProps extends NextLinkProps, ButtonVariants {}
 
 const Link = forwardRef<
   HTMLAnchorElement,
   LinkProps & AnchorHTMLAttributes<HTMLAnchorElement>
->(({ variant = 'link', className, size, ...props }, ref) => {
-  if (!props.href.startsWith('/')) {
-    return (
-      <a
-        ref={ref}
-        className={cn(buttonVariants({ variant, size, className }))}
-        {...props}
-      />
-    );
+>(({ variant = "underline", className, size, ...props }, ref) => {
+  if (!props.href.startsWith("/")) {
+    throw new Error("<Link /> href must start with '/'");
   }
 
   return (
@@ -31,6 +23,6 @@ const Link = forwardRef<
   );
 });
 
-Link.displayName = 'Link';
+Link.displayName = "Link";
 
 export { Link };

@@ -1,62 +1,59 @@
-import type { ResolvingMetadata } from 'next';
-import { Suspense } from 'react';
-import { getSets } from '@/lib/fetch';
-import { Link } from '@/components/ui/link';
-import { Image } from '@/components/ui/image';
-import type { TSet } from '@/types/tcg';
+import { Image } from "@/components/ui/image";
+import { Link } from "@/components/ui/link";
+import { getSets } from "@/lib/pokemon-tcg";
+import { getQueryKey, getSearchUrl } from "@/lib/utils";
+import type { SimpleSet } from "@/types/api/pokemon-tcg";
+import type { ResolvingMetadata } from "next";
+
+export const revalidate = 86400;
 
 export async function generateMetadata(_, parent: ResolvingMetadata) {
   const keywords = (await parent)?.keywords || [];
   return {
-    title: 'Sets',
+    title: "Expansions",
     description:
-      'Explore a comprehensive collection of Pokemon TCG card sets. From classic expansions to the latest releases, dive into the world of Pokemon cards. Discover the unique themes, artwork, and gameplay mechanics of each set. Complete your card collection and become a true Pokemon TCG connoisseur',
+      "Explore a comprehensive collection of Pokemon TCG card expansions. From classic expansions to the latest releases, dive into the world of Pokemon cards. Discover the unique themes, artwork, and gameplay mechanics of each set. Complete your card collection and become a true Pokemon TCG connoisseur",
     keywords: [
-      'Pokemon card sets',
-      'TCG expansions',
-      'Complete card sets',
-      'Set collection',
-      'All card sets',
-      'Set catalog',
-      'Pokemon TCG releases',
-      'Card set archive',
-      'Complete card list',
-      'Set checklist',
-      'Expansion packs',
-      'Set gallery',
-      'Card set database',
-      'Set details',
-      'Set history',
+      "Pokemon card expansions",
+      "TCG expansions",
+      "Complete card expansions",
+      "Set collection",
+      "All card expansions",
+      "Set catalog",
+      "Pokemon TCG releases",
+      "Card set archive",
+      "Complete card list",
+      "Set checklist",
+      "Expansion packs",
+      "Set gallery",
+      "Card set database",
+      "Set details",
+      "Set history",
       ...keywords,
     ],
   };
 }
 
-export default function Page() {
-  return (
-    <main className="py-16 flex flex-col gap-2">
-      <Suspense fallback={<SetsFallback />}>
-        <Sets />
-      </Suspense>
-    </main>
-  );
-}
-
-function SetsFallback() {
-  return (
-    <div className="grid gap-2 grid-cols-fluid lg:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: 12 }).map((_, i) => (
-        <div key={`sets-fallback-${i}`} className="h-40 aspect-video" />
-      ))}
-    </div>
-  );
-}
-
-async function Sets() {
+export default async function Page() {
   const sets = await getSets();
-  if (!sets?.count) return <div>No sets found</div>;
 
-  const group: { [key: string]: TSet[] } = {};
+  if (!sets?.count) {
+    return (
+      <main className="flex grow items-center justify-center">
+        <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
+          <p className="text-3xl font-bold">No results found</p>
+          <p className="text-muted-foreground">
+            Go back{" "}
+            <Link className="text-primary" href="/">
+              home
+            </Link>
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  const group: { [key: string]: SimpleSet[] } = {};
 
   sets.data.forEach((set) => {
     if (!set.series) return;
@@ -67,45 +64,49 @@ async function Sets() {
   const series = Object.entries(group);
 
   return (
-    <section className="flex flex-col gap-4 z-0">
+    <main className="flex flex-col gap-2">
       {series.map(([series, sets]) => {
         return (
-          <div key={series} className="py-2 space-y-2">
-            <h2
-              id={series}
-              className="flex relative items-center justify-between gap-2 border-y border-border p-2"
-            >
+          <section key={series} className="py-8">
+            <h2 className="sticky top-0 z-30 flex items-center justify-between gap-2 p-3 font-bungee text-xl backdrop-blur-md">
               {series}
             </h2>
-            <div className="grid py-6 gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-x-2 gap-y-8 p-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {sets.map((set) => (
                 <Link
                   key={set.id}
-                  href={`/search?sets=${set.id}`}
-                  aria-labelledby="setname"
-                  className="group flex flex-col p-2 gap-4 items-center"
+                  variant={null}
+                  href={getSearchUrl(`${getQueryKey("sets")}=${set.id}`)}
+                  aria-label={set.name}
+                  title={`${set.series}: ${set.name}`}
+                  className="group flex flex-col items-center gap-2 outline-none"
                 >
-                  <Image
-                    src={set.images.logo}
-                    alt={set.name ?? 'a pokemon card'}
-                    placeholder="blur"
-                    width={192}
-                    height={128}
-                    blurDataURL={set.images.logo}
-                    className="h-40 object-contain object-center motion-safe:transition-transform group-hover:scale-105 group-focus-visible:scale-105"
-                  />
-                  <div className="flex flex-col gap-2 w-full justify-center motion-safe:transition-shadow group-focus-visible:shadow-[0_-25px_50px_-12px_var(--tw-shadow-color)] group-hover:shadow-[0_-25px_50px_-12px_var(--tw-shadow-color)] items-center py-2 px-4 rounded-sm shadow-border bg-muted border border-border">
-                    <span id="setname" className="group-hover:text-primary">
-                      {set.name}
-                    </span>
-                    <span className="text-xs">{set.releaseDate}</span>
+                  <div className="motion-safe:transition-gpu relative w-full overflow-clip rounded-xl border border-border bg-spotlight/20 p-2 drop-shadow-md group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-1 group-focus-visible:ring-offset-background">
+                    <Image
+                      src={set.images.logo}
+                      alt={set.name ?? "a pokemon card"}
+                      placeholder="blur"
+                      fill
+                      className="absolute left-0 top-0 mx-auto scale-110 object-contain opacity-[0.025]"
+                    />
+                    <Image
+                      src={set.images.logo}
+                      alt={set.name ?? "a pokemon card"}
+                      placeholder="blur"
+                      width={192}
+                      height={128}
+                      className="z-10 mx-auto h-40 object-contain object-center group-hover:scale-105 group-focus-visible:scale-105 motion-safe:transition-transform"
+                    />
                   </div>
+                  <span className="mt-auto font-semibold decoration-2 group-hover:underline group-focus-visible:underline">
+                    {set.name}
+                  </span>
                 </Link>
               ))}
             </div>
-          </div>
+          </section>
         );
       })}
-    </section>
+    </main>
   );
 }

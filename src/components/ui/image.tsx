@@ -1,4 +1,4 @@
-import NextImage, { type ImageProps } from 'next/image';
+import NextImage, { type ImageProps } from "next/image";
 
 const shimmer = (w: number, h: number) => `
 <svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -15,8 +15,8 @@ const shimmer = (w: number, h: number) => `
 </svg>`;
 
 const toBase64 = (str: string) =>
-  typeof window === 'undefined'
-    ? Buffer.from(str).toString('base64')
+  typeof window === "undefined"
+    ? Buffer.from(str).toString("base64")
     : window.btoa(str);
 
 export const blur = `data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`;
@@ -31,7 +31,7 @@ export function Image(props: ImageProps) {
       src={props.src}
       alt={props.alt}
       {...((+(props.width ?? 40) >= 40 || +(props.height ?? 40) >= 40) && {
-        placeholder: 'blur',
+        placeholder: "blur",
         blurDataURL: blur,
       })}
     />

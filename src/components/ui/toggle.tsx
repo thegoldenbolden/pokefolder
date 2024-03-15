@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { forwardRef } from 'react';
-import * as TogglePrimitive from '@radix-ui/react-toggle';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import * as TogglePrimitive from "@radix-ui/react-toggle";
+import { forwardRef } from "react";
 
 const Toggle = forwardRef<
   React.ElementRef<typeof TogglePrimitive.Root>,
@@ -12,7 +12,7 @@ const Toggle = forwardRef<
     ref={ref}
     className={cn(
       `
-    border border-border hover:bg-foreground hover:text-background rounded-sm p-2
+    rounded-sm border border-border p-2 hover:bg-foreground hover:text-background
     data-[state='on']:bg-foreground data-[state='on']:text-background data-[state='on']:hover:bg-foreground/90`,
       className,
     )}

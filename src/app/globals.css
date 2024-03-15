@@ -2,52 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
+:root {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+
+  --background: 0 0% 0%;
+  --background-light: 0 0% 8%;
+  --background-lighter: 0 0% 15%;
+
+  --foreground: 0 0% 100%;
+  --spotlight: 0 0% 15%;
+  --border: 0 0% 20%;
+  --ring: var(--primary);
+
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 88%;
+
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 100%;
+
+  --primary: 48 100% 50%;
+  --primary-foreground: 0 0% 0%;
+
+  --accent: 0 100% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+}
+
+/* Fluid font size variables, for browsers that support clamp */
+@supports (font-size: clamp(1rem, 1vw, 1rem)) {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --spotlight: 0 0% 10%;
-    --border: 0 0% 15%;
-    --input: 0 0% 89.8%;
-    --radius: 0.5rem;
-
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 88%;
-
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 48 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --ring: var(--primary);
-
-    --secondary: 223 47% 44%;
-    --secondary-foreground: 0 0% 100%;
-    --accent: 0 100% 50%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --font-size-xs: clamp(0.64rem, -0.13vw + 0.67rem, 0.56rem);
+    --font-size-sm: clamp(0.8rem, -0.08vw + 0.82rem, 0.75rem);
+    --font-size-base: clamp(1rem, 0vw + 1rem, 1rem);
+    --font-size-lg: clamp(1.25rem, 0.14vw + 1.22rem, 1.33rem);
+    --font-size-xl: clamp(1.56rem, 0.36vw + 1.49rem, 1.78rem);
+    --font-size-2xl: clamp(1.95rem, 0.69vw + 1.81rem, 2.37rem);
+    --font-size-3xl: clamp(2.44rem, 1.19vw + 2.2rem, 3.16rem);
+    --font-size-4xl: clamp(3.05rem, 1.93vw + 2.67rem, 4.21rem);
+    --font-size-5xl: clamp(3.81rem, 2.99vw + 3.22rem, 5.61rem);
+    --font-size-6xl: clamp(4.77rem, 4.52vw + 3.87rem, 7.48rem);
+    --font-size-7xl: clamp(5.96rem, 6.68vw + 4.62rem, 9.97rem);
+    --font-size-8xl: clamp(7.45rem, 9.73vw + 5.5rem, 13.29rem);
+    --font-size-9xl: clamp(9.31rem, 14vw + 6.51rem, 17.71rem);
   }
-
-  :disabled {
-    cursor: not-allowed;
+}
+/* Fallback variables for browsers that don't support clamp */
+@supports not (font-size: clamp(1rem, 1vw, 1rem)) {
+  :root {
+    --font-size-xs: 0.64rem;
+    --font-size-sm: 0.8rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.56rem;
+    --font-size-2xl: 1.95rem;
+    --font-size-3xl: 2.44rem;
+    --font-size-4xl: 3.05rem;
+    --font-size-5xl: 3.81rem;
+    --font-size-6xl: 4.77rem;
+    --font-size-7xl: 5.96rem;
+    --font-size-8xl: 7.45rem;
+    --font-size-9xl: 9.31rem;
   }
-
-  .bg-image {
-    background-image: radial-gradient(
-        ellipse at top,
-        hsl(var(--spotlight)),
-        transparent
-      ),
-      radial-gradient(ellipse at bottom, hsl(var(--background)), transparent);
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    z-index: -1;
-    top: 0;
-    left: 0;
+  @media screen and (min-width: 1280px) {
+    :root {
+      --font-size-xs: 0.56rem;
+      --font-size-sm: 0.75rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.33rem;
+      --font-size-xl: 1.78rem;
+      --font-size-2xl: 2.37rem;
+      --font-size-3xl: 3.16rem;
+      --font-size-4xl: 4.21rem;
+      --font-size-5xl: 5.61rem;
+      --font-size-6xl: 7.48rem;
+      --font-size-7xl: 9.97rem;
+      --font-size-8xl: 13.29rem;
+      --font-size-9xl: 17.71rem;
+    }
   }
+}
+
+.bg-image {
+  background-image: radial-gradient(
+      ellipse at top,
+      hsl(var(--spotlight)),
+      transparent
+    ),
+    radial-gradient(ellipse at bottom, hsl(var(--background)), transparent);
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  left: 0;
 }
 
 @layer components {

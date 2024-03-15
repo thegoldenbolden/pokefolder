@@ -1,20 +1,23 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/ui/hover-card';
-import { Optional, TypesImage } from '@/components/card/typings';
-import { getCardUrl, getPrice } from '@/lib/utils';
-import { PageControls } from './page-controls';
-import { useCards } from '@/hooks/use-cards';
-import { Link } from '@/ui/link';
-import { Image } from '@/ui/image';
+import { TypesImage } from "@/components/card/typings";
+import { Anchor } from "@/components/ui/anchor";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Image } from "@/components/ui/image";
+import { Link } from "@/components/ui/link";
 import {
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
   TableHeader,
   Table as TableRoot,
   TableRow,
-} from '@/ui/table';
+} from "@/components/ui/table";
+import { useCards } from "@/hooks/use-cards";
+import { getCardPrice, getCardUrl, getSearchUrl } from "@/lib/utils";
 
 export function Table() {
   const { cards, isLoading, error } = useCards();
@@ -22,9 +25,6 @@ export function Table() {
   if (isLoading) {
     return (
       <TableRoot>
-        <TableCaption>
-          <PageControls />
-        </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Set</TableHead>
@@ -42,7 +42,7 @@ export function Table() {
           {Array.from({ length: 20 }).map((_, i) => (
             <TableRow
               key={`row-fallback-${i}`}
-              className="motion-safe:animate-pulse duration-500 h-9 odd:bg-muted even:bg-muted/75 "
+              className="h-9 duration-500 odd:bg-muted even:bg-muted/75 motion-safe:animate-pulse"
             >
               {Array.from({ length: 9 }).map((_, i) => (
                 <TableCell key={`cell-fallback-${i}`} />
@@ -68,11 +68,25 @@ export function Table() {
   }
 
   if (error) {
-    return <span>An error occurred</span>;
+    return (
+      <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
+        <p className="text-3xl font-bold">No results found</p>
+        <p className="text-muted-foreground">
+          Try searching for something else.
+        </p>
+      </div>
+    );
   }
 
   if (!cards?.count) {
-    return <span>No cards were found</span>;
+    return (
+      <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
+        <p className="text-3xl font-bold">Uh oh..</p>
+        <p className="text-muted-foreground">
+          An error occurred while searching for cards.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -96,66 +110,65 @@ export function Table() {
             <HoverCardTrigger asChild>
               <TableRow>
                 <TableCell>
-                  <Link variant="link" href={`/search?sets=${card.set.id}`}>
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`sets=${card.set.id}`)}
+                  >
                     {card.set.name}
                   </Link>
                 </TableCell>
                 <TableCell>{card.number}</TableCell>
                 <TableCell>
-                  <Link variant="link" href={getCardUrl(card)}>
+                  <Link variant="underline" href={getCardUrl(card)}>
                     {card.name}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link variant="link" href={`/search?rarities=${card.rarity}`}>
+                  <Link
+                    variant="underline"
+                    href={getSearchUrl(`rarities=${card.rarity}`)}
+                  >
                     {card.rarity}
                   </Link>
                 </TableCell>
                 <TableCell>
                   <Link
-                    variant="link"
-                    href={`/search?supertypes=${card.supertype}`}
+                    variant="underline"
+                    href={getSearchUrl(`supertypes=${card.supertype}`)}
                   >
                     {card.supertype}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Optional data={card.types}>
-                    <span className="inline-flex gap-1 flex-wrap items-centerj">
-                      <TypesImage q="types" id="types" data={card.types!} />
-                    </span>
-                  </Optional>
+                  <span className="inline-flex flex-wrap items-center gap-1">
+                    <TypesImage id="types" data={card.types} />
+                  </span>
                 </TableCell>
                 <TableCell className="space-x-2">
-                  <Optional data={card.subtypes}>
-                    {card.subtypes &&
-                      card.subtypes.map((subtype) => (
+                  {!card.subtypes || card.subtypes.length === 0
+                    ? null
+                    : card.subtypes.map((subtype) => (
                         <Link
-                          href={`/search?subtypes=${subtype}`}
+                          href={getSearchUrl(`subtypes=${subtype}`)}
+                          variant="underline"
                           key={subtype}
                         >
                           {subtype}
                         </Link>
                       ))}
-                  </Optional>
                 </TableCell>
                 <TableCell>
                   {card.tcgplayer?.url ? (
-                    <Link
-                      variant="link"
-                      href={card.tcgplayer.url}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {getPrice(
-                        'USD',
+                    <Anchor variant="underline" href={card.tcgplayer.url}>
+                      {getCardPrice(
+                        "USD",
                         card.tcgplayer?.prices?.holofoil?.market,
                       )}
-                    </Link>
+                    </Anchor>
                   ) : (
                     <>
-                      {getPrice(
-                        'USD',
+                      {getCardPrice(
+                        "USD",
                         card.tcgplayer?.prices?.holofoil?.market,
                       )}
                     </>
@@ -163,23 +176,20 @@ export function Table() {
                 </TableCell>
                 <TableCell>
                   {card.cardmarket?.url ? (
-                    <Link
-                      variant="link"
-                      href={card.cardmarket.url}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {getPrice('EUR', card.cardmarket?.prices?.trendPrice)}
-                    </Link>
+                    <Anchor variant="underline" href={card.cardmarket.url}>
+                      {getCardPrice("EUR", card.cardmarket?.prices?.trendPrice)}
+                    </Anchor>
                   ) : (
-                    <>{getPrice('EUR', card.cardmarket?.prices?.trendPrice)}</>
+                    <>
+                      {getCardPrice("EUR", card.cardmarket?.prices?.trendPrice)}
+                    </>
                   )}
                 </TableCell>
               </TableRow>
             </HoverCardTrigger>
-            <HoverCardContent className="p-0 border-none  bg-transparent rounded-sm">
+            <HoverCardContent className="rounded-sm border-none  bg-transparent p-0">
               <Image
-                src={card.images.large || card.images.small || '/back.png'}
+                src={card.images.large || card.images.small || "/back.png"}
                 alt={card.name}
                 width={250}
                 height={350}

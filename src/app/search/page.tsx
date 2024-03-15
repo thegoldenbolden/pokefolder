@@ -1,17 +1,29 @@
-import type { Metadata, ResolvingMetadata } from 'next';
-import { Accordion } from '@/components/ui/accordion';
-import { AccordionWithCombobox } from '@/components/accordion/with-combobox';
-import { AccordionWithInput } from '@/components/accordion/with-input';
-import { AccordionWithSlider } from '@/components/accordion/with-slider';
-import { PageControls } from '@/components/gallery/page-controls';
-import { getSets, getTypes, regionsToHPTable } from '@/lib/fetch';
-import { ViewAs } from '@/components/gallery/view-as';
-import { FormSheet } from '@/components/form';
-import { Gallery } from '@/components/gallery';
-import { DEFAULT_HP } from '@/lib/tcg';
-import Loading from '../loading';
-import { Suspense } from 'react';
-import { FormProvider } from '@/hooks/use-form';
+import { Gallery } from "@/components/gallery";
+import { GalleryFooter } from "@/components/gallery/footer";
+import { SelectOrder, SelectSort, ViewAs } from "@/components/gallery/toolbar";
+import {
+  Combobox,
+  type DefaultMultiComboboxValue,
+} from "@/components/search/combobox";
+import { Form } from "@/components/search/form";
+import { Input } from "@/components/search/input";
+import { Slider } from "@/components/search/slider";
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FormProvider } from "@/hooks/use-form";
+import { getSets, getTraits, getTypes } from "@/lib/pokemon-tcg";
+import { regions as pokedex } from "@/lib/pokemon-tcg/constants";
+import { getQueryFallback } from "@/lib/utils";
+import type { QueryValues } from "@/types";
+import type { SimpleSet } from "@/types/api/pokemon-tcg";
+import type { Metadata, ResolvingMetadata } from "next";
+import { Suspense } from "react";
+
+export const revalidate = 86400;
 
 export async function generateMetadata(
   _,
@@ -20,202 +32,260 @@ export async function generateMetadata(
   const keywords = (await parent)?.keywords || [];
 
   return {
-    alternates: { canonical: '/' },
+    alternates: { canonical: "/search" },
     description:
-      'Discover and find your favorite Pokemon cards with ease. Our powerful search feature allows you to quickly locate specific cards, explore rarities, and build your perfect deck. Unleash your strategic skills in the Pokemon TCG and dominate the competition',
+      "Discover and find your favorite Pokemon cards with ease. Our powerful search feature allows you to quickly locate specific cards, explore rarities, and build your perfect deck. Unleash your strategic skills in the Pokemon TCG and dominate the competition",
     keywords: [
-      'Pokemon card search',
-      'Card lookup',
-      'Card finder',
-      'Card database',
-      'Pokemon TCG search',
-      'Find Pokemon cards',
-      'Search for cards',
-      'Card collection search',
-      'Pokemon card inventory',
-      'Card catalog',
-      'Card exploration',
-      'Pokemon card database',
-      'Trading card search',
-      'Card rarity search',
-      'Card details lookup',
+      "Pokemon card search",
+      "Card lookup",
+      "Card finder",
+      "Card database",
+      "Pokemon TCG search",
+      "Find Pokemon cards",
+      "Search for cards",
+      "Card collection search",
+      "Pokemon card inventory",
+      "Card catalog",
+      "Card exploration",
+      "Pokemon card database",
+      "Trading card search",
+      "Card rarity search",
+      "Card details lookup",
       ...keywords,
     ],
   };
 }
 
 export default async function Page() {
+  const order: QueryValues["order"][] = ["asc", "desc"];
+  const orderFallback = getQueryFallback("order");
+
+  const sortFallback = getQueryFallback("sort");
+
+  type Sort = {
+    id: QueryValues["sort"];
+    name: string;
+  };
+
+  const sort: Sort[] = [
+    { id: "name", name: "Card Name" },
+    { id: "number", name: "Card Number" },
+    { id: "region", name: "Region" },
+    { id: "release", name: "Release Date" },
+    { id: "cardmarket", name: "Cardmarket Prices" },
+    { id: "tcgplayer", name: "TCGPlayer Prices" },
+  ];
+
+  const [
+    setsRes,
+    typesRes,
+    subtypesRes,
+    supertypesRes,
+    raritiesRes,
+    traitsRes,
+  ] = await Promise.all([
+    getSets(),
+    getTypes("types"),
+    getTypes("subtypes"),
+    getTypes("supertypes"),
+    getTypes("rarities"),
+    getTraits(),
+  ]);
+
+  const sets = setsRes?.data ?? [];
+  const types = typesRes?.data ?? [];
+  const subtypes = subtypesRes?.data ?? [];
+  const supertypes = supertypesRes?.data ?? [];
+  const rarities = raritiesRes?.data ?? [];
+  const traits = traitsRes.data ?? [];
+  const hpFallback = getQueryFallback("hp");
+  const regions = Object.entries(pokedex);
+
+  const marks = [
+    { id: "d", name: "D" },
+    { id: "e", name: "E" },
+    { id: "f", name: "F" },
+  ];
+
+  const legalities = [
+    { id: "expanded_legal", name: "Expanded: Legal" },
+    { id: "standard_legal", name: "Standard: Legal" },
+    { id: "unlimited_legal", name: "Unlimited: Legal" },
+    { id: "expanded_banned", name: "Expanded: Banned" },
+    { id: "standard_banned", name: "Standard: Banned" },
+    { id: "unlimited_banned", name: "Unlimited: Banned" },
+  ];
+
   return (
-    <main className="grid grid-cols-1 lg:has-[div]:data-[loading=true]:grid-cols-[max-content_1fr] has-[aside]:grid-cols-[max-content_1fr] gap-1 lg:gap-4 py-16">
-      <Suspense
-        fallback={
-          <Loading className="lg:grow-0 lg:w-[256px] lg:rounded-sm lg:max-h-svh lg:overflow-y-hidden lg:bg-foreground/5 lg:border lg:border-border lg:sticky lg:top-6 lg:self-start static self-auto border-none max-h-max justify-self-start h-9 px-3 py-2 bg-muted text-muted-foreground" />
-        }
-      >
-        <Form />
-      </Suspense>
-
-      <div className="flex flex-col gap-1">
-        <div className="flex flex-wrap items-center justify-between gap-1">
+    <main className="flex w-full flex-col gap-6 p-2">
+      <div className="flex flex-wrap items-stretch gap-2">
+        <Suspense fallback={<ControlsFallback />}>
+          <SelectSort
+            id="sort"
+            defaultValue={sortFallback}
+            fallback={sortFallback}
+          >
+            <SelectTrigger aria-label="sort cards" variant="border">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              {sort.map((sort) => {
+                return (
+                  <SelectItem key={`sort-by-${sort.id}`} value={`${sort.id}`}>
+                    {sort.name}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </SelectSort>
+          <SelectOrder
+            id="order"
+            defaultValue={orderFallback}
+            fallback={orderFallback}
+          >
+            <SelectTrigger aria-label="order cards" variant="border">
+              <SelectValue placeholder="Order" />
+            </SelectTrigger>
+            <SelectContent>
+              {order.map((order) => {
+                return (
+                  <SelectItem key={`order-${order}`} value={order}>
+                    {order === "asc" ? "Ascending" : "Descending"}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </SelectOrder>
           <ViewAs />
-          <div className="ml-auto">
-            <PageControls />
-          </div>
-        </div>
-        <div className="py-4 grow">
-          <Gallery />
-        </div>
-
-        <PageControls />
+          <FormProvider sets={sets}>
+            <Form>
+              <Input
+                id="cards"
+                name="Cards"
+                placeholder="vikavolt, cynthia, gengar"
+              />
+              <Input
+                id="artists"
+                name="Artists"
+                placeholder="5ban graphics, kirisAki, tetsuya koizumi"
+              />
+              <Input
+                id="abilities"
+                name="Abilities"
+                placeholder="solid shell, snap trap, poisonous puddle"
+              />
+              <Input
+                id="attacks"
+                name="Attacks"
+                placeholder="bite, tackle, damage rush"
+              />
+              <Combobox
+                id="traits"
+                name="Ancient Traits"
+                placeholder="barrier, stop, double, evolution"
+                data={traits.map((name) => setComboboxValues({ name }))}
+              />
+              <Combobox
+                id="sets"
+                name="Sets"
+                placeholder="vivid voltage, 151, paradox rift"
+                data={sets.map((expansion) => setComboboxValues(expansion))}
+              />
+              <Combobox
+                id="rarities"
+                name="Rarities"
+                placeholder="rare prime, legend, amazing rare"
+                data={rarities.map((name) => setComboboxValues({ name }))}
+              />
+              <Combobox
+                id="subtypes"
+                name="Subtypes"
+                placeholder="ancient, fusion strike, break"
+                data={subtypes.map((name) => setComboboxValues({ name }))}
+              />
+              <Combobox
+                id="supertypes"
+                name="Supertypes"
+                placeholder="pokemon, trainer, energy"
+                data={supertypes.map((name) => setComboboxValues({ name }))}
+              />
+              <Combobox
+                id="types"
+                name="Types"
+                placeholder="colorless, grass, lightning"
+                data={types.map((name) => setComboboxValues({ name }))}
+              />
+              <Combobox
+                id="region"
+                name="Regions"
+                placeholder="hoenn, sinnoh, unova"
+                data={regions.map(([name, id]) =>
+                  setComboboxValues({ name, id }),
+                )}
+              />
+              <Combobox
+                id="legalities"
+                name="Legalities"
+                placeholder="standard, unlimited"
+                data={legalities.map((legality) => setComboboxValues(legality))}
+              />
+              <Combobox
+                name="Regulation Marks"
+                placeholder="d, e, f"
+                id="marks"
+                data={marks}
+              />
+              <Slider
+                id="hp"
+                name="HP"
+                step={10}
+                max={hpFallback[1]}
+                min={hpFallback[0]}
+                minStepsBetweenThumbs={1}
+                defaultValue={hpFallback}
+              />
+            </Form>
+          </FormProvider>
+        </Suspense>
       </div>
+      <Suspense fallback={<GalleryFallback />}>
+        <Gallery />
+        <GalleryFooter />
+      </Suspense>
     </main>
   );
 }
 
-async function Form() {
-  const sets = await getSets();
-  const types = await getTypes('types');
-  const subtypes = await getTypes('subtypes');
-  const supertypes = await getTypes('supertypes');
-  const rarities = await getTypes('rarities');
+function setComboboxValues({
+  id,
+  name,
+  series = undefined,
+  images = undefined,
+}: Partial<SimpleSet> & Pick<DefaultMultiComboboxValue, "name">) {
+  return { id: id ? id : name.toLowerCase(), name, series, images };
+}
 
-  const regions = Object.entries(regionsToHPTable);
-  const order = [
-    { id: 'cardmarket', name: 'Cardmarket Prices' },
-    { id: 'tcgplayer', name: 'TCGPlayer Prices' },
-    { id: 'name', name: 'Card Name' },
-    { id: 'number', name: 'Card Number' },
-    { id: 'pokedex', name: 'National Pokedex' },
-    { id: 'release', name: 'Release Date' },
-  ];
-
+function ControlsFallback() {
   return (
-    <FormProvider sets={sets?.data}>
-      <FormSheet>
-        <Accordion type="single" collapsible>
-          <AccordionWithCombobox
-            heading="Sort"
-            placeholder="Sort by"
-            stateKey="orderBy"
-            data={order}
-          />
-          <AccordionWithInput
-            input={{ id: 'cards', placeholder: 'Type a card' }}
-            heading="Name"
-            stateKey="cards"
-          />
-          <AccordionWithInput
-            input={{ id: 'artists', placeholder: 'Type an artist' }}
-            heading="Artists"
-            stateKey="artists"
-          />
-          <AccordionWithInput
-            input={{ id: 'abilities', placeholder: 'Type an ability' }}
-            heading="Abilities"
-            stateKey="abilities"
-          />
-          <AccordionWithInput
-            input={{ id: 'traits', placeholder: 'Type an ancient trait' }}
-            heading="Ancient Traits"
-            stateKey="traits"
-          />
-          <AccordionWithInput
-            input={{ id: 'attacks', placeholder: 'Type an attack' }}
-            heading="Attacks"
-            stateKey="attacks"
-          />
-          <AccordionWithCombobox
-            heading="Sets"
-            stateKey="sets"
-            placeholder="Type a set or series name"
-            data={sets?.data ?? []}
-          />
-          <AccordionWithCombobox
-            heading="Rarities"
-            stateKey="rarities"
-            placeholder="Type a rarity"
-            data={
-              rarities?.data.map((name) => ({
-                id: name.toLowerCase(),
-                name,
-              })) ?? []
-            }
-          />
-          <AccordionWithCombobox
-            heading="Subtypes"
-            stateKey="subtypes"
-            placeholder="Type a subtype"
-            data={
-              subtypes?.data.map((name) => ({
-                id: name.toLowerCase(),
-                name,
-              })) ?? []
-            }
-          />
-          <AccordionWithCombobox
-            heading="Supertypes"
-            stateKey="supertypes"
-            placeholder="Type a supertype"
-            data={
-              supertypes?.data.map((name) => ({
-                id: name.toLowerCase(),
-                name,
-              })) ?? []
-            }
-          />
-          <AccordionWithCombobox
-            heading="Types"
-            stateKey="types"
-            placeholder="Type a card typing"
-            data={
-              types?.data.map((name) => ({ id: name.toLowerCase(), name })) ??
-              []
-            }
-          />
-          <AccordionWithCombobox
-            heading="National Pokedex"
-            placeholder="Type a generation"
-            stateKey="pokedex"
-            data={regions.map(([name, id]) => ({
-              id,
-              name,
-            }))}
-          />
-          <AccordionWithCombobox
-            heading="Legalities"
-            placeholder="Type a legality"
-            stateKey="legalities"
-            data={[
-              { id: 'expanded_legal', name: 'Expanded: Legal' },
-              { id: 'standard_legal', name: 'Standard: Legal' },
-              { id: 'unlimited_legal', name: 'Unlimited: Legal' },
-              { id: 'expanded_banned', name: 'Expanded: Banned' },
-              { id: 'standard_banned', name: 'Standard: Banned' },
-              { id: 'unlimited_banned', name: 'Unlimited: Banned' },
-            ]}
-          />
-          <AccordionWithCombobox
-            heading="Regulation Marks"
-            placeholder="Type a mark"
-            stateKey="marks"
-            data={[
-              { id: 'd', name: 'D' },
-              { id: 'f', name: 'F' },
-            ]}
-          />
-          <AccordionWithSlider
-            stateKey="hp"
-            heading="HP"
-            slider={{
-              step: 10,
-              max: DEFAULT_HP[1],
-              min: DEFAULT_HP[0],
-              minStepsBetweenThumbs: 1,
-              defaultValue: DEFAULT_HP,
-            }}
-          />
-        </Accordion>
-      </FormSheet>
-    </FormProvider>
+    <div
+      role="status"
+      className="h-9 w-full max-w-72 rounded-xl bg-muted motion-safe:animate-pulse"
+    />
+  );
+}
+
+function GalleryFallback() {
+  return (
+    <ul
+      role="status"
+      className="grid grow grid-cols-2 items-center justify-items-center gap-3 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+    >
+      {Array.from({ length: 30 }).map((_, i) => (
+        <li
+          key={`fallback-${i}`}
+          className="aspect-card max-h-[350px] w-full rounded-lg bg-muted drop-shadow-lg motion-safe:animate-pulse"
+        />
+      ))}
+    </ul>
   );
 }

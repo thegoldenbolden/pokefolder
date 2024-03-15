@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
-
-const Table = dynamic(() => import('./table').then((m) => m.Table));
-const Images = dynamic(() => import('./images').then((m) => m.Images));
+import { getQueryKey } from "@/lib/utils";
+import type { QueryValues } from "@/types";
+import { useSearchParams } from "next/navigation";
+import { Images } from "./images";
+import { Table } from "./table";
 
 export function Gallery() {
   const params = useSearchParams();
-  const view = params.get('view');
-  return view === 'table' ? <Table /> : <Images />;
+  const view = params.get(getQueryKey("view")) as QueryValues["view"];
+  return view === "list" ? <Table /> : <Images />;
 }

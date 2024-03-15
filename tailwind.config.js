@@ -1,18 +1,29 @@
-/** @type {import('tailwindcss').Config} */
-
 const { screens } = require('tailwindcss/defaultConfig');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  plugins: [require('tailwindcss-animate')],
   theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px',
-      },
-    },
     extend: {
+      fontSize: {
+        xs: 'var(--font-size-xs)',
+        sm: 'var(--font-size-sm)',
+        base: 'var(--font-size-base)',
+        lg: 'var(--font-size-lg)',
+        xl: 'var(--font-size-xl)',
+        '2xl': 'var(--font-size-2xl)',
+        '3xl': 'var(--font-size-3xl)',
+        '4xl': 'var(--font-size-4xl)',
+        '5xl': 'var(--font-size-5xl)',
+        '6xl': 'var(--font-size-6xl)',
+        '7xl': 'var(--font-size-7xl)',
+        '8xl': 'var(--font-size-8xl)',
+        '9xl': 'var(--font-size-9xl)',
+      },
+      aspectRatio: {
+        card: '3 / 4',
+      },
       screens: {
         xs: '480px',
         ...screens,
@@ -26,19 +37,28 @@ module.exports = {
         fluid: 'repeat(auto-fit, minmax(min(13rem, 100%), 1fr))',
       },
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        spotlight: 'hsl(var(--spotlight))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+        },
+        ring: {
+          DEFAULT: 'hsl(var(--ring))',
+        },
+        spotlight: {
+          DEFAULT: 'hsl(var(--spotlight))',
+        },
+        background: {
+          DEFAULT: 'hsl(var(--background))',
+          light: 'hsl(var(--background-light))',
+          lighter: 'hsl(var(--background-lighter))',
+        },
+        foreground: {
+          DEFAULT: 'hsl(var(--foreground))',
+          light: 'hsl(var(--foreground-light))',
+          lighter: 'hsl(var(--foreground-lighter))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
         },
         accent: {
           DEFAULT: 'hsl(var(--accent))',
@@ -57,11 +77,6 @@ module.exports = {
           foreground: 'hsl(var(--popover-foreground))',
         },
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
       keyframes: {
         'accordion-down': {
           from: { height: 0 },
@@ -78,5 +93,4 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
 };
