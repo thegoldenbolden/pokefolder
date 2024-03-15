@@ -1,9 +1,9 @@
-'use client';
-import { SWRConfig as SWRSWRConfig } from 'swr';
+"use client";
+import { SWRConfig } from "swr";
 
-export function SWRConfig(props: React.PropsWithChildren) {
+export function SWRProvider(props: React.PropsWithChildren) {
   return (
-    <SWRSWRConfig
+    <SWRConfig
       value={{
         revalidateIfStale: false,
         revalidateOnFocus: false,
@@ -13,6 +13,6 @@ export function SWRConfig(props: React.PropsWithChildren) {
       }}
     >
       {props.children}
-    </SWRSWRConfig>
+    </SWRConfig>
   );
 }

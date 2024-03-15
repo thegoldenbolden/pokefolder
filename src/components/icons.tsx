@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from "react";
 export type Icon = (props: SVGProps<SVGSVGElement>) => JSX.Element;
 
 const BaseIcon: Icon = (props) => {
@@ -22,7 +22,7 @@ const BaseIcon: Icon = (props) => {
 
 export const Moon: Icon = (props) => {
   return (
-    <BaseIcon aria-label="moon icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
     </BaseIcon>
   );
@@ -30,7 +30,7 @@ export const Moon: Icon = (props) => {
 
 export const Sun: Icon = (props) => {
   return (
-    <BaseIcon aria-label="sun icon" {...props}>
+    <BaseIcon {...props}>
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2" />
       <path d="M12 20v2" />
@@ -46,7 +46,7 @@ export const Sun: Icon = (props) => {
 
 export const Search: Icon = (props) => {
   return (
-    <BaseIcon aria-label="search icon" {...props}>
+    <BaseIcon {...props}>
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </BaseIcon>
@@ -55,7 +55,7 @@ export const Search: Icon = (props) => {
 
 export const SearchX: Icon = (props) => {
   return (
-    <BaseIcon aria-label="reset search" {...props}>
+    <BaseIcon {...props}>
       <path d="m13.5 8.5-5 5" />
       <path d="m8.5 8.5 5 5" />
       <circle cx="11" cy="11" r="8" />
@@ -66,7 +66,7 @@ export const SearchX: Icon = (props) => {
 
 export const Calendar: Icon = (props) => {
   return (
-    <BaseIcon aria-label="calendar icon" {...props}>
+    <BaseIcon {...props}>
       <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
       <line x1="16" x2="16" y1="2" y2="6" />
       <line x1="8" x2="8" y1="2" y2="6" />
@@ -77,7 +77,7 @@ export const Calendar: Icon = (props) => {
 
 export const X: Icon = (props) => {
   return (
-    <BaseIcon aria-label="x icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
     </BaseIcon>
@@ -86,7 +86,7 @@ export const X: Icon = (props) => {
 
 export const Filter: Icon = (props) => {
   return (
-    <BaseIcon aria-label="filter icon" {...props}>
+    <BaseIcon {...props}>
       <line x1="21" x2="14" y1="4" y2="4" />
       <line x1="10" x2="3" y1="4" y2="4" />
       <line x1="21" x2="12" y1="12" y2="12" />
@@ -102,7 +102,7 @@ export const Filter: Icon = (props) => {
 
 export const ChevronUp: Icon = (props) => {
   return (
-    <BaseIcon aria-label="chevron up icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m18 15-6-6-6 6" />
     </BaseIcon>
   );
@@ -110,7 +110,7 @@ export const ChevronUp: Icon = (props) => {
 
 export const ChevronDown: Icon = (props) => {
   return (
-    <BaseIcon aria-label="chevron down icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m6 9 6 6 6-6" />
     </BaseIcon>
   );
@@ -118,7 +118,7 @@ export const ChevronDown: Icon = (props) => {
 
 export const ChevronUpDown: Icon = (props) => {
   return (
-    <BaseIcon aria-label="chevron up down icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m7 15 5 5 5-5" />
       <path d="m7 9 5-5 5 5" />
     </BaseIcon>
@@ -127,7 +127,7 @@ export const ChevronUpDown: Icon = (props) => {
 
 export const Check: Icon = (props) => {
   return (
-    <BaseIcon aria-label="check icon" {...props}>
+    <BaseIcon {...props}>
       <polyline points="20 6 9 17 4 12" />
     </BaseIcon>
   );
@@ -135,7 +135,7 @@ export const Check: Icon = (props) => {
 
 export const Gem: Icon = (props) => {
   return (
-    <BaseIcon aria-label="gem icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M6 3h12l4 6-10 13L2 9Z" />
       <path d="M11 3 8 9l4 13 4-13-3-6" />
       <path d="M2 9h20" />
@@ -145,7 +145,7 @@ export const Gem: Icon = (props) => {
 
 export const Clock: Icon = (props) => {
   return (
-    <BaseIcon aria-label="clock icon" {...props}>
+    <BaseIcon {...props}>
       <circle cx="12" cy="12" r="10" />
       <polyline points="12 6 12 12 16 14" />
     </BaseIcon>
@@ -154,7 +154,7 @@ export const Clock: Icon = (props) => {
 
 export const ArrowRightLong: Icon = (props) => {
   return (
-    <BaseIcon aria-label="arrow right" {...props}>
+    <BaseIcon {...props}>
       <path d="M18 8L22 12L18 16" />
       <path d="M2 12H22" />
     </BaseIcon>
@@ -163,7 +163,7 @@ export const ArrowRightLong: Icon = (props) => {
 
 export const Ban: Icon = (props) => {
   return (
-    <BaseIcon aria-label="ban icon" {...props}>
+    <BaseIcon {...props}>
       <circle cx="12" cy="12" r="10" />
       <path d="m4.9 4.9 14.2 14.2" />
     </BaseIcon>
@@ -172,7 +172,7 @@ export const Ban: Icon = (props) => {
 
 export const ChevronRight: Icon = (props) => {
   return (
-    <BaseIcon aria-label="chevron right icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m9 18 6-6-6-6" />
     </BaseIcon>
   );
@@ -180,7 +180,7 @@ export const ChevronRight: Icon = (props) => {
 
 export const ChevronLeft: Icon = (props) => {
   return (
-    <BaseIcon aria-label="chevron left icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m15 18-6-6 6-6" />
     </BaseIcon>
   );
@@ -188,7 +188,7 @@ export const ChevronLeft: Icon = (props) => {
 
 export const Table: Icon = (props) => {
   return (
-    <BaseIcon aria-label="table icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M12 3v18" />
       <rect width="18" height="18" x="3" y="3" rx="2" />
       <path d="M3 9h18" />
@@ -197,20 +197,9 @@ export const Table: Icon = (props) => {
   );
 };
 
-export const Grid: Icon = (props) => {
-  return (
-    <BaseIcon aria-label="grid icon" {...props}>
-      <rect width="7" height="7" x="3" y="3" rx="1" />
-      <rect width="7" height="7" x="14" y="3" rx="1" />
-      <rect width="7" height="7" x="14" y="14" rx="1" />
-      <rect width="7" height="7" x="3" y="14" rx="1" />
-    </BaseIcon>
-  );
-};
-
 export const Minus: Icon = (props) => {
   return (
-    <BaseIcon aria-label="minus icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M5 12h14" />
     </BaseIcon>
   );
@@ -218,7 +207,7 @@ export const Minus: Icon = (props) => {
 
 export const Ascending: Icon = (props) => {
   return (
-    <BaseIcon aria-label="ascending icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m3 8 4-4 4 4" />
       <path d="M7 4v16" />
       <path d="M11 12h4" />
@@ -230,7 +219,7 @@ export const Ascending: Icon = (props) => {
 
 export const Descending: Icon = (props) => {
   return (
-    <BaseIcon aria-label="descending icon" {...props}>
+    <BaseIcon {...props}>
       <path d="m3 16 4 4 4-4" />
       <path d="M7 20V4" />
       <path d="M11 4h4" />
@@ -242,7 +231,7 @@ export const Descending: Icon = (props) => {
 
 export const BookImage: Icon = (props) => {
   return (
-    <BaseIcon aria-label="book images icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
       <circle cx="10" cy="8" r="2" />
       <path d="m20 13.7-2.1-2.1c-.8-.8-2-.8-2.8 0L9.7 17" />
@@ -252,7 +241,7 @@ export const BookImage: Icon = (props) => {
 
 export const ScanSearch: Icon = (props) => {
   return (
-    <BaseIcon aria-label="book images icon" {...props}>
+    <BaseIcon {...props}>
       <path d="M3 7V5a2 2 0 0 1 2-2h2" />
       <path d="M17 3h2a2 2 0 0 1 2 2v2" />
       <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
@@ -265,13 +254,83 @@ export const ScanSearch: Icon = (props) => {
 
 export const AlarmClock: Icon = (props) => {
   return (
-    <BaseIcon aria-label="alarm clock icon" {...props}>
+    <BaseIcon {...props}>
       <circle cx="12" cy="13" r="8" />
       <path d="M12 9v4l2 2" />
       <path d="M5 3 2 6" />
       <path d="m22 6-3-3" />
       <path d="M6.38 18.7 4 21" />
       <path d="M17.64 18.67 20 21" />
+    </BaseIcon>
+  );
+};
+
+export const DotsHorizontal: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+      <circle cx="5" cy="12" r="1" />
+    </BaseIcon>
+  );
+};
+
+export const Plus: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </BaseIcon>
+  );
+};
+
+export const FolderSearch: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <circle cx="17" cy="17" r="3" />
+      <path d="M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1" />
+      <path d="m21 21-1.5-1.5" />
+    </BaseIcon>
+  );
+};
+
+export const Grid: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <rect width="7" height="7" x="3" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="3" rx="1" />
+      <rect width="7" height="7" x="14" y="14" rx="1" />
+      <rect width="7" height="7" x="3" y="14" rx="1" />
+    </BaseIcon>
+  );
+};
+
+export const Gallery: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <path d="M7 2h10" />
+      <path d="M5 6h14" />
+      <rect width="18" height="12" x="3" y="10" rx="2" />
+    </BaseIcon>
+  );
+};
+
+export const ExternalLink: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6" />
+      <path d="m21 3-9 9" />
+      <path d="M15 3h6v6" />
+    </BaseIcon>
+  );
+};
+
+export const Remove: Icon = (props) => {
+  return (
+    <BaseIcon {...props}>
+      <path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z" />
+      <line x1="18" x2="12" y1="9" y2="15" />
+      <line x1="12" x2="18" y1="9" y2="15" />
     </BaseIcon>
   );
 };

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 export default function Error({
   error,
@@ -8,7 +8,7 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="grid place-content-center min-h-96">
+    <div className="grid min-h-96 place-content-center">
       <h2>Something went wrong!</h2>
       <button onClick={() => reset()}>Try again?</button>
     </div>

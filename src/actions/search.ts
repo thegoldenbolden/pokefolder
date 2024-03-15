@@ -1,18 +1,19 @@
-'use server';
+"use server";
 
-import { addDefaultParams } from '@/lib/tcg';
-import { getCards } from '@/lib/fetch';
+import { getCards } from "@/lib/pokemon-tcg";
+import { createTCGQueryString, setQueryParams } from "@/lib/pokemon-tcg/utils";
 
-export async function search(searchParams: URLSearchParams) {
-  const params = addDefaultParams(new URLSearchParams(searchParams));
+export async function search(searchParams: string) {
+  const params = setQueryParams(new URLSearchParams(searchParams));
+  const query = createTCGQueryString(params);
 
   try {
-    const cards = await getCards(params);
-    return { cards };
+    const data = await getCards(query);
+    return { data };
   } catch (error) {
-    console.error('An error occurred fetching cards\n\n', error);
+    console.error("Failed to fetch cards", { params, error });
     return {
-      error: 'An error occurred',
+      message: "Failed to fetch cards",
     };
   }
 }
