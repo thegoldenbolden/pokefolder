@@ -31,7 +31,6 @@ type CardParams = {
 };
 
 export const revalidate = 86400;
-
 const findCard = cache(getCard);
 
 export async function generateMetadata(
@@ -48,19 +47,20 @@ export async function generateMetadata(
 
   const keywords = (await parent)?.keywords || [];
 
-  let from = card.name;
+  let description = `Get details about ${card.name}`;
+
   if (card.set.series && card.set.name) {
-    from = `expansion ${card.set.series}: ${card.set.name}`;
+    description += ` from expansion ${card.set.series}: ${card.set.name}.`;
     keywords.push(card.set.series);
     keywords.push(card.set.name);
   } else if (card.set.name) {
-    from = card.set.name;
+    description += ` from expansion ${card.set.name}.`;
     keywords.push(card.set.name);
   }
 
   return {
     keywords: [card.name, ...keywords],
-    description: `Get information about ${card.name} from ${from}.`,
+    description,
     title: {
       absolute: `${card.name} - ${card.set.name}`,
     },
