@@ -15,15 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormProvider } from "@/hooks/use-form";
-import { getSets, getTraits, getTypes } from "@/lib/pokemon-tcg";
+import { getSets, getTypes } from "@/lib/pokemon-tcg";
 import { regions as pokedex } from "@/lib/pokemon-tcg/constants";
 import { getQueryFallback } from "@/lib/utils";
 import type { QueryValues } from "@/types";
 import type { SimpleSet } from "@/types/api/pokemon-tcg";
 import type { Metadata, ResolvingMetadata } from "next";
 import { Suspense } from "react";
-
-export const revalidate = 86400;
 
 export async function generateMetadata(
   _,
@@ -76,28 +74,20 @@ export default async function Page() {
     { id: "tcgplayer", name: "TCGPlayer Prices" },
   ];
 
-  const [
-    setsRes,
-    typesRes,
-    subtypesRes,
-    supertypesRes,
-    raritiesRes,
-    traitsRes,
-  ] = await Promise.all([
-    getSets(),
-    getTypes("types"),
-    getTypes("subtypes"),
-    getTypes("supertypes"),
-    getTypes("rarities"),
-    getTraits(),
-  ]);
+  const [setsRes, typesRes, subtypesRes, supertypesRes, raritiesRes] =
+    await Promise.all([
+      getSets(),
+      getTypes("types"),
+      getTypes("subtypes"),
+      getTypes("supertypes"),
+      getTypes("rarities"),
+    ]);
 
   const sets = setsRes?.data ?? [];
   const types = typesRes?.data ?? [];
   const subtypes = subtypesRes?.data ?? [];
   const supertypes = supertypesRes?.data ?? [];
   const rarities = raritiesRes?.data ?? [];
-  const traits = traitsRes.data ?? [];
   const hpFallback = getQueryFallback("hp");
   const regions = Object.entries(pokedex);
 
@@ -178,12 +168,6 @@ export default async function Page() {
                 id="attacks"
                 name="Attacks"
                 placeholder="bite, tackle, damage rush"
-              />
-              <Combobox
-                id="traits"
-                name="Ancient Traits"
-                placeholder="barrier, stop, double, evolution"
-                data={traits.map((name) => setComboboxValues({ name }))}
               />
               <Combobox
                 id="sets"
