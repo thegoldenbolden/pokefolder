@@ -14,14 +14,14 @@ function createApiUrl(url: string) {
   return new URL(url, "https://api.pokemontcg.io/v2/");
 }
 
-async function fetcher<T>(url: URL): Promise<T> {
-  const response = await fetch(url, { headers });
+async function fetcher<T>(url: URL, init: RequestInit = {}): Promise<T> {
+  const response = await fetch(url, { headers, ...init });
 
   if (!response.ok || response.status !== 200) {
-    console.error({
+    console.error(
+      `${response.headers.get("date")}: ${decodeURIComponent(url.href)}\n\n`,
       response,
-      url: decodeURIComponent(url.href),
-    });
+    );
     throw new Error("Failed to fetch");
   }
 
@@ -29,47 +29,43 @@ async function fetcher<T>(url: URL): Promise<T> {
 }
 
 async function getCards(params: string): Promise<TCGApiResponse<CardObject>> {
-  return await fetcher(createApiUrl(`cards?${params}`));
+  const url = createApiUrl(`cards?${params}`);
+  return await fetcher(url);
 }
 
 async function getCard(id: string): Promise<{ data: CardObject } | null> {
-  return await fetcher(createApiUrl(`cards/${id}`));
+  const url = createApiUrl(`cards/${id}`);
+  return await fetcher(url);
 }
 
-async function getSets(): Promise<TCGApiResponse<SimpleSet> | null> {
+async function getSets<T = TCGApiResponse<SimpleSet> | null>(): Promise<T> {
   const url = createApiUrl("sets");
   url.searchParams.set("orderBy", "-releaseDate");
   url.searchParams.set("select", "id,name,series,releaseDate,images");
 
-  return await fetcher(url);
-}
+  const response = await fetcher<T>(url, {
+    next: {
+      revalidate: 86400,
+    },
+  });
 
-async function getTraits(): Promise<{ data: string[] }> {
-  const data = await fetcher<TCGApiResponse<CardObject>>(
-    createApiUrl(`cards?q=ancientTrait.name:*&orderBy=ancientTrait.name`),
-  );
-
-  if (!data.data.length) {
-    return {
-      data: [],
-    };
-  }
-
-  const filtered = data.data
-    .map((card) => card.ancientTrait?.name ?? "")
-    .filter((name) => name.length);
-
-  const traits = Array.from(new Set(filtered));
-
-  return { data: traits };
+  return response;
 }
 
 type Endpoint = "types" | "subtypes" | "supertypes" | "rarities";
 
-async function getTypes(
+async function getTypes<T = TCGApiResponse<string> | null>(
   endpoint: Endpoint,
-): Promise<TCGApiResponse<string> | null> {
-  return await fetcher(createApiUrl(endpoint));
+): Promise<T> {
+  const url = createApiUrl(endpoint);
+
+  const fetchCache: RequestInit = {
+    next: {
+      revalidate: endpoint === "types" ? Infinity : 86400,
+    },
+  };
+
+  return await fetcher<T>(url, fetchCache);
 }
 
-export { createApiUrl, getCard, getCards, getSets, getTraits, getTypes };
+export { createApiUrl, getCard, getCards, getSets, getTypes };

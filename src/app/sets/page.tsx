@@ -5,8 +5,6 @@ import { getQueryKey, getSearchUrl } from "@/lib/utils";
 import type { SimpleSet } from "@/types/api/pokemon-tcg";
 import type { ResolvingMetadata } from "next";
 
-export const revalidate = 86400;
-
 export async function generateMetadata(_, parent: ResolvingMetadata) {
   const keywords = (await parent)?.keywords || [];
   return {
