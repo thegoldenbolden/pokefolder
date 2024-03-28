@@ -45,7 +45,6 @@ export default function Page() {
         <p className="w-full max-w-[80%] text-center">
           Try searching&nbsp;
           <Link
-            prefetch={true}
             className="text-primary hover:text-primary/80"
             href={getSearchUrl(`${cardKey}=vikavolt`)}
           >
@@ -53,18 +52,13 @@ export default function Page() {
           </Link>
           ,&nbsp;
           <Link
-            prefetch={true}
             className="text-primary hover:text-primary/80"
             href={getSearchUrl(`${cardKey}=mew,cynthia`)}
           >
             mew, cynthia
           </Link>
           &nbsp;or&nbsp;
-          <Link
-            prefetch={true}
-            className="text-primary hover:text-primary/80"
-            href="/sets"
-          >
+          <Link className="text-primary hover:text-primary/80" href="/sets">
             browse by sets
           </Link>
         </p>
