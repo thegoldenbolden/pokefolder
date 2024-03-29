@@ -69,3 +69,17 @@ export function getQueryFallback(param: QueryKey) {
 export function getQueryFallbackKeys() {
   return Object.keys(fallbacks) as (keyof typeof fallbacks)[];
 }
+
+export async function fetcher<T>(url: URL, init: RequestInit = {}): Promise<T> {
+  const response = await fetch(url, init);
+
+  if (!response.ok || response.status !== 200) {
+    console.error(
+      `${response.headers.get("date")}: ${decodeURIComponent(url.href)}\n\n`,
+      response,
+    );
+    throw new Error("Failed to fetch");
+  }
+
+  return await response.json();
+}

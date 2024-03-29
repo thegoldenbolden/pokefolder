@@ -1,3 +1,5 @@
+import { fetcher } from "@/lib/utils";
+import { env } from "@/schemas/valibot/env";
 import type {
   CardObject,
   SimpleSet,
@@ -7,35 +9,21 @@ import "server-only";
 
 const headers: RequestInit["headers"] = {
   "content-type": "application/json",
-  "x-api-key": `${process.env.TCG_KEY}`,
+  "x-api-key": env.TCG_API_KEY,
 };
 
 function createApiUrl(url: string) {
   return new URL(url, "https://api.pokemontcg.io/v2/");
 }
 
-async function fetcher<T>(url: URL, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(url, { headers, ...init });
-
-  if (!response.ok || response.status !== 200) {
-    console.error(
-      `${response.headers.get("date")}: ${decodeURIComponent(url.href)}\n\n`,
-      response,
-    );
-    throw new Error("Failed to fetch");
-  }
-
-  return await response.json();
-}
-
 async function getCards(params: string): Promise<TCGApiResponse<CardObject>> {
   const url = createApiUrl(`cards?${params}`);
-  return await fetcher(url);
+  return await fetcher(url, { headers });
 }
 
 async function getCard(id: string): Promise<{ data: CardObject } | null> {
   const url = createApiUrl(`cards/${id}`);
-  return await fetcher(url);
+  return await fetcher(url, { headers });
 }
 
 async function getSets<T = TCGApiResponse<SimpleSet> | null>(): Promise<T> {
@@ -44,6 +32,7 @@ async function getSets<T = TCGApiResponse<SimpleSet> | null>(): Promise<T> {
   url.searchParams.set("select", "id,name,series,releaseDate,images");
 
   const response = await fetcher<T>(url, {
+    headers,
     next: {
       revalidate: 86400,
     },
@@ -52,14 +41,13 @@ async function getSets<T = TCGApiResponse<SimpleSet> | null>(): Promise<T> {
   return response;
 }
 
-type Endpoint = "types" | "subtypes" | "supertypes" | "rarities";
-
 async function getTypes<T = TCGApiResponse<string> | null>(
-  endpoint: Endpoint,
+  endpoint: "types" | "subtypes" | "supertypes" | "rarities",
 ): Promise<T> {
   const url = createApiUrl(endpoint);
 
   const fetchCache: RequestInit = {
+    headers,
     next: {
       revalidate: endpoint === "types" ? Infinity : 86400,
     },
