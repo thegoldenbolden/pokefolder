@@ -1,8 +1,8 @@
 "use client";
 
+import { Remove } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import React from "react";
-import { Remove } from "../icons";
-import { Button } from "./button";
 
 export function Tags(props: React.ComponentProps<"ul">) {
   return (

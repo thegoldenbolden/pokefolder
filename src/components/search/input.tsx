@@ -4,9 +4,9 @@ import { Plus } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input as TextInput } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TagItem, Tags } from "@/components/ui/tags";
 import { useForm, type FormField } from "@/hooks/use-form";
 import * as React from "react";
-import { TagItem, Tags } from "../ui/tags";
 
 type InputProps = React.ComponentProps<typeof TextInput> & {
   id: Exclude<FormField, "hp">;

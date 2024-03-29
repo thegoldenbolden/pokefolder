@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TagItem, Tags } from "@/components/ui/tags";
 import { useForm, type FormField, type FormValue } from "@/hooks/use-form";
 import { cn, getQueryKey } from "@/lib/utils";
 import type { SimpleSet } from "@/types/api/pokemon-tcg";
 import { useCombobox, useMultipleSelection } from "downshift";
 import * as React from "react";
-import { TagItem, Tags } from "../ui/tags";
 
 export type DefaultMultiComboboxValue = {
   id: string;
