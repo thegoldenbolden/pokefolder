@@ -4,8 +4,6 @@ export const MAX_PAGE_LIMIT = 60;
 export const MIN_PAGE_LIMIT = 10;
 
 export const CARDS_PER_SET = 25;
-export const DAILY_S = 86400;
-export const WEEKLY_S = 604800;
 
 export const params: QueryKeys = {
   abilities: "abilities",
