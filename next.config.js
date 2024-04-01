@@ -1,10 +1,11 @@
 /** @type {import("next").NextConfig} */
-const nextConfig = {
+module.exports = {
+  experimental: {
+    ppr: true,
+  },
   images: {
     unoptimized: true,
-    formats: ['image/avif', 'image/webp'],
-    domains: ['images.pokemontcg.io'],
+    formats: ["image/avif", "image/webp"],
+    domains: ["images.pokemontcg.io"],
   },
 };
-
-module.exports = nextConfig;
