@@ -7,9 +7,7 @@ export function Table(props: React.ComponentProps<"table">) {
 }
 
 export function TableHeader(props: React.ComponentProps<"thead">) {
-  return (
-    <thead className="bg-foreground font-medium text-background" {...props} />
-  );
+  return <thead className="bg-fg font-medium text-canvas" {...props} />;
 }
 
 export function TableBody(props: React.ComponentProps<"tbody">) {
@@ -17,9 +15,7 @@ export function TableBody(props: React.ComponentProps<"tbody">) {
 }
 
 export function TableFooter(props: React.ComponentProps<"tfoot">) {
-  return (
-    <tfoot className="bg-foreground font-medium text-background" {...props} />
-  );
+  return <tfoot className="bg-fg font-medium text-canvas" {...props} />;
 }
 
 export function TableRow(props: React.ComponentProps<"tr">) {
@@ -45,5 +41,5 @@ export function TableCell(props: React.ComponentProps<"td">) {
 }
 
 export function TableCaption(props: React.ComponentProps<"caption">) {
-  return <caption className="text-sm text-foreground" {...props} />;
+  return <caption className="text-sm text-fg" {...props} />;
 }

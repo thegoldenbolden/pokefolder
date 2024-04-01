@@ -1,0 +1,48 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+model User {
+  id       String    @id
+  email    String    @unique
+  nickname String?
+  sessions Session[]
+  accounts Account[]
+
+  @@index([id])
+  @@index([email])
+  @@map(name: "users")
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@index([userId])
+  @@map(name: "sessions")
+}
+
+model Account {
+  id             String   @id @unique
+  username       String?
+  provider       String
+  providerUserId String   @map("provider_user_id")
+  expiresAt      Int?     @map("expires_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+  @@map(name: "accounts")
+}

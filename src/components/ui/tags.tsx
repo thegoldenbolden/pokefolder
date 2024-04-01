@@ -1,8 +1,8 @@
 "use client";
 
+import { TagX } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import React from "react";
-import { Remove } from "../icons";
-import { Button } from "./button";
 
 export function Tags(props: React.ComponentProps<"ul">) {
   return (
@@ -29,11 +29,11 @@ export function TagItem({ id, name, onDelete, ...props }: TagItemProps) {
         <Button
           type="button"
           variant={null}
-          className="rounded-none outline-none hover:bg-transparent hover:text-destructive focus-visible:text-destructive"
+          className="hover:text-destructive focus-visible:text-destructive rounded-none outline-none hover:bg-transparent"
           aria-label={`remove ${name}`}
           onClick={onDelete}
         >
-          <Remove className="size-4" />
+          <TagX className="size-4" />
         </Button>
       )}
     </li>

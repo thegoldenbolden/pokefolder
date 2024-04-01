@@ -12,8 +12,8 @@ const Toggle = forwardRef<
     ref={ref}
     className={cn(
       `
-    rounded-sm border border-border p-2 hover:bg-foreground hover:text-background
-    data-[state='on']:bg-foreground data-[state='on']:text-background data-[state='on']:hover:bg-foreground/90`,
+    rounded-sm border border-border p-2 hover:bg-fg hover:text-canvas
+    data-[state='on']:bg-fg data-[state='on']:text-canvas data-[state='on']:hover:bg-fg/90`,
       className,
     )}
     {...props}

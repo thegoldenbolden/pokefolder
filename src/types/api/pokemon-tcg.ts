@@ -8,6 +8,7 @@ export type SimpleSet = {
   releaseDate: string;
   images: { symbol: string; logo: string };
   series?: string;
+  total: number;
 };
 
 export type SetObject = {
@@ -23,7 +24,7 @@ export type SetObject = {
   images: { symbol: string; logo: string };
 };
 
-// https://docs.pokemontcg.io/api-reference/cards/card-object#regulationmark-string
+// https://docs.pokemontcg.io/api-reference/cards/card-object
 
 export type SimpleCard = {
   id: string;

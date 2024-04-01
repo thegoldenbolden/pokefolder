@@ -17,7 +17,6 @@ export function useCards() {
   params.sort();
 
   const { data, error, isLoading } = useSWR<Search>(
-    // null,
     `/api/cards?${params.toString()}`,
     async () => {
       try {
