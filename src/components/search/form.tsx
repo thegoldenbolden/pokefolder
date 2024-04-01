@@ -32,15 +32,14 @@ export function Form({
         title="Filter"
         aria-label="open filter form"
         size="icon"
-        variant="border"
+        variant="ghost"
       >
         <Filter />
       </SheetTrigger>
-      <SheetContent className="flex flex-col gap-4 overflow-auto">
+      <SheetContent asChild className="flex flex-col overflow-auto bg-inherit">
         <form
           {...props}
           data-pending={pending}
-          className="h-full bg-inherit"
           onSubmit={(e) => {
             e.preventDefault();
             if (pending) return;
@@ -105,7 +104,7 @@ export function Form({
                 variant="underline"
                 size={null}
                 aria-label="reset form"
-                className="justify-start text-xs uppercase transition-none hover:text-destructive"
+                className="hover:text-destructive justify-start text-xs uppercase transition-none"
                 onClick={() => dispatch({ type: "reset" })}
               >
                 Clear all
@@ -136,7 +135,7 @@ export function Form({
           <div className="sticky bottom-0 z-40 mt-auto w-full border-t border-border bg-inherit px-3 py-4">
             <Button
               className="w-full p-2 font-bungee capitalize"
-              variant="foreground"
+              variant="fg"
               type="submit"
             >
               Apply filters

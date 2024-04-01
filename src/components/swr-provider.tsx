@@ -1,16 +1,16 @@
 "use client";
+
 import { SWRConfig } from "swr";
 
-export function SWRProvider(props: React.PropsWithChildren) {
+export function SWRProvider(props: React.ComponentProps<typeof SWRConfig>) {
   return (
     <SWRConfig
       value={{
         revalidateIfStale: false,
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
-        fetcher: async (resource, init) =>
-          fetch(resource, init).then((res) => res.json()),
       }}
+      {...props}
     >
       {props.children}
     </SWRConfig>

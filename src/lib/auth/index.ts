@@ -51,16 +51,9 @@ interface DatabaseUserAttributes {
   nickname: string | null;
 }
 
-export const getUser = cache(async () => {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
-  if (!sessionId) {
-    return null;
-  }
-
-  const { user } = await lucia.validateSession(sessionId);
-  return user;
-});
-
+/**
+ * - use for server actions or route handlers
+ * */
 export async function getSession() {
   const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
 
@@ -90,3 +83,24 @@ export async function getSession() {
 
   return { user, session };
 }
+
+/**
+ * - use for server components
+ * */
+export const getUser = cache(async () => {
+  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+  if (!sessionId) {
+    return null;
+  }
+
+  const { user } = await lucia.validateSession(sessionId);
+  return user;
+});
+
+/**
+ * - use for server components
+ * */
+export const isAuthenticated = cache(async () => {
+  const user = await getUser();
+  return !!user;
+});

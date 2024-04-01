@@ -3,6 +3,8 @@
 import { Grid, Table } from "@/components/icons";
 import { Link } from "@/components/ui/link";
 import { Select } from "@/components/ui/select";
+import { MAX_PAGE_LIMIT, MIN_PAGE_LIMIT } from "@/lib/constants";
+import { getNumberFromRange } from "@/lib/pokemon-tcg/utils";
 import { getQueryKey, getSearchUrl } from "@/lib/utils";
 import type { QueryKey, QueryValues } from "@/types";
 import { useSearchParams } from "next/navigation";
@@ -25,20 +27,19 @@ export function ViewAs() {
   return (
     <>
       <Link
-        variant={!isListView ? "foreground" : "border"}
+        variant={!isListView ? "primary" : "ghost"}
         size="icon"
-        color={isListView ? "muted" : "primary"}
         href={imagesLink}
-        aria-label="view as images"
+        aria-label="view cards as images"
         title="Images"
       >
         <Grid />
       </Link>
       <Link
         size="icon"
-        variant={isListView ? "foreground" : "border"}
+        variant={isListView ? "primary" : "ghost"}
         href={listLink}
-        aria-label="view as table"
+        aria-label="view cards as a table"
         title="Table"
       >
         <Table />
@@ -52,7 +53,7 @@ type SelectProps<T extends QueryKey> = React.ComponentProps<typeof Select> & {
   fallback: QueryValues[T];
 };
 
-export function SelectOrder({ id, fallback, ...props }: SelectProps<"order">) {
+export function SelectOrder({ fallback, ...props }: SelectProps<"order">) {
   const searchParams = useSearchParams();
 
   return (
@@ -60,14 +61,14 @@ export function SelectOrder({ id, fallback, ...props }: SelectProps<"order">) {
       {...props}
       onValueChange={(v) => {
         const params = new URLSearchParams(searchParams);
-        params.set(id, v || fallback);
+        params.set(props.id, v || fallback);
         window.history.replaceState(null, "", getSearchUrl(params));
       }}
     />
   );
 }
 
-export function SelectSort({ id, fallback, ...props }: SelectProps<"sort">) {
+export function SelectSort({ fallback, ...props }: SelectProps<"sort">) {
   const searchParams = useSearchParams();
 
   return (
@@ -75,7 +76,37 @@ export function SelectSort({ id, fallback, ...props }: SelectProps<"sort">) {
       {...props}
       onValueChange={(v) => {
         const params = new URLSearchParams(searchParams);
-        params.set(id, v || fallback);
+        params.set(props.id, v || fallback);
+        window.history.pushState(null, "", getSearchUrl(params));
+      }}
+    />
+  );
+}
+
+export function SelectPerPage({ fallback, ...props }: SelectProps<"limit">) {
+  const searchParams = useSearchParams();
+  const pageKey = getQueryKey("page");
+
+  const pageSize = searchParams.get(props.id);
+
+  const getPageSize = () => {
+    return getNumberFromRange({
+      min: MIN_PAGE_LIMIT,
+      max: MAX_PAGE_LIMIT,
+      round: 10,
+      value: pageSize,
+      fallback,
+    });
+  };
+
+  return (
+    <Select
+      {...props}
+      value={`${getPageSize()}`}
+      onValueChange={(v) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set(props.id, v);
+        params.set(pageKey, "1");
         window.history.pushState(null, "", getSearchUrl(params));
       }}
     />

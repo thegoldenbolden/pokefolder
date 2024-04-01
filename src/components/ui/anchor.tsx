@@ -3,7 +3,7 @@ import { buttonVariants, type ButtonVariants } from "./button";
 
 export function Anchor({
   className,
-  variant,
+  variant = "underline",
   size,
   ...props
 }: React.ComponentProps<"a"> & ButtonVariants) {

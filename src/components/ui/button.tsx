@@ -6,17 +6,20 @@ import { forwardRef } from "react";
 export type ButtonVariants = VariantProps<typeof buttonVariants>;
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-lg disabled:pointer-events-none",
+  "inline-flex items-center justify-center rounded-md disabled:pointer-events-none",
   {
     variants: {
       defaultVariants: {
-        variant: "border",
+        variant: "outline",
       },
       variant: {
-        border:
-          "bg-transparent border border-border hover:bg-foreground/5 hover:text-foreground",
-        foreground: "bg-foreground text-background hover:bg-foreground/75",
-        ghost: "hover:bg-foreground/10",
+        outline:
+          "bg-transparent border border-border hover:bg-fg/5 hover:text-fg",
+        primary: "bg-primary text-primary-fg hover:bg-primary/75",
+        fg: "bg-fg text-fg-contrast hover:bg-fg/75",
+        muted: "bg-muted border border-border text-muted-fg hover:bg-muted/75",
+        ghost: "hover:bg-fg/10",
+        border: "bg-border hover:bg-border/75",
         underline: "decoration-2 hover:underline",
       },
       size: {
@@ -28,9 +31,9 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       {
-        variant: ["border", "foreground", "ghost"],
+        variant: ["outline", "fg", "ghost", "muted", "primary"],
         className:
-          "motion-safe:transition-gpu outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+          "motion-safe:transition-colors outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-canvas",
       },
       {
         variant: "underline",

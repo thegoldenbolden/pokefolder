@@ -50,6 +50,6 @@ export const externalApiOrderBy: Record<QueryValues["sort"], string> = {
   release: "set.releaseDate",
   region: "nationalPokedexNumbers.0",
   cardmarket: "cardmarket.prices.trendPrice",
-  tcgplayer: "tcgplayer.prices.holofoil.market",
+  tcgplayer: "tcgplayer.prices.normal.low",
   series: "set.series",
 };

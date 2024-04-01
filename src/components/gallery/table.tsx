@@ -1,11 +1,11 @@
-import { TypesImage } from "@/components/card/typings";
+import { PokemonCard } from "@/components/pokemon/card";
+import { TypeGroup } from "@/components/pokemon/type";
 import { Anchor } from "@/components/ui/anchor";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import {
   TableBody,
@@ -108,14 +108,11 @@ export function Table() {
             <HoverCardTrigger asChild>
               <TableRow>
                 <TableCell>
-                  <Link
-                    variant="underline"
-                    href={getSearchUrl(`sets=${card.set.id}`)}
-                  >
+                  <Link href={getSearchUrl(`sets=${card.set.id}`)}>
                     {card.set.name}
                   </Link>
                 </TableCell>
-                <TableCell>{card.number}</TableCell>
+                <TableCell>{card.number.toString()}</TableCell>
                 <TableCell>
                   <Link
                     variant="underline"
@@ -125,33 +122,29 @@ export function Table() {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link
-                    variant="underline"
-                    href={getSearchUrl(`rarities=${card.rarity}`)}
-                  >
+                  <Link href={getSearchUrl(`rarities=${card.rarity}`)}>
                     {card.rarity}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Link
-                    variant="underline"
-                    href={getSearchUrl(`supertypes=${card.supertype}`)}
-                  >
+                  <Link href={getSearchUrl(`supertypes=${card.supertype}`)}>
                     {card.supertype}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <span className="inline-flex flex-wrap items-center gap-1">
-                    <TypesImage id="types" data={card.types} />
-                  </span>
+                  <div className="inline-flex flex-wrap items-center gap-1">
+                    <TypeGroup
+                      id={card.id}
+                      types={card.types?.map((type) => ({ type }))}
+                    />
+                  </div>
                 </TableCell>
                 <TableCell className="space-x-2">
                   {!card.subtypes || card.subtypes.length === 0
-                    ? null
+                    ? "--"
                     : card.subtypes.map((subtype) => (
                         <Link
                           href={getSearchUrl(`subtypes=${subtype}`)}
-                          variant="underline"
                           key={subtype}
                         >
                           {subtype}
@@ -160,24 +153,18 @@ export function Table() {
                 </TableCell>
                 <TableCell>
                   {card.tcgplayer?.url ? (
-                    <Anchor variant="underline" href={card.tcgplayer.url}>
-                      {getCardPrice(
-                        "USD",
-                        card.tcgplayer?.prices?.normal?.market,
-                      )}
+                    <Anchor href={card.tcgplayer.url}>
+                      {getCardPrice("USD", card.tcgplayer?.prices?.normal?.low)}
                     </Anchor>
                   ) : (
                     <>
-                      {getCardPrice(
-                        "USD",
-                        card.tcgplayer?.prices?.normal?.market,
-                      )}
+                      {getCardPrice("USD", card.tcgplayer?.prices?.normal?.low)}
                     </>
                   )}
                 </TableCell>
                 <TableCell>
                   {card.cardmarket?.url ? (
-                    <Anchor variant="underline" href={card.cardmarket.url}>
+                    <Anchor href={card.cardmarket.url}>
                       {getCardPrice("EUR", card.cardmarket?.prices?.trendPrice)}
                     </Anchor>
                   ) : (
@@ -189,14 +176,11 @@ export function Table() {
               </TableRow>
             </HoverCardTrigger>
             <HoverCardContent className="rounded-sm border-none  bg-transparent p-0">
-              <Image
-                src={card.images.large || card.images.small || "/back.png"}
-                alt={card.name}
-                width={250}
-                height={350}
-                sizes="(max-width: 768px) 12rem, (max-width: 1280px) 16rem, 16rem"
+              <PokemonCard
+                name={card.name}
+                priorityImg={card.images.small}
+                priorityImgFallback={card.images.large}
                 className="transition-transform hover:scale-105 focus-visible:scale-105"
-                placeholder="blur"
               />
             </HoverCardContent>
           </HoverCard>

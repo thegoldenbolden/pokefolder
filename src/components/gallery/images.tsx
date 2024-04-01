@@ -1,8 +1,9 @@
 "use client";
-import { CardLink } from "@/components/card/link";
+import { CardLink } from "@/components/pokemon/link";
 import { useCards } from "@/hooks/use-cards";
 import { getQueryFallback, getQueryKey } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
+import { PokemonCard } from "../pokemon/card";
 
 export function Images() {
   const { cards, isLoading, error } = useCards();
@@ -49,14 +50,14 @@ export function Images() {
     <ul className="grid w-full grid-cols-2 items-center gap-4 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {cards.data.map((card) => (
         <li key={`${card.id}-list`}>
-          <CardLink
-            id={card.id}
-            name={card.name}
-            setName={card.set.name}
-            smallImg={card.images.small}
-            largeImg={card.images.large}
-            types={card.types}
-          />
+          <CardLink id={card.id} name={card.name} setName={card.set.name}>
+            <PokemonCard
+              name={card.name}
+              priorityImg={card.images.small}
+              priorityImgFallback={card.images.large}
+              types={card.types}
+            />
+          </CardLink>
         </li>
       ))}
     </ul>
