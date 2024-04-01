@@ -81,7 +81,7 @@ export function Input({ name, id, ...props }: InputProps) {
           variant="underline"
           size={null}
           aria-label={`reset ${id}`}
-          className="justify-start text-xs uppercase transition-none hover:text-destructive"
+          className="hover:text-destructive justify-start text-xs uppercase transition-none"
           onClick={() => dispatch({ type: "set", key: id, values: [] })}
         >
           reset
@@ -108,12 +108,12 @@ export function Input({ name, id, ...props }: InputProps) {
             value={value}
             onKeyDown={onKeyDown}
             onChange={(e) => setValue(e.currentTarget.value)}
-            className="grow rounded-md outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-safe:transition-colors"
+            className="grow rounded-md outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-canvas motion-safe:transition-colors"
             {...props}
           />
           <Button
             color="border"
-            variant="border"
+            variant="outline"
             size="icon"
             className="aspect-square"
             type="button"

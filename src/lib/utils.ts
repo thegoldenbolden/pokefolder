@@ -1,6 +1,5 @@
 import { fallbacks, params } from "@/lib/constants";
 import type { QueryKey } from "@/types";
-import type { SimpleCard } from "@/types/api/pokemon-tcg";
 import { cx, type CxOptions } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 
@@ -28,8 +27,8 @@ export function createParameter(key: string, name: string | undefined) {
   return params;
 }
 
-export function getCardUrl(card: SimpleCard) {
-  let name = decodeURIComponent(card.name);
+export function getCardUrl(id: string, cardName: string) {
+  let name = decodeURIComponent(cardName);
   const matches = name.match(/[a-zA-Z0-9é'&]+/gi) || [];
   name = matches.length ? matches.join("-") : name;
 
@@ -38,7 +37,7 @@ export function getCardUrl(card: SimpleCard) {
     .replaceAll("'s", "s")
     .replaceAll("lv.", "lv");
 
-  return `/cards/${name.toLowerCase()}/${card.id}`;
+  return `/cards/${name.toLowerCase()}/${id}`;
 }
 
 export function getCardPrice(currency: "EUR" | "USD", value?: number | null) {

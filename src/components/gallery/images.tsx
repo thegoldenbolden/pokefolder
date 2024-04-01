@@ -29,7 +29,7 @@ export function Images() {
     return (
       <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
         <p className="text-3xl font-bold">Uh oh..</p>
-        <p className="text-muted-foreground">
+        <p className="text-muted-fg">
           An error occurred while searching for cards.
         </p>
       </div>
@@ -40,9 +40,7 @@ export function Images() {
     return (
       <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
         <p className="text-3xl font-bold">No results found</p>
-        <p className="text-muted-foreground">
-          Try searching for something else.
-        </p>
+        <p className="text-muted-fg">Try searching for something else.</p>
       </div>
     );
   }
@@ -51,7 +49,14 @@ export function Images() {
     <ul className="grid w-full grid-cols-2 items-center gap-4 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {cards.data.map((card) => (
         <li key={`${card.id}-list`}>
-          <CardLink {...card} />
+          <CardLink
+            id={card.id}
+            name={card.name}
+            setName={card.set.name}
+            smallImg={card.images.small}
+            largeImg={card.images.large}
+            types={card.types}
+          />
         </li>
       ))}
     </ul>

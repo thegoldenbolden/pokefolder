@@ -216,35 +216,3 @@ function getTCGOrderByField(
 export function getQueryValue(key: QueryKey, searchParams: URLSearchParams) {
   return searchParams.get(key);
 }
-
-/**
- * Get the background color based on the card's type
- */
-export function getBackgroundColor(type?: string) {
-  switch (type?.toLowerCase()) {
-    default:
-      return "linear-gradient(to bottom right, hsl(var(--background-light)), hsl(var(--background-lighter))";
-    case "colorless":
-      return "hsl(240 1.9% 59.6%)";
-    case "darkness":
-      return "hsl(207.8, 33.3%, 11.8%)";
-    case "dragon":
-      return "hsl(45.8, 44.9%, 14.9%)";
-    case "fairy":
-      return "hsl(322.9, 32.8%, 25.5%)";
-    case "fighting":
-      return "hsl(9.9, 57.4%, 13.1%)";
-    case "fire":
-      return "hsl(357.9, 71.8%, 25.9%)";
-    case "grass":
-      return "hsl(137.1, 51.9%, 11.8%)";
-    case "lightning":
-      return "hsl(45.5, 67.4%, 33.1%)";
-    case "metal":
-      return "hsl(213.3, 3.9%, 25.3%)";
-    case "psychic":
-      return "hsl(300, 31.2%, 16.5%)";
-    case "water":
-      return "hsl(195.7, 66.8%, 26.1%)";
-  }
-}

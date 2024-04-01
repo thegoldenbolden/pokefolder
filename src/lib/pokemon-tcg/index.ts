@@ -29,12 +29,12 @@ async function getCard(id: string): Promise<{ data: CardObject } | null> {
 async function getSets<T = TCGApiResponse<SimpleSet> | null>(): Promise<T> {
   const url = createApiUrl("sets");
   url.searchParams.set("orderBy", "-releaseDate");
-  url.searchParams.set("select", "id,name,series,releaseDate,images");
+  url.searchParams.set("select", "id,name,series,releaseDate,images,total");
 
   const response = await fetcher<T>(url, {
     headers,
     next: {
-      revalidate: 86400,
+      revalidate: 604800,
     },
   });
 
@@ -49,7 +49,7 @@ async function getTypes<T = TCGApiResponse<string> | null>(
   const fetchCache: RequestInit = {
     headers,
     next: {
-      revalidate: endpoint === "types" ? Infinity : 86400,
+      revalidate: endpoint === "types" ? Infinity : 604800,
     },
   };
 

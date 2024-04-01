@@ -71,9 +71,7 @@ export function Table() {
     return (
       <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
         <p className="text-3xl font-bold">No results found</p>
-        <p className="text-muted-foreground">
-          Try searching for something else.
-        </p>
+        <p className="text-muted-fg">Try searching for something else.</p>
       </div>
     );
   }
@@ -82,7 +80,7 @@ export function Table() {
     return (
       <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
         <p className="text-3xl font-bold">Uh oh..</p>
-        <p className="text-muted-foreground">
+        <p className="text-muted-fg">
           An error occurred while searching for cards.
         </p>
       </div>
@@ -119,7 +117,10 @@ export function Table() {
                 </TableCell>
                 <TableCell>{card.number}</TableCell>
                 <TableCell>
-                  <Link variant="underline" href={getCardUrl(card)}>
+                  <Link
+                    variant="underline"
+                    href={getCardUrl(card.id, card.name)}
+                  >
                     {card.name}
                   </Link>
                 </TableCell>
@@ -162,14 +163,14 @@ export function Table() {
                     <Anchor variant="underline" href={card.tcgplayer.url}>
                       {getCardPrice(
                         "USD",
-                        card.tcgplayer?.prices?.holofoil?.market,
+                        card.tcgplayer?.prices?.normal?.market,
                       )}
                     </Anchor>
                   ) : (
                     <>
                       {getCardPrice(
                         "USD",
-                        card.tcgplayer?.prices?.holofoil?.market,
+                        card.tcgplayer?.prices?.normal?.market,
                       )}
                     </>
                   )}

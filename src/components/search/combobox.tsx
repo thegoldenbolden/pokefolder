@@ -51,7 +51,7 @@ const ComboboxTypes = Object.assign(
       return (
         <>
           {item.images?.symbol && (
-            <span className="rounded-sm bg-foreground p-1">
+            <span className="rounded-sm bg-fg p-1">
               <Image
                 src={item.images.symbol}
                 alt={`symbol for ${item.name} from the series ${item.series}`}
@@ -205,7 +205,7 @@ export function Combobox({ data, name, id, placeholder }: ComboboxProps) {
           variant="underline"
           size={null}
           aria-label={`reset ${id}`}
-          className="justify-start text-xs uppercase transition-none hover:text-destructive"
+          className="hover:text-destructive justify-start text-xs uppercase transition-none"
           onClick={() => dispatch({ type: "set", key: id, values: [] })}
         >
           reset
@@ -229,7 +229,7 @@ export function Combobox({ data, name, id, placeholder }: ComboboxProps) {
         </Tags>
         <Input
           name={id}
-          className="grow outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-safe:transition-colors"
+          className="grow outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-canvas motion-safe:transition-colors"
           placeholder={placeholder}
           {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
           id={id}
@@ -246,8 +246,7 @@ export function Combobox({ data, name, id, placeholder }: ComboboxProps) {
               className={cn(
                 "flex items-center gap-2 px-3 py-2 first:rounded-t-md last:rounded-b-md",
                 {
-                  "bg-foreground/10 text-foreground":
-                    highlightedIndex === index,
+                  "bg-fg/10 text-fg": highlightedIndex === index,
                   "font-bold": selectedItem === item,
                 },
               )}
