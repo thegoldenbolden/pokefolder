@@ -5,30 +5,6 @@
 :root {
   box-sizing: border-box;
   scroll-behavior: smooth;
-
-  --background: 0 0% 0%;
-  --background-light: 0 0% 8%;
-  --background-lighter: 0 0% 15%;
-
-  --foreground: 0 0% 100%;
-  --spotlight: 0 0% 15%;
-  --border: 0 0% 20%;
-  --ring: var(--primary);
-
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 88%;
-
-  --popover: 0 0% 0%;
-  --popover-foreground: 0 0% 100%;
-
-  --primary: 48 100% 50%;
-  --primary-foreground: 0 0% 0%;
-
-  --accent: 0 100% 50%;
-  --accent-foreground: 0 0% 100%;
-
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
 }
 
 /* Fluid font size variables, for browsers that support clamp */
@@ -85,36 +61,32 @@
   }
 }
 
+.gradient-text {
+  color: var(--color-tagline-start);
+}
+
+@supports (background-clip: text) {
+  .gradient-text {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-tagline-start),
+      var(--color-tagline-end)
+    );
+    background-clip: text;
+    color: transparent;
+  }
+}
+
 .bg-image {
-  background-image: radial-gradient(
-      ellipse at top,
-      hsl(var(--spotlight)),
-      transparent
-    ),
-    radial-gradient(ellipse at bottom, hsl(var(--background)), transparent);
   height: 100vh;
   width: 100vw;
   position: fixed;
   z-index: -1;
   top: 0;
   left: 0;
-}
-
-@layer components {
-  .logo {
-    color: hsl(var(--primary));
-    -webkit-text-stroke: 0.15rem hsl(var(--secondary));
-  }
-
-  .gradient-text {
-    color: white;
-  }
-
-  @supports (background-clip: text) {
-    .gradient-text {
-      background-image: linear-gradient(180deg, #fff, #adadad);
-      background-clip: text;
-      color: transparent;
-    }
-  }
+  background-image: linear-gradient(
+    to bottom,
+    hsl(var(--color-canvas)),
+    hsl(var(--color-spotlight))
+  );
 }

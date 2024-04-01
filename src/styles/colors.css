@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+[data-theme="light"] {
+  --color-fg: 0 0% 0%;
+  --color-fg-soft: 0 0% 34%;
+  --color-fg-contrast: 0 0% 100%;
+  --color-primary: 0 100% 45%;
+  --color-primary-fg: 0 0% 94%;
+  --color-accent: 48 80% 50%;
+  --color-accent-fg: 0 0% 0%;
+  --color-popover: 0 0% 90%;
+  --color-popover-fg: 0 0% 7%;
+  --color-muted: 0 0% 90%;
+  --color-muted-fg: 0 0% 7%;
+
+  --color-tagline-start: #606060;
+  --color-tagline-end: #000000;
+
+  --color-canvas: 0 0% 94%;
+  --color-spotlight: 0 0% 94%;
+  --color-border: 0 0% 84%;
+  --color-input: 0 0% 90%;
+  --color-ring: var(--primary);
+
+  /* Card Typing Colors */
+  --color-typing: 0 0% 80%;
+  --color-typing-start: 0 0% 80%;
+  --color-typing-end: 0 0% 70%;
+
+  /* Price Colors */
+  --color-low-price: 110 70% 30%;
+  --color-mid-price: 210 70% 60%;
+  --color-high-price: 0 100% 40%;
+  --color-market-price: 270 70% 50%;
+  --color-euro-price: 0 30% 40%;
+}
+
+[data-theme="dark"] {
+  --color-canvas: 0 0% 0%;
+  --color-fg: 0 0% 100%;
+  --color-fg-soft: 0 0% 64%;
+  --color-fg-contrast: 0 0% 0%;
+  --color-primary: 0 63% 45%;
+  --color-primary-fg: 0 0% 94%;
+  --color-accent: 48 100% 50%;
+  --color-accent-fg: 0 0% 0%;
+  --color-popover: 0 0% 10.4%;
+  --color-popover-fg: 0 0% 100%;
+  --color-muted: 0 0% 10.4%;
+  --color-muted-fg: 0 0% 100%;
+
+  --color-tagline-start: #fff;
+  --color-tagline-end: #adadad;
+
+  --color-spotlight: 0 0% 15%;
+  --color-border: 0 0% 18%;
+  --color-input: 0 0% 13%;
+  --color-ring: var(--primary);
+
+  /* Card Typing Colors */
+  --color-typing: 0 0% 8%;
+  --color-typing-start: 0 0% 8%;
+  --color-typing-end: 0 0% 15%;
+
+  /* Price Colors */
+  --color-low-price: 110 50% 70%;
+  --color-mid-price: 210 70% 60%;
+  --color-high-price: 0 100% 60%;
+  --color-market-price: 270 70% 70%;
+  --color-euro-price: 0 30% 60%;
+}
+
+/** Card Typing Colors **/
+.colorless {
+  --color-typing: 240 1.9% 59.6%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.darkness {
+  --color-typing: 207.8 33.3% 11.8%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.dragon {
+  --color-typing: 45.8 44.9% 14.9%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.fairy {
+  --color-typing: 322.9 32.8% 25.5%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.fighting {
+  --color-typing: 9.9 57.4% 13.1%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.fire {
+  --color-typing: 357.9 71.8% 25.9%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.grass {
+  --color-typing: 137.1 51.9% 11.8%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.lightning {
+  --color-typing: 45.4 67.4% 33.1%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.metal {
+  --color-typing: 213.3 3.9% 25.3%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.psychic {
+  --color-typing: 300 31.2% 16.5%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
+.water {
+  --color-typing: 195.7 66.8% 26.1%;
+  --color-typing-start: var(--color-typing);
+  --color-typing-end: var(--color-typing);
+}
