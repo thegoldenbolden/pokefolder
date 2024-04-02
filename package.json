@@ -12,7 +12,7 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "db:push": "bunx prisma db push",
-    "format": "prettier --write ./src && npx prisma format"
+    "format": "prettier --write ./src && bunx prisma format"
   },
   "repository": {
     "type": "git",
