@@ -32,7 +32,7 @@ export function PokemonCarouselContent(
   props: React.ComponentProps<typeof CarouselContent>,
 ) {
   return (
-    <div className="overflow-hidden border border-border bg-muted px-4 pb-2 pt-4 shadow-inner shadow-black/10 xl:rounded-xl">
+    <div className="overflow-hidden border-y border-y-border bg-muted px-4 pb-2 pt-4 shadow-inner shadow-black/10 xl:rounded-xl xl:border-x xl:border-x-border">
       <CarouselContent {...props} />
     </div>
   );
