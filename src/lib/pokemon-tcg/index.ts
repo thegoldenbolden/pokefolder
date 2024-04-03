@@ -37,34 +37,21 @@ export async function getCard(
   return await fetcher(url, { headers });
 }
 
-export async function getAllCardsFromExpansion(id: string) {
+export async function getExpansionCards(expansion: Expansion) {
   const searchParams = new URLSearchParams(
-    `q=set.id:${id}&orderBy=name&page=1&pageSize=250`,
+    `q=set.id:${expansion.id}&orderBy=name&page=1&pageSize=250`,
   );
-  const pageSize = 250;
 
-  const initial = await getCards(searchParams.toString());
-  const cards = initial.data;
-
-  if (initial.totalCount <= 250) {
-    return cards;
-  }
-
-  const totalPages = Math.ceil(initial.totalCount / pageSize);
-
+  const totalPages = Math.ceil(+expansion.total / 250);
   const pages: string[] = [];
-  /** start at 2nd page */
-  for (let i = 2; i <= totalPages; i++) {
+  for (let i = 1; i <= totalPages; i++) {
     searchParams.set("page", i.toString());
     pages.push(searchParams.toString());
   }
 
+  const cards: CardObject[] = [];
   const data = await Promise.all(pages.map((params) => getCards(params)));
-
-  data.forEach((data) => {
-    cards.push(...data.data);
-  });
-
+  data.forEach((page) => cards.push(...page.data));
   return cards;
 }
 

@@ -2,7 +2,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { ScrollArea, ScrollBar } from "@/components/ui/scrollarea";
-import { groupBySeries } from "@/lib/pokemon-tcg/utils";
+import { groupBySeries } from "@/lib/pokemon-tcg";
 import type { ResolvingMetadata } from "next";
 
 export async function generateMetadata(_, parent: ResolvingMetadata) {

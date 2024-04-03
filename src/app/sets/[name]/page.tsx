@@ -6,7 +6,7 @@ import { Cards, Filter, Stats } from "@/components/sets/stats";
 import { SiteFooter } from "@/components/site-footer";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
-import { getAllCardsFromExpansion, getExpansion } from "@/lib/pokemon-tcg";
+import { getExpansion, getExpansionCards } from "@/lib/pokemon-tcg";
 import type { CardObject } from "@/types/pokemon-tcg";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -22,16 +22,16 @@ export default async function Page({ params }: Segment) {
     notFound();
   }
 
-  const cards = await getAllCardsFromExpansion(expansion.id);
+  const cards = await getExpansionCards(expansion);
 
   if (!cards.length) {
     return <main>No cards found</main>;
   }
 
   const stats: Record<Filter, Map<string, number>> = {
-    rarities: new Map(),
+    rarity: new Map(),
     subtypes: new Map(),
-    supertypes: new Map(),
+    supertype: new Map(),
     types: new Map(),
   };
 
@@ -46,14 +46,11 @@ export default async function Page({ params }: Segment) {
       stats.subtypes.set(type, (stats.subtypes.get(type) || 0) + 1),
     );
     card.rarity &&
-      stats.rarities.set(
-        card.rarity,
-        (stats.rarities.get(card.rarity) ?? 0) + 1,
-      );
+      stats.rarity.set(card.rarity, (stats.rarity.get(card.rarity) ?? 0) + 1);
     card.supertype &&
-      stats.supertypes.set(
+      stats.supertype.set(
         card.supertype,
-        (stats.supertypes.get(card.supertype) ?? 0) + 1,
+        (stats.supertype.get(card.supertype) ?? 0) + 1,
       );
   }
 
@@ -91,7 +88,7 @@ export default async function Page({ params }: Segment) {
               <div className="h-12 w-full rounded-xl border border-border bg-muted motion-safe:animate-pulse" />
             }
           >
-            <Stats cards={cards} stats={stats} />
+            <Stats cards={cards} tabs={stats} />
           </Suspense>
         </section>
         <section>
