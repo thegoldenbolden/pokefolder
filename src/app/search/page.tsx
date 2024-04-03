@@ -1,4 +1,4 @@
-import { Gallery } from "@/components/gallery";
+import { Gallery, GalleryFallback } from "@/components/gallery";
 import { GalleryFooter } from "@/components/gallery/footer";
 import {
   SelectOrder,
@@ -6,10 +6,7 @@ import {
   SelectSort,
   ViewAs,
 } from "@/components/gallery/toolbar";
-import {
-  Combobox,
-  type DefaultMultiComboboxValue,
-} from "@/components/search/combobox";
+import { Combobox } from "@/components/search/combobox";
 import { Form } from "@/components/search/form";
 import { Input } from "@/components/search/input";
 import { Slider } from "@/components/search/slider";
@@ -21,11 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormProvider } from "@/hooks/use-form";
-import { getSets, getTypes } from "@/lib/pokemon-tcg";
-import { regions as pokedex } from "@/lib/pokemon-tcg/constants";
+import { getExpansions, getField } from "@/lib/pokemon-tcg";
 import { getQueryFallback } from "@/lib/utils";
 import type { QueryValues } from "@/types";
-import type { SimpleSet } from "@/types/api/pokemon-tcg";
 import type { Metadata, ResolvingMetadata } from "next";
 import { Suspense } from "react";
 
@@ -82,39 +77,8 @@ export default async function Page() {
     { id: "tcgplayer", name: "TCGPlayer Prices" },
   ];
 
-  const [setsRes, typesRes, subtypesRes, supertypesRes, raritiesRes] =
-    await Promise.all([
-      getSets(),
-      getTypes("types"),
-      getTypes("subtypes"),
-      getTypes("supertypes"),
-      getTypes("rarities"),
-    ]);
-
-  const sets = setsRes?.data ?? [];
-  const types = typesRes?.data ?? [];
-  const subtypes = subtypesRes?.data ?? [];
-  const supertypes = supertypesRes?.data ?? [];
-  const rarities = raritiesRes?.data ?? [];
   const hpFallback = getQueryFallback("hp");
-  const regions = Object.entries(pokedex);
-
-  const marks = [
-    { id: "d", name: "D" },
-    { id: "e", name: "E" },
-    { id: "f", name: "F" },
-    { id: "g", name: "G" },
-    { id: "h", name: "H" },
-  ];
-
-  const legalities = [
-    { id: "expanded_legal", name: "Expanded: Legal" },
-    { id: "standard_legal", name: "Standard: Legal" },
-    { id: "unlimited_legal", name: "Unlimited: Legal" },
-    { id: "expanded_banned", name: "Expanded: Banned" },
-    { id: "standard_banned", name: "Standard: Banned" },
-    { id: "unlimited_banned", name: "Unlimited: Banned" },
-  ];
+  const expansions = getExpansions();
 
   return (
     <>
@@ -182,7 +146,7 @@ export default async function Page() {
             </div>
             <div className="flex flex-wrap items-stretch gap-1">
               <ViewAs />
-              <FormProvider sets={sets}>
+              <FormProvider expansions={expansions}>
                 <Form>
                   <Input
                     id="cards"
@@ -208,53 +172,73 @@ export default async function Page() {
                     id="sets"
                     name="Sets"
                     placeholder="vivid voltage, 151, paradox rift"
-                    data={sets.map((expansion) => setComboboxValues(expansion))}
+                    data={expansions.map((e) => e)}
                   />
                   <Combobox
                     id="rarities"
                     name="Rarities"
                     placeholder="rare prime, legend, amazing rare"
-                    data={rarities.map((name) => setComboboxValues({ name }))}
+                    data={getField("rarities").map((name) => ({
+                      name,
+                      id: name.toLowerCase(),
+                    }))}
                   />
                   <Combobox
                     id="subtypes"
                     name="Subtypes"
                     placeholder="ancient, fusion strike, break"
-                    data={subtypes.map((name) => setComboboxValues({ name }))}
+                    data={getField("subtypes").map((name) => ({
+                      name,
+                      id: name.toLowerCase(),
+                    }))}
                   />
                   <Combobox
                     id="supertypes"
                     name="Supertypes"
                     placeholder="pokemon, trainer, energy"
-                    data={supertypes.map((name) => setComboboxValues({ name }))}
+                    data={getField("supertypes").map((name) => ({
+                      name,
+                      id: name.toLowerCase(),
+                    }))}
                   />
                   <Combobox
                     id="types"
                     name="Types"
                     placeholder="colorless, grass, lightning"
-                    data={types.map((name) => setComboboxValues({ name }))}
+                    data={getField("types").map((name) => ({
+                      name,
+                      id: name.toLowerCase(),
+                    }))}
                   />
                   <Combobox
                     id="region"
                     name="Regions"
                     placeholder="hoenn, sinnoh, unova"
-                    data={regions.map(([name, id]) =>
-                      setComboboxValues({ name, id }),
+                    // TODO: figure out how to make ts happy
+                    data={(getField("regions") as [string, string]).map(
+                      ([name, id]) => ({
+                        name,
+                        id,
+                      }),
                     )}
                   />
                   <Combobox
                     id="legalities"
                     name="Legalities"
                     placeholder="standard, unlimited"
-                    data={legalities.map((legality) =>
-                      setComboboxValues(legality),
-                    )}
+                    data={getField("legalities").map((legality) => ({
+                      id: legality,
+                      name: legality.replaceAll("_", ":"),
+                    }))}
                   />
                   <Combobox
                     name="Regulation Marks"
                     placeholder="d, e, f"
                     id="marks"
-                    data={marks}
+                    data={getField("marks").map((mark) => ({
+                      id: mark,
+                      name: mark,
+                    }))}
                   />
                   <Slider
                     id="hp"
@@ -280,36 +264,11 @@ export default async function Page() {
   );
 }
 
-function setComboboxValues({
-  id,
-  name,
-  series = undefined,
-  images = undefined,
-}: Partial<SimpleSet> & Pick<DefaultMultiComboboxValue, "name">) {
-  return { id: id ? id : name.toLowerCase(), name, series, images };
-}
-
 function ControlsFallback() {
   return (
     <div
       role="status"
       className="h-9 w-full max-w-72 rounded-xl bg-muted motion-safe:animate-pulse"
     />
-  );
-}
-
-function GalleryFallback() {
-  return (
-    <ul
-      role="status"
-      className="grid grow grid-cols-2 items-center justify-items-center gap-3 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-    >
-      {Array.from({ length: 30 }).map((_, i) => (
-        <li
-          key={`fallback-${i}`}
-          className="aspect-card max-h-[350px] w-full rounded-lg bg-muted drop-shadow-lg motion-safe:animate-pulse"
-        />
-      ))}
-    </ul>
   );
 }

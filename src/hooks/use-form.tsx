@@ -1,9 +1,9 @@
 "use client";
 
+import type { Expansion } from "@/lib/pokemon-tcg/constants";
 import { getNumberFromRange } from "@/lib/pokemon-tcg/utils";
 import { getQueryFallback } from "@/lib/utils";
 import type { QueryKey } from "@/types";
-import type { SimpleSet } from "@/types/api/pokemon-tcg";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 
@@ -55,10 +55,10 @@ export function useForm() {
 }
 
 type FormProviderProps = React.PropsWithChildren<{
-  sets: SimpleSet[];
+  expansions: Expansion[];
 }>;
 
-export function FormProvider({ children, sets }: FormProviderProps) {
+export function FormProvider({ expansions, children }: FormProviderProps) {
   const [state, dispatch] = React.useReducer(reducer, DEFAULT_FORM_VALUES);
   const params = useSearchParams();
 
@@ -104,7 +104,7 @@ export function FormProvider({ children, sets }: FormProviderProps) {
           ...values,
           sets: q.map((v) => ({
             id: v,
-            name: sets.find((e) => e.id === v)?.name ?? v,
+            name: expansions.find((x) => x.id === v)?.name ?? v,
           })),
         };
         return;
@@ -114,7 +114,7 @@ export function FormProvider({ children, sets }: FormProviderProps) {
     });
 
     dispatch({ type: "initialize", values });
-  }, [params, sets]);
+  }, [params, expansions]);
 
   return (
     <FormContext.Provider value={{ state, dispatch }}>

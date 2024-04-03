@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea, ScrollBar } from "@/components/ui/scrollarea";
 import { TagItem, Tags } from "@/components/ui/tags";
 import { useForm, type FormField, type FormValue } from "@/hooks/use-form";
+import type { Expansion } from "@/lib/pokemon-tcg/constants";
 import { cn, getQueryKey } from "@/lib/utils";
-import type { SimpleSet } from "@/types/api/pokemon-tcg";
 import { useCombobox, useMultipleSelection } from "downshift";
 import * as React from "react";
 
@@ -19,7 +20,7 @@ export type DefaultMultiComboboxValue = {
 type ComboboxQueryParams = Exclude<FormField, "hp">;
 
 type ComboboxProps = React.PropsWithChildren<{
-  data: (SimpleSet | DefaultMultiComboboxValue)[];
+  data: (Expansion | DefaultMultiComboboxValue)[];
   name: string;
   placeholder?: string;
   id: ComboboxQueryParams;
@@ -47,14 +48,14 @@ const ComboboxTypes = Object.assign(
         </div>
       );
     },
-    [getQueryKey("sets")]: (item: SimpleSet) => {
+    [getQueryKey("sets")]: (item: Expansion) => {
       return (
         <>
           {item.images?.symbol && (
             <span className="rounded-sm bg-fg p-1">
               <Image
-                src={item.images.symbol}
-                alt={`symbol for ${item.name} from the series ${item.series}`}
+                src={item.images.symbol.src}
+                alt={item.images.symbol.alt}
                 height={20}
                 width={20}
                 className="aspect-square object-contain"
@@ -63,7 +64,7 @@ const ComboboxTypes = Object.assign(
           )}
           <div className="flex flex-col">
             <span className="text-sm">{item.name}</span>
-            <span className="text-ellipsis text-xs">{item.series}</span>
+            <span className="text-ellipsis text-xs">{item.series.name}</span>
           </div>
         </>
       );
@@ -92,7 +93,9 @@ const ComboboxTypes = Object.assign(
 function getFiltered(
   input: string,
   selected: FormValue[],
-  comboboxValues: (DefaultMultiComboboxValue & { series?: string })[],
+  comboboxValues: (DefaultMultiComboboxValue & {
+    series?: Expansion["series"];
+  })[],
 ) {
   const value = input.toLowerCase();
 
@@ -101,7 +104,7 @@ function getFiltered(
     return (
       item.id.toLowerCase().includes(value) ||
       item.name.toLowerCase().includes(value) ||
-      item.series?.toLowerCase().includes(value)
+      item.series?.name.toLowerCase().includes(value)
     );
   });
 }
@@ -212,7 +215,6 @@ export function Combobox({ data, name, id, placeholder }: ComboboxProps) {
         </Button>
       </div>
       <div className="flex w-full flex-col gap-2">
-        {/* <div className="flex flex-col gap-1"> */}
         <Tags className="flex flex-wrap items-center gap-1 text-sm">
           {selected.map((item, index) => (
             <TagItem
@@ -234,29 +236,31 @@ export function Combobox({ data, name, id, placeholder }: ComboboxProps) {
           {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
           id={id}
         />
-        {/* </div> */}
-        <ul
-          className={`z-10 max-h-72 w-full overflow-auto rounded-lg border border-border ${
-            !(isOpen && items.length) && "hidden"
-          }`}
-          {...getMenuProps()}
-        >
-          {items.map((item, index) => (
-            <li
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 first:rounded-t-md last:rounded-b-md",
-                {
-                  "bg-fg/10 text-fg": highlightedIndex === index,
-                  "font-bold": selectedItem === item,
-                },
-              )}
-              key={`${item.name}${index}`}
-              {...getItemProps({ item, index })}
-            >
-              <Combobox {...item} />
-            </li>
-          ))}
-        </ul>
+        <ScrollArea>
+          <ul
+            className={`z-10 max-h-72 w-full overflow-auto rounded-lg border border-border ${
+              !(isOpen && items.length) && "hidden"
+            }`}
+            {...getMenuProps()}
+          >
+            {items.map((item, index) => (
+              <li
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 first:rounded-t-md last:rounded-b-md",
+                  {
+                    "bg-fg/10 text-fg": highlightedIndex === index,
+                    "font-bold": selectedItem === item,
+                  },
+                )}
+                key={`${item.name}${index}`}
+                {...getItemProps({ item, index })}
+              >
+                <Combobox {...item} />
+              </li>
+            ))}
+          </ul>
+          <ScrollBar orientation="vertical" />
+        </ScrollArea>
       </div>
     </div>
   );
