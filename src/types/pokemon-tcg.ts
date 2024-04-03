@@ -1,16 +1,4 @@
-// Pokémon TCG API https://docs.pokemontcg.io/
-
 // https://docs.pokemontcg.io/api-reference/sets/set-object
-
-export type SimpleSet = {
-  id: string;
-  name: string;
-  releaseDate: string;
-  images: { symbol: string; logo: string };
-  series?: string;
-  total: number;
-};
-
 export type SetObject = {
   id: string;
   name: string;
@@ -25,12 +13,11 @@ export type SetObject = {
 };
 
 // https://docs.pokemontcg.io/api-reference/cards/card-object
-
 export type SimpleCard = {
   id: string;
   name: string;
   images: Partial<CardImage>;
-  set: SimpleSet;
+  set: SetObject;
 };
 
 export type CardObject = {

@@ -50,3 +50,5 @@ export type QueryValues = {
 export type QueryKeys = {
   readonly [P in QueryKey]: P;
 };
+
+export type TODO = any;
