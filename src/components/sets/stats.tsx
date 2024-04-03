@@ -6,27 +6,18 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { PokemonCard } from "../pokemon/card";
 import { CardLink } from "../pokemon/link";
-import { TypeImage } from "../pokemon/type";
 import { Button } from "../ui/button";
 import { ScrollArea, ScrollBar } from "../ui/scrollarea";
 
 export type Filter = "types" | "subtypes" | "supertype" | "rarity";
-type View = "table" | "images";
-
-type Params = Partial<Record<Filter, string>> & {
-  view: "table" | "images";
-  tab?: Filter;
-  q?: Filter;
-};
 
 type Stats = {
-  cards: CardObject[];
   tabs: {
     [P in Filter]: Map<string, number>;
   };
 };
 
-export function Stats({ cards, tabs }: Stats) {
+export function Stats({ tabs }: Stats) {
   const pathname = usePathname();
   const readonlySearchParams = useSearchParams();
   const currentTab = readonlySearchParams.get("tab") as Filter;
@@ -131,7 +122,7 @@ export function Stats({ cards, tabs }: Stats) {
               return (
                 <li
                   key={`${currentTab}.${name}`}
-                  className="lg:basis/9 xl:basis/12 basis-1/3 sm:basis-1/6 md:basis-1/6"
+                  className="lg:basis-1/9 basis-1/3 sm:basis-1/6 md:basis-1/6"
                 >
                   <Button
                     variant={null}
@@ -140,11 +131,12 @@ export function Stats({ cards, tabs }: Stats) {
                     className="group"
                     onClick={() => goTo([["q", name]])}
                   >
-                    <Stat
-                      filter={currentTab as Filter}
-                      name={name}
-                      value={value}
-                    />
+                    <div className="flex flex-col items-start gap-1">
+                      <span className="text-start text-sm uppercase text-fg-soft decoration-2 group-hover:underline group-focus-visible:underline">
+                        {name}
+                      </span>
+                      <span>{value.toString()} cards</span>
+                    </div>
                   </Button>
                 </li>
               );
@@ -198,36 +190,4 @@ export function Cards({ cards }: { cards: CardObject[] }) {
       })}
     </ul>
   );
-}
-
-type StatProps = {
-  filter: Filter;
-  name: string;
-  value: number;
-};
-
-function Stat({ name, value, filter }: StatProps) {
-  switch (filter) {
-    default:
-      return (
-        <div className="flex flex-col items-start gap-1">
-          <span className="text-start text-sm uppercase text-fg-soft decoration-2 group-hover:underline group-focus-visible:underline">
-            {name}
-          </span>
-          <span>{value.toString()} cards</span>
-        </div>
-      );
-    case "types":
-      return (
-        <div className="flex flex-col items-start gap-1">
-          <div className="flex items-center gap-1">
-            <TypeImage width={24} height={24} name={name} />
-            <span className="text-start text-sm uppercase text-fg-soft decoration-2 group-hover:underline group-focus-visible:underline">
-              {name}
-            </span>
-          </div>
-          <span>{value.toString()} cards</span>
-        </div>
-      );
-  }
 }
