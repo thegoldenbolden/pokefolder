@@ -1,7 +1,7 @@
 "use client";
 import { search } from "@/actions/search";
 import { getQueryKey } from "@/lib/utils";
-import type { CardObject, TCGApiResponse } from "@/types/api/pokemon-tcg";
+import type { CardObject, TCGApiResponse } from "@/types/pokemon-tcg";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 

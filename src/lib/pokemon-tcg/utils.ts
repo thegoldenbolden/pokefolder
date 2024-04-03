@@ -15,7 +15,7 @@ import {
   getQueryKeys,
 } from "@/lib/utils";
 import type { QueryKey, QueryValues } from "@/types";
-import type { Legality } from "@/types/api/pokemon-tcg";
+import type { Legality } from "@/types/pokemon-tcg";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 
 type LegalParam = [keyof Legality, string];
