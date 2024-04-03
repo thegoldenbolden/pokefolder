@@ -88,7 +88,7 @@ export default async function Page({ params }: Segment) {
               <div className="h-12 w-full rounded-xl border border-border bg-muted motion-safe:animate-pulse" />
             }
           >
-            <Stats cards={cards} tabs={stats} />
+            <Stats tabs={stats} />
           </Suspense>
         </section>
         <section>
