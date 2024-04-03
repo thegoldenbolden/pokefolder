@@ -16,77 +16,55 @@ import {
   Table as TableRoot,
   TableRow,
 } from "@/components/ui/table";
-import { useCards } from "@/hooks/use-cards";
 import { getCardPrice, getCardUrl, getSearchUrl } from "@/lib/utils";
+import { CardObject } from "@/types/pokemon-tcg";
 
-export function Table() {
-  const { cards, isLoading, error } = useCards();
-
-  if (isLoading) {
-    return (
-      <TableRoot>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Set</TableHead>
-            <TableHead>No.</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Rarity</TableHead>
-            <TableHead>Supertype</TableHead>
-            <TableHead>Types</TableHead>
-            <TableHead>Subtypes</TableHead>
-            <TableHead>TCGPlayer</TableHead>
-            <TableHead>Cardmarket</TableHead>
+export function TableFallback({ size }: { size: number }) {
+  return (
+    <TableRoot role="status">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Set</TableHead>
+          <TableHead>No.</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Rarity</TableHead>
+          <TableHead>Supertype</TableHead>
+          <TableHead>Types</TableHead>
+          <TableHead>Subtypes</TableHead>
+          <TableHead>TCGPlayer</TableHead>
+          <TableHead>Cardmarket</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody className="min-h-[648px]">
+        {Array.from({ length: size }).map((_, i) => (
+          <TableRow
+            key={`row-fallback-${i}`}
+            className="h-9 duration-500 odd:bg-muted even:bg-muted/75 motion-safe:animate-pulse"
+          >
+            {Array.from({ length: 9 }).map((_, i) => (
+              <TableCell key={`cell-fallback-${i}`} />
+            ))}
           </TableRow>
-        </TableHeader>
-        <TableBody className="min-h-[648px]">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <TableRow
-              key={`row-fallback-${i}`}
-              className="h-9 duration-500 odd:bg-muted even:bg-muted/75 motion-safe:animate-pulse"
-            >
-              {Array.from({ length: 9 }).map((_, i) => (
-                <TableCell key={`cell-fallback-${i}`} />
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow className="hover:bg-primary focus-visible:bg-primary">
-            <TableHead>Set</TableHead>
-            <TableHead>No.</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Rarity</TableHead>
-            <TableHead>Supertype</TableHead>
-            <TableHead>Types</TableHead>
-            <TableHead>Subtypes</TableHead>
-            <TableHead>TCGPlayer</TableHead>
-            <TableHead>Cardmarket</TableHead>
-          </TableRow>
-        </TableFooter>
-      </TableRoot>
-    );
-  }
+        ))}
+      </TableBody>
+      <TableFooter>
+        <TableRow className="hover:bg-primary focus-visible:bg-primary">
+          <TableHead>Set</TableHead>
+          <TableHead>No.</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Rarity</TableHead>
+          <TableHead>Supertype</TableHead>
+          <TableHead>Types</TableHead>
+          <TableHead>Subtypes</TableHead>
+          <TableHead>TCGPlayer</TableHead>
+          <TableHead>Cardmarket</TableHead>
+        </TableRow>
+      </TableFooter>
+    </TableRoot>
+  );
+}
 
-  if (error) {
-    return (
-      <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
-        <p className="text-3xl font-bold">No results found</p>
-        <p className="text-muted-fg">Try searching for something else.</p>
-      </div>
-    );
-  }
-
-  if (!cards?.count) {
-    return (
-      <div className="mx-auto flex h-full max-w-xs grow flex-col justify-center">
-        <p className="text-3xl font-bold">Uh oh..</p>
-        <p className="text-muted-fg">
-          An error occurred while searching for cards.
-        </p>
-      </div>
-    );
-  }
-
+export function Table({ cards }: { cards: CardObject[] }) {
   return (
     <TableRoot>
       <TableHeader>
@@ -103,7 +81,7 @@ export function Table() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {cards.data.map((card) => (
+        {cards.map((card) => (
           <HoverCard key={card.id}>
             <HoverCardTrigger asChild>
               <TableRow>
@@ -179,6 +157,7 @@ export function Table() {
               <PokemonCard
                 name={card.name}
                 priorityImg={card.images.small}
+                alt={`${card.name} from ${card.set.name}`}
                 priorityImgFallback={card.images.large}
                 className="transition-transform hover:scale-105 focus-visible:scale-105"
               />
