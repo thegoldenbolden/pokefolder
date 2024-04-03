@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea, ScrollBar } from "@/components/ui/scrollarea";
 import { TagItem, Tags } from "@/components/ui/tags";
 import { useForm, type FormField, type FormValue } from "@/hooks/use-form";
 import type { Expansion } from "@/lib/pokemon-tcg/constants";
@@ -236,31 +235,28 @@ export function Combobox({ data, name, id, placeholder }: ComboboxProps) {
           {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
           id={id}
         />
-        <ScrollArea>
-          <ul
-            className={`z-10 max-h-72 w-full overflow-auto rounded-lg border border-border ${
-              !(isOpen && items.length) && "hidden"
-            }`}
-            {...getMenuProps()}
-          >
-            {items.map((item, index) => (
-              <li
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 first:rounded-t-md last:rounded-b-md",
-                  {
-                    "bg-fg/10 text-fg": highlightedIndex === index,
-                    "font-bold": selectedItem === item,
-                  },
-                )}
-                key={`${item.name}${index}`}
-                {...getItemProps({ item, index })}
-              >
-                <Combobox {...item} />
-              </li>
-            ))}
-          </ul>
-          <ScrollBar orientation="vertical" />
-        </ScrollArea>
+        <ul
+          className={`z-10 max-h-72 w-full overflow-auto rounded-lg border border-border ${
+            !(isOpen && items.length) && "hidden"
+          }`}
+          {...getMenuProps()}
+        >
+          {items.map((item, index) => (
+            <li
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 first:rounded-t-md last:rounded-b-md",
+                {
+                  "bg-fg/10 text-fg": highlightedIndex === index,
+                  "font-bold": selectedItem === item,
+                },
+              )}
+              key={`${item.name}${index}`}
+              {...getItemProps({ item, index })}
+            >
+              <Combobox {...item} />
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
