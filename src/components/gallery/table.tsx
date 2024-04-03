@@ -156,9 +156,8 @@ export function Table({ cards }: { cards: CardObject[] }) {
             <HoverCardContent className="rounded-sm border-none  bg-transparent p-0">
               <PokemonCard
                 name={card.name}
-                priorityImg={card.images.small}
+                src={card.images.small}
                 alt={`${card.name} from ${card.set.name}`}
-                priorityImgFallback={card.images.large}
                 className="transition-transform hover:scale-105 focus-visible:scale-105"
               />
             </HoverCardContent>

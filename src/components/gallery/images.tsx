@@ -23,10 +23,14 @@ export function Images({ cards }: { cards: CardObject[] }) {
     <ul className="grid w-full grid-cols-2 items-center gap-4 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {cards.map((card) => (
         <li key={`${card.id}-list`}>
-          <CardLink id={card.id} name={card.name} setName={card.set.name}>
+          <CardLink
+            id={card.id}
+            name={card.name}
+            aria-label={`${card.name} from ${card.set.name}`}
+          >
             <PokemonCard
               name={card.name}
-              priorityImg={card.images.small}
+              src={card.images.small}
               types={card.types}
               alt={`${card.name} from ${card.set.name}`}
             />

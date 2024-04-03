@@ -93,12 +93,12 @@ export default async function Page() {
                       <CardLink
                         id={card.id}
                         name={card.name}
-                        setName={card.set.name}
+                        aria-label={`${card.name} from ${card.set.name}`}
                       >
                         <PokemonCard
+                          alt={`${card.name} from ${card.set.name}`}
                           name={card.name}
-                          priorityImg={card.images.small}
-                          priorityImgFallback={card.images.large}
+                          src={card.images.small}
                           types={card.types}
                         />
                       </CardLink>

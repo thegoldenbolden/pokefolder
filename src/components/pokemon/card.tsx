@@ -1,33 +1,25 @@
 import { cn } from "@/lib/utils";
 import { Image, rgbDataURL } from "../ui/image";
 
-type CardLinkProps = Omit<React.ComponentProps<typeof Image>, "alt" | "src"> & {
+type CardImage = Omit<React.ComponentProps<typeof Image>, "src"> & {
   name?: string;
-  priorityImg?: string;
-  priorityImgFallback?: string;
   types?: string[];
+  src?: string;
 };
 
-export function PokemonCard({
-  priorityImg,
-  types,
-  priorityImgFallback,
-  name,
-  className,
-  ...props
-}: CardLinkProps) {
+export function PokemonCard(props: CardImage) {
   return (
     <Image
+      {...props}
       referrerPolicy="no-referrer"
-      src={priorityImg || priorityImgFallback || "/back.png"}
-      alt={name || "a pokemon card"}
+      src={props.src || "/back.png"}
       width={250}
       height={350}
       sizes="(max-width: 768px) 12rem, (max-width: 1280px) 16rem, 16rem"
       placeholder="blur"
-      className={cn("aspect-card rounded-lg drop-shadow-md", className)}
-      blurDataURL={getRGBDataUrl(types)}
-      {...props}
+      className={cn("aspect-card rounded-lg drop-shadow-md", props.className)}
+      blurDataURL={getRGBDataUrl(props.types)}
+      alt={props.alt}
     />
   );
 }

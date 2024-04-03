@@ -15,11 +15,7 @@ import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { getCard, getCards } from "@/lib/pokemon-tcg";
 import { getCardPrice, getQueryKey, getSearchUrl } from "@/lib/utils";
-import type {
-  CardObject,
-  Cardmarket,
-  TCGPlayer,
-} from "@/types/api/pokemon-tcg";
+import type { CardObject, Cardmarket, TCGPlayer } from "@/types/pokemon-tcg";
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -95,8 +91,8 @@ export default async function Page({ params }: Route) {
           </div>
           <PokemonCard
             name={card.name}
-            priorityImg={card.images.large}
-            priorityImgFallback={card.images.small}
+            src={card.images.large}
+            alt={`${card.name} from ${card.set.name}`}
             className="mx-auto px-4"
             height={450}
             width={300}
@@ -458,11 +454,15 @@ async function ExpansionCards({ setId }: ExpansionCardsProps) {
     <>
       {cards.data.map((card) => (
         <PokemonCarouselItem key={card.id}>
-          <CardLink id={card.id} name={card.name} setName={card.set.name}>
+          <CardLink
+            id={card.id}
+            name={card.name}
+            aria-label={`${card.name} from ${card.set.name}`}
+          >
             <PokemonCard
+              alt={`${card.name} from ${card.set.name}`}
               name={card.name}
-              priorityImg={card.images.small}
-              priorityImgFallback={card.images.large}
+              src={card.images.small}
               types={card.types}
             />
           </CardLink>
