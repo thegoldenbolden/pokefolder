@@ -30,7 +30,7 @@ export function ScrollTop() {
     <Button
       data-visible={visible}
       variant="fg"
-      className="fixed right-3 top-full translate-y-full rounded-full p-2 data-[visible=true]:-translate-y-[calc(100%+1rem)] motion-safe:transition-all"
+      className="fixed left-1/2 top-full -translate-x-1/2 translate-y-full rounded-full p-2 data-[visible=true]:-translate-y-[calc(100%+1rem)] motion-safe:transition-all"
       onClick={scrollTop}
       aria-label="Scroll to top"
     >

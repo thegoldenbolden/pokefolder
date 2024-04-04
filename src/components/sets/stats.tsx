@@ -1,13 +1,14 @@
 "use client";
 
+import { X } from "@/components/icons";
+import { PokemonCard } from "@/components/pokemon/card";
+import { CardLink } from "@/components/pokemon/link";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scrollarea";
 import { cn } from "@/lib/utils";
 import { CardObject } from "@/types/pokemon-tcg";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { PokemonCard } from "../pokemon/card";
-import { CardLink } from "../pokemon/link";
-import { Button } from "../ui/button";
-import { ScrollArea, ScrollBar } from "../ui/scrollarea";
 
 export type Filter = "types" | "subtypes" | "supertype" | "rarity";
 
@@ -21,12 +22,11 @@ export function Stats({ tabs }: Stats) {
   const pathname = usePathname();
   const readonlySearchParams = useSearchParams();
   const currentTab = readonlySearchParams.get("tab") as Filter;
-  const q = readonlySearchParams.get("q") as Filter;
   const searchParams = new URLSearchParams(readonlySearchParams);
 
   const getClassName = (tab?: Filter) => {
     return cn(
-      "px-3 py-1 relative rounded-md",
+      "px-3 py-1 h-9 relative rounded-md",
       currentTab === tab
         ? "bg-primary/70"
         : "hover:bg-border focus-visible:bg-border",
@@ -49,9 +49,13 @@ export function Stats({ tabs }: Stats) {
       <div className="rounded-xl border border-border bg-muted">
         <ScrollArea>
           <nav>
-            <ul className="mx-auto flex w-full max-w-screen-xl gap-1 overflow-y-visible p-2">
-              <li className={getClassName()}>
+            <ul className="mx-auto flex w-full max-w-screen-xl items-stretch gap-1 p-2">
+              <li>
                 <Button
+                  title="Clear filters"
+                  size="icon"
+                  aria-label="clear filters"
+                  className={getClassName()}
                   onClick={() =>
                     goTo([
                       ["q", ""],
@@ -59,11 +63,12 @@ export function Stats({ tabs }: Stats) {
                     ])
                   }
                 >
-                  Clear
+                  <X />
                 </Button>
               </li>
-              <li className={getClassName("types")}>
+              <li>
                 <Button
+                  className={getClassName("types")}
                   onClick={() =>
                     goTo([
                       ["q", ""],
@@ -74,8 +79,9 @@ export function Stats({ tabs }: Stats) {
                   Types
                 </Button>
               </li>
-              <li className={getClassName("subtypes")}>
+              <li>
                 <Button
+                  className={getClassName("subtypes")}
                   onClick={() =>
                     goTo([
                       ["q", ""],
@@ -86,8 +92,9 @@ export function Stats({ tabs }: Stats) {
                   Subtypes
                 </Button>
               </li>
-              <li className={getClassName("supertype")}>
+              <li>
                 <Button
+                  className={getClassName("supertype")}
                   onClick={() =>
                     goTo([
                       ["q", ""],
@@ -98,8 +105,9 @@ export function Stats({ tabs }: Stats) {
                   Supertypes
                 </Button>
               </li>
-              <li className={getClassName("rarity")}>
+              <li>
                 <Button
+                  className={getClassName("rarity")}
                   onClick={() =>
                     goTo([
                       ["q", ""],
@@ -128,7 +136,7 @@ export function Stats({ tabs }: Stats) {
                     variant={null}
                     size={null}
                     data-active={currentTab === name}
-                    className="group"
+                    className="group outline-none focus-visible:outline-none"
                     onClick={() => goTo([["q", name]])}
                   >
                     <div className="flex flex-col items-start gap-1">
