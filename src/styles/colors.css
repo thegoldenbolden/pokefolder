@@ -23,7 +23,7 @@
   --color-spotlight: 0 0% 94%;
   --color-border: 0 0% 84%;
   --color-input: 0 0% 90%;
-  --color-ring: var(--primary);
+  --color-ring: var(--color-primary);
 
   /* Card Typing Colors */
   --color-typing: 0 0% 80%;
@@ -58,7 +58,7 @@
   --color-spotlight: 0 0% 15%;
   --color-border: 0 0% 18%;
   --color-input: 0 0% 13%;
-  --color-ring: var(--primary);
+  --color-ring: var(--color-primary);
 
   /* Card Typing Colors */
   --color-typing: 0 0% 8%;
