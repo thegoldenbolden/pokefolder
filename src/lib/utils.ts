@@ -1,4 +1,5 @@
 import { fallbacks, params } from "@/lib/constants";
+import { env } from "@/schemas/valibot/env";
 import type { QueryKey } from "@/types";
 import { cx, type CxOptions } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
@@ -9,8 +10,8 @@ export function cn(...inputs: CxOptions) {
 
 export function getURL(pathname: `/${string}` = "/") {
   let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ??
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ??
+    env.NEXT_PUBLIC_SITE_URL ??
+    env.NEXT_PUBLIC_VERCEL_URL ??
     "http://localhost:3000";
   url = url.includes("http") ? url : `https://${url}`;
   return url + pathname;
@@ -71,6 +72,11 @@ export function getQueryFallbackKeys() {
 
 export async function fetcher<T>(url: URL, init: RequestInit = {}): Promise<T> {
   const response = await fetch(url, init);
+
+  console.log({
+    url: decodeURIComponent(url.href),
+    date: response.headers.get("date"),
+  });
 
   if (!response.ok || response.status !== 200) {
     console.error(
