@@ -1,4 +1,4 @@
-import { ChevronLeft } from "@/components/icons";
+import { ChevronLeft, ChevronRight } from "@/components/icons";
 import { PokemonCard } from "@/components/pokemon/card";
 import { CardLink } from "@/components/pokemon/link";
 import { ScrollTop } from "@/components/scroll-top";
@@ -6,7 +6,11 @@ import { Cards, Filter, Stats } from "@/components/sets/stats";
 import { SiteFooter } from "@/components/site-footer";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
-import { getExpansion, getExpansionCards } from "@/lib/pokemon-tcg";
+import {
+  getExpansion,
+  getExpansionCards,
+  groupBySeries,
+} from "@/lib/pokemon-tcg";
 import type { CardObject } from "@/types/pokemon-tcg";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -54,9 +58,19 @@ export default async function Page({ params }: Segment) {
       );
   }
 
+  const { series } = groupBySeries();
+  const expansions =
+    series.find((s) => s.name === expansion.series.name)?.expansions || [];
+  let expansionIdx = expansions.findIndex((e) => e.id === expansion.id);
+  expansionIdx = expansionIdx === -1 ? 0 : expansionIdx;
+  const nextExpansion =
+    expansions[expansions.length - 1 === expansionIdx ? 0 : expansionIdx + 1];
+  const previousExpansion =
+    expansions[expansionIdx <= 0 ? expansions.length - 1 : expansionIdx - 1];
+
   return (
     <>
-      <main className="mx-auto flex w-full max-w-screen-xl flex-col gap-8 px-3 py-6 xl:px-0">
+      <main className="flex flex-col gap-8">
         <Image
           height={768}
           width={768}
@@ -64,25 +78,36 @@ export default async function Page({ params }: Segment) {
           src={expansion.images.logo.src}
           alt={expansion.images.logo.alt}
         />
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2 text-xl">
-            <Image
-              src={expansion.images.symbol.src}
-              alt={expansion.images.symbol.alt}
-              height={40}
-              width={40}
-              className="size-8"
-            />
-            <h1 className="font-bungee text-xl">{expansion.name}</h1>
+        <div className="sticky top-12 z-50 w-full self-start border-b border-b-border bg-canvas">
+          <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-center justify-between gap-2 px-3 py-1">
+            <h1 className="max-w-screen-xl truncate font-bungee text-xl">
+              {expansion.name}
+            </h1>
+            <div className="flex grow flex-wrap text-sm sm:grow-0">
+              <Link
+                variant="ghost"
+                className="basis-1/2 gap-2 overflow-hidden px-2 py-1 sm:basis-auto"
+                href={`/sets/${previousExpansion.href}`}
+              >
+                <ChevronLeft className="mr-auto size-4 shrink-0" />
+                <span className="grow truncate text-ellipsis text-center">
+                  {previousExpansion.name}
+                </span>
+              </Link>
+              <Link
+                variant="ghost"
+                className="basis-1/2 gap-2 overflow-hidden px-2 py-1 sm:basis-auto"
+                href={`/sets/${nextExpansion.href}`}
+              >
+                <span className="grow truncate text-ellipsis text-center">
+                  {nextExpansion.name}
+                </span>
+                <ChevronRight className="ml-auto size-4 shrink-0" />
+              </Link>
+            </div>
           </div>
-          <Link className="group self-start" variant={null} href="/sets">
-            <ChevronLeft className="size-4" />
-            <span className="decoration-2 group-hover:underline group-focus-visible:underline">
-              Back to expansions
-            </span>
-          </Link>
         </div>
-        <section className="flex flex-col gap-2">
+        <section className="mx-auto flex w-full max-w-screen-xl flex-col gap-1 px-3 xl:px-0">
           <Suspense
             fallback={
               <div className="h-12 w-full rounded-xl border border-border bg-muted motion-safe:animate-pulse" />
@@ -91,7 +116,7 @@ export default async function Page({ params }: Segment) {
             <Stats tabs={stats} />
           </Suspense>
         </section>
-        <section>
+        <section className="mx-auto w-full max-w-screen-xl px-3 xl:px-0">
           <Suspense fallback={<CardsFallback cards={cards} />}>
             <Cards cards={cards} />
           </Suspense>
